@@ -1,0 +1,387 @@
+key,en,de
+navigation.mods,Mods,Mods
+navigation.dashboard,Dashboard,Dashboard
+navigation.my_mods,My Mods,Meine Mods
+navigation.moderation,Moderation,Moderation
+navigation.reports,Reports,Meldungen
+navigation.categories,Categories,Kategorien
+navigation.ranks,Ranks,Ränge
+navigation.rank_point_rules,Point Rules,Punkteregeln
+navigation.settings,Settings,Einstellungen
+navigation.users,Users,Benutzer
+navigation.profile,Profile,Profil
+navigation.logout,Log Out,Abmelden
+navigation.admin,Admin,Admin
+navigation.moderation_queue,Moderation Queue,Moderations-Warteschlange
+actions.submit,Submit,Absenden
+actions.save,Save,Speichern
+actions.cancel,Cancel,Abbrechen
+actions.delete,Delete,Löschen
+actions.edit,Edit,Bearbeiten
+actions.approve,Approve,Genehmigen
+actions.reject,Reject,Ablehnen
+actions.resolve,Resolve,Erledigen
+actions.dismiss,Dismiss,Verwerfen
+actions.hide,Hide,Verbergen
+actions.show,Show,Sichtbar machen
+actions.block,Block,Sperren
+actions.unblock,Unblock,Entsperren
+actions.post,Post,Senden
+actions.rate,Rate,Bewerten
+actions.preview,Preview,Vorschau
+actions.back,Back,Zurück
+actions.filter,Filter,Filtern
+mods.title,Mods,Mods
+mods.submit_mod,Submit Mod,Mod einreichen
+mods.submitted_mods,Submitted mods,Eingereichte Mods
+mods.track_status_subtitle,"Track pending, approved, and rejected entries.","Verfolge ausstehende, genehmigte und abgelehnte Einträge."
+mods.no_submitted_mods,You have not submitted any mods yet.,Du hast noch keine Mods eingereicht.
+mods.my_mods,My Mods,Meine Mods
+mods.no_mods,No mods yet.,Noch keine Mods vorhanden.
+mods.status,Status,Status
+mods.category,Category,Kategorie
+mods.select_category,Select category,Kategorie auswählen
+mods.description,Description,Beschreibung
+mods.external_download_url,External download URL,Externer Download-Link
+mods.virustotal_url,VirusTotal URL,VirusTotal-Link
+mods.screenshot_urls,Screenshot URLs,Screenshot-URLs
+mods.screenshot_urls_placeholder,One image URL per line,Eine URL pro Zeile
+mods.submit_for_review,Submit for review,Zur Prüfung einreichen
+mods.download,External Download,Externer Download
+mods.download_clicks_count,{count} download clicks,{count} Download-Klicks
+mods.virustotal,VirusTotal Report,VirusTotal-Bericht
+mods.no_virustotal,No VirusTotal link was provided for this entry.,Für diesen Eintrag wurde kein VirusTotal-Link angegeben.
+mods.submitted_by,Submitted by,Eingereicht von
+mods.unknown,Unknown,Unbekannt
+mods.rating,Rating,Bewertung
+mods.no_ratings,No ratings yet,Noch keine Bewertungen
+mods.rate_this_mod,Rate this mod,Diesen Mod bewerten
+mods.select_rating,Select rating,Bewertung auswählen
+mods.save_rating,Save rating,Bewertung speichern
+mods.login_to_rate,Log in to rate this mod.,"Anmelden, um diesen Mod zu bewerten."
+mods.comments,Comments,Kommentare
+mods.share_feedback,Share feedback about this mod,Teile dein Feedback zu diesem Mod
+mods.post_comment,Post comment,Kommentar senden
+mods.login_to_comment,Log in to comment.,"Anmelden, um zu kommentieren."
+mods.no_comments,No comments yet.,Noch keine Kommentare.
+mods.report_mod,Report this mod,Diesen Mod melden
+mods.select_reason,Select reason,Grund auswählen
+mods.reason_broken_link,Broken download link,Defekter Download-Link
+mods.reason_malware,Malware or suspicious content,Malware oder verdächtiger Inhalt
+mods.reason_spam,Spam or misleading,Spam oder irreführend
+mods.reason_other,Other,Sonstiges
+mods.additional_details,Additional details (optional),Zusätzliche Details (optional)
+mods.submit_report,Submit report,Meldung absenden
+mods.discover,Discover approved mods from the community.,Entdecke geprüfte Mods aus der Community.
+mods.discover_subtitle,Every public entry passed the OpenModHub moderation workflow before appearing here.,Jeder öffentliche Eintrag hat den OpenModHub-Moderationsprozess durchlaufen, bevor er hier erscheint.
+mods.search_placeholder,Search mods,Mods durchsuchen
+mods.all_categories,All categories,Alle Kategorien
+mods.sort_by,Sort by,Sortieren nach
+mods.sort_direction,Sort direction,Sortierrichtung
+mods.sort_approved_at,Date,Datum
+mods.sort_title,Title,Titel
+mods.sort_rating,Rating,Bewertung
+mods.sort_downloads,Download clicks,Download-Klicks
+mods.sort_asc,Ascending,Aufsteigend
+mods.sort_desc,Descending,Absteigend
+mods.no_results,No approved mods match your filters yet.,Noch keine passenden Mods für deine Filter.
+admin.moderation.title,Moderation Queue,Moderationswarteschlange
+admin.moderation.heading,Review submitted mods,Eingereichte Mods prüfen
+admin.moderation.subtitle,Approve safe entries or reject submissions with a clear reason.,Sichere Einträge genehmigen oder Ablehnungen mit Begründung versehen.
+admin.moderation.no_mods,No mods in this queue.,Keine Mods in dieser Warteschlange.
+admin.moderation.approve_publish,Approve and publish,Genehmigen und veröffentlichen
+admin.moderation.confirm_reject,Confirm reject,Ablehnung bestätigen
+admin.moderation.rejection_reason_placeholder,"Explain why this mod was rejected","Erkläre, warum dieser Mod abgelehnt wurde"
+admin.categories.title,Categories,Kategorien
+admin.categories.heading,Manage categories,Kategorien verwalten
+admin.categories.subtitle,"Create, edit, and deactivate categories.","Kategorien erstellen, bearbeiten und deaktivieren."
+admin.categories.new_category,New category,Neue Kategorie
+admin.categories.no_categories,No categories yet.,Noch keine Kategorien.
+admin.categories.name,Name,Name
+admin.categories.description,Description (optional),Beschreibung (optional)
+admin.categories.active,Active,Aktiv
+admin.categories.inactive,Inactive,Inaktiv
+admin.categories.mods_count,Mods,Mods
+admin.categories.deactivate,Deactivate,Deaktivieren
+admin.categories.activate,Activate,Aktivieren
+admin.ranks.title,Ranks,Ränge
+admin.ranks.heading,Manage ranks,Ränge verwalten
+admin.ranks.subtitle,Define ranks based on published mod count.,Ränge basierend auf veröffentlichten Mods definieren.
+admin.ranks.new_rank,New rank,Neuer Rang
+admin.ranks.no_ranks,No ranks yet.,Noch keine Ränge.
+admin.ranks.name,Name,Name
+admin.ranks.required_mods,Required published mods,Erforderliche veröffentlichte Mods
+admin.ranks.required_points,Required points,Erforderliche Punkte
+admin.ranks.color,Color,Farbe
+admin.ranks.icon,Icon (optional),Icon (optional)
+admin.ranks.special_rank,Special rank,Spezialrang
+admin.ranks.special_rank_locked,"Special rank, assigned manually.","Spezialrang, manuell zugewiesen."
+admin.ranks.point_rules,Point rules,Punkteregeln
+admin.ranks.point_rules_subtitle,Changing these values recalculates all user ranks retroactively.,Änderungen an diesen Werten berechnen alle Benutzerränge rückwirkend neu.
+admin.ranks.points,Points,Punkte
+admin.ranks.download_threshold,Download threshold,Download-Schwelle
+admin.ranks.min_ratings_threshold,Minimum ratings,Mindestanzahl Bewertungen
+admin.ranks.rule_comment_created,Visible comment created,Sichtbarer Kommentar erstellt
+admin.ranks.rule_approved_mod,Approved mod upload,Genehmigter Mod-Upload
+admin.ranks.rule_approved_version,Approved new mod version,Genehmigte neue Mod-Version
+admin.ranks.rule_download_threshold,Mod download threshold reached,Mod-Download-Schwelle erreicht
+admin.ranks.rule_rating_received,Rating received on approved mod,Bewertung für genehmigten Mod erhalten
+admin.ranks.rule_rating_average_bonus,High average rating bonus,Bonus für hohe Durchschnittsbewertung
+admin.rank_point_rules.title,Point Rules,Punkteregeln
+admin.rank_point_rules.heading,Manage point rules,Punkteregeln verwalten
+admin.rank_point_rules.subtitle,Changing these values recalculates all user ranks retroactively.,Änderungen an diesen Werten berechnen alle Benutzerränge rückwirkend neu.
+admin.rank_point_rules.points,Points,Punkte
+admin.rank_point_rules.download_threshold,Download threshold,Download-Schwelle
+admin.rank_point_rules.min_ratings_threshold,Minimum ratings,Mindestanzahl Bewertungen
+admin.rank_point_rules.rule_comment_created,Visible comment created,Sichtbarer Kommentar erstellt
+admin.rank_point_rules.rule_approved_mod,Approved mod upload,Genehmigter Mod-Upload
+admin.rank_point_rules.rule_approved_version,Approved new mod version,Genehmigte neue Mod-Version
+admin.rank_point_rules.rule_download_threshold,Mod download threshold reached,Mod-Download-Schwelle erreicht
+admin.rank_point_rules.rule_rating_received,Rating received on approved mod,Bewertung für genehmigten Mod erhalten
+admin.rank_point_rules.rule_rating_average_bonus,High average rating bonus,Bonus für hohe Durchschnittsbewertung
+admin.reports.title,Report Management,Meldungsverwaltung
+admin.reports.heading,Community reports,Community-Meldungen
+admin.reports.subtitle,Review user reports and resolve or dismiss them.,Benutzermeldungen prüfen und erledigen oder verwerfen.
+admin.reports.no_reports,No reports to review.,Keine Meldungen zur Prüfung.
+admin.settings.title,Settings,Einstellungen
+admin.settings.heading,Application settings,Anwendungseinstellungen
+admin.settings.subtitle,Configure global application settings.,Globale Anwendungseinstellungen konfigurieren.
+admin.settings.default_locale,Default language,Standardsprache
+admin.settings.locale_updated,Default language updated.,Standardsprache aktualisiert.
+admin.settings.branding_heading,Branding,Branding
+admin.settings.branding_hint,Upload a local logo and configure the displayed logo text.,Lade ein lokales Logo hoch und konfiguriere den angezeigten Logo-Text.
+admin.settings.current_logo,Current logo,Aktuelles Logo
+admin.settings.logo_text,Logo text,Logo-Text
+admin.settings.show_logo_text,Show logo text,Logo-Text anzeigen
+admin.settings.show_logo_text_hint,Disable this if the uploaded logo already contains text.,Deaktivieren wenn das hochgeladene Logo bereits Text enthält.
+admin.settings.logo_upload_heading,Logo upload,Logo-Upload
+admin.settings.logo_upload_hint,"PNG, JPG, or WebP. Maximum size: 2 MB.","PNG, JPG oder WebP. Maximale Größe: 2 MB."
+admin.settings.upload_logo,Upload logo,Logo hochladen
+admin.settings.remove_logo,Remove logo,Logo entfernen
+admin.users.title,Users,Benutzer
+admin.users.heading,Manage users,Benutzer verwalten
+admin.users.subtitle,"Edit user details, assign roles, and manage passwords.","Benutzerdaten bearbeiten, Rollen zuweisen und Passwörter verwalten."
+admin.users.no_users,No users found.,Keine Benutzer gefunden.
+admin.users.new_password,New password (optional),Neues Passwort (optional)
+admin.users.confirm_password,Confirm password,Passwort bestätigen
+admin.users.roles_label,Roles,Rollen
+admin.users.special_rank,Special rank,Spezialrang
+admin.users.no_special_rank,No special rank,Kein Spezialrang
+admin.users.joined,Joined,Beigetreten
+admin.users.blocked,Blocked,Gesperrt
+admin.users.blocked_since,Blocked since,Gesperrt seit
+admin.users.block_reason_prompt,Reason for blocking this user (optional),Grund für die Sperrung dieses Benutzers (optional)
+admin.users.cannot_block_self,You cannot block your own account.,Du kannst dein eigenes Konto nicht sperren.
+admin.users.cannot_block_last_admin,At least one unblocked admin must remain in the system.,Mindestens ein nicht gesperrter Admin muss im System verbleiben.
+auth.login,Log in,Anmelden
+auth.register,Register,Registrieren
+auth.forgot_password,Forgot your password?,Passwort vergessen?
+auth.reset_password,Reset password,Passwort zurücksetzen
+auth.confirm_password,Confirm password,Passwort bestätigen
+auth.verify_email,Verify your email address,E-Mail-Adresse bestätigen
+auth.email_not_verified,Your email address is not verified.,Deine E-Mail-Adresse ist noch nicht bestätigt.
+auth.resend_verification,Resend verification email,Bestätigungs-E-Mail erneut senden
+auth.name,Name,Name
+auth.email,Email,E-Mail
+auth.password,Password,Passwort
+auth.confirm_password_label,Confirm Password,Passwort bestätigen
+auth.already_registered,Already registered?,Bereits registriert?
+auth.remember_me,Remember me,Angemeldet bleiben
+auth.forgot_password_description,Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.,Passwort vergessen? Kein Problem. Gib einfach deine E-Mail-Adresse an und wir senden dir einen Link zum Zurücksetzen deines Passworts.
+auth.email_reset_link,Email Password Reset Link,Passwort-Zurücksetzen-Link senden
+auth.verify_email_description,Thanks for signing up! Before getting started," could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.",Danke für deine Registrierung! Bevor du loslegst, könntest du bitte deine E-Mail-Adresse bestätigen, indem du auf den Link klickst, den wir dir gerade gesendet haben? Falls du die E-Mail nicht erhalten hast, senden wir dir gerne eine neue.
+auth.verification_link_sent,A new verification link has been sent to the email address you provided during registration.,"Ein neuer Bestätigungslink wurde an die E-Mail-Adresse gesendet, die du bei der Registrierung angegeben hast."
+auth.resend_verification_email,Resend Verification Email,Bestätigungs-E-Mail erneut senden
+auth.log_out,Log Out,Abmelden
+auth.debug_verification_url_heading,Debug verification URL,Debug-Bestätigungslink
+auth.debug_verification_url_hint,Debug mode is enabled. Use this local development link to verify the newly registered account.,Der Debug-Modus ist aktiviert. Nutze diesen lokalen Entwicklungslink zur Bestätigung des neu registrierten Kontos.
+auth.confirm_password_description,"This is a secure area of the application. Please confirm your password before continuing.","Dies ist ein geschützter Bereich der Anwendung. Bitte bestätige dein Passwort, um fortzufahren."
+auth.confirm,Confirm,Bestätigen
+auth.website,Website,Website
+auth.captcha_required,Please complete the security check to continue.,Bitte schließe die Sicherheitsprüfung ab, um fortzufahren.
+auth.captcha_failed,The security check could not be verified.,Die Sicherheitsprüfung konnte nicht bestätigt werden.
+auth.registration_failed,Registration could not be completed. Please try again.,Die Registrierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.
+auth.account_blocked,Your account has been blocked.,Dein Konto wurde gesperrt.
+profile.title,Profile,Profil
+profile.heading,Profile Information,Profilinformationen
+profile.subtitle,Update your account's profile information and email address.,Aktualisiere deine Kontoinformationen und E-Mail-Adresse.
+profile.update_password,Update Password,Passwort aktualisieren
+profile.password_subtitle,"Ensure your account is using a long, random password to stay secure.","Verwende ein langes, zufälliges Passwort für dein Konto."
+profile.current_password,Current Password,Aktuelles Passwort
+profile.new_password,New Password,Neues Passwort
+profile.delete_account,Delete Account,Konto löschen
+profile.delete_subtitle,"Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.","Sobald dein Konto gelöscht wird, werden alle Daten dauerhaft entfernt. Bevor du dein Konto löschst, lade bitte alle Daten oder Informationen herunter, die du behalten möchtest."
+profile.delete_confirm,Are you sure you want to delete your account?,Bist du sicher, dass du dein Konto löschen möchtest?
+profile.delete_modal_description,"Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.","Sobald dein Konto gelöscht wird, werden alle Daten dauerhaft entfernt. Bitte gib dein Passwort ein, um die endgültige Löschung deines Kontos zu bestätigen."
+profile.language,Language,Sprache
+profile.system_default,System default,Systemstandard
+profile.verified,Verified,Bestätigt
+profile.unverified,Unverified,Nicht bestätigt
+profile.resend_email,Click here to re-send the verification email.,"Klicke hier, um die Bestätigungs-E-Mail erneut zu senden."
+profile.sent_link,A new verification link has been sent to your email address.,Ein neuer Bestätigungslink wurde an deine E-Mail-Adresse gesendet.
+profile.save,Save,Speichern
+profile.saved,Saved.,Gespeichert.
+profile.cancel,Cancel,Abbrechen
+profile.no_description,No description.,Keine Beschreibung.
+users.profile,User profile,Benutzerprofil
+users.current_rank,Current rank,Aktueller Rang
+users.no_rank_yet,No rank yet,Noch kein Rang
+users.published_mods,Published mods,Veröffentlichte Mods
+users.published_mods_count,{count} published mods,{count} veröffentlichte Mods
+users.points_count,{count} points,{count} Punkte
+users.special_rank,Special rank,Spezialrang
+users.no_published_mods,This user has no published mods yet.,Dieser Benutzer hat noch keine Mods veröffentlicht.
+dashboard.title,Dashboard,Dashboard
+dashboard.heading,Dashboard,Dashboard
+dashboard.logged_in,You're logged in!,Du bist angemeldet!
+dashboard.welcome,Welcome back,Willkommen zurück
+dashboard.metrics_heading,Editorial overview,Redaktionsübersicht
+dashboard.metrics_subtitle,Current moderation and community signals.,Aktuelle Moderations- und Community-Signale.
+dashboard.pending_mods,Pending mods,Ausstehende Mods
+dashboard.pending_reports,Pending reports,Offene Meldungen
+dashboard.visible_comments,Visible comments,Sichtbare Kommentare
+dashboard.approved_mods,Approved mods,Genehmigte Mods
+dashboard.approved_mods_last_7_days,Approved in 7 days,Genehmigt in 7 Tagen
+dashboard.total_users,Total users,Benutzer gesamt
+dashboard.new_users_last_7_days,New users in 7 days,Neue Benutzer in 7 Tagen
+flash.report_submitted,Report submitted.,Meldung gesendet.
+flash.category_created,Category created.,Kategorie erstellt.
+flash.category_updated,Category updated.,Kategorie aktualisiert.
+flash.category_deleted,Category deleted.,Kategorie gelöscht.
+flash.category_not_deletable,Categories with mods cannot be deleted. Deactivate the category instead.,Kategorien mit Mods können nicht gelöscht werden. Deaktiviere die Kategorie stattdessen.
+flash.rank_created,Rank created.,Rang erstellt.
+flash.rank_updated,Rank updated.,Rang aktualisiert.
+flash.rank_deleted,Rank deleted.,Rang gelöscht.
+flash.rank_point_rules_updated,Rank point rules updated.,Rang-Punkteregeln aktualisiert.
+flash.mod_approved,Mod approved.,Mod genehmigt.
+flash.mod_rejected,Mod rejected.,Mod abgelehnt.
+flash.comment_posted,Comment posted.,Kommentar gesendet.
+flash.comment_hidden,Comment hidden.,Kommentar verborgen.
+flash.comment_shown,Comment shown.,Kommentar sichtbar gemacht.
+flash.comment_deleted,Comment deleted.,Kommentar gelöscht.
+flash.report_resolved,Report resolved.,Meldung erledigt.
+flash.report_dismissed,Report dismissed.,Meldung verworfen.
+flash.settings_updated,Settings updated.,Einstellungen aktualisiert.
+flash.locale_updated,Language updated.,Sprache aktualisiert.
+flash.profile_updated,Profile updated.,Profil aktualisiert.
+flash.password_updated,Password updated.,Passwort aktualisiert.
+flash.account_deleted,Account deleted.,Konto gelöscht.
+flash.user_updated,User updated.,Benutzer aktualisiert.
+flash.user_blocked,User blocked.,Benutzer gesperrt.
+flash.user_unblocked,User unblocked.,Benutzer entsperrt.
+flash.logo_updated,Logo updated.,Logo aktualisiert.
+flash.logo_deleted,Logo removed.,Logo entfernt.
+common.loading,Loading...,Laden...
+common.error,An error occurred.,Ein Fehler ist aufgetreten.
+common.success,Success.,Erfolgreich.
+common.no_data,No data available.,Keine Daten verfügbar.
+common.select_language,Select language,Sprache auswählen
+common.active,Active,Aktiv
+common.inactive,Inactive,Inaktiv
+common.create,Create,Erstellen
+common.download_link,Download link,Download-Link
+common.virustotal,VirusTotal,VirusTotal
+security.heading,Security check,Sicherheitsprüfung
+security.status_missing,Not checked,Nicht geprüft
+security.status_not_submitted,Not submitted,Nicht gesendet
+security.status_pending,Pending,Ausstehend
+security.status_clean,Clean,Sauber
+security.status_suspicious,Suspicious,Verdächtig
+security.status_failed,Failed,Fehlgeschlagen
+security.checked_at,Checked at,Geprüft am
+security.decision_support,Security checks are decision support only and do not approve mods automatically.,Sicherheitsprüfungen dienen nur als Entscheidungshilfe und genehmigen Mods nicht automatisch.
+security.missing_description,No automated security check is available yet.,Noch keine automatische Sicherheitsprüfung verfügbar.
+security.not_submitted_description,VirusTotal automation is disabled or the URL was not submitted.,VirusTotal-Automatisierung ist deaktiviert oder die URL wurde nicht gesendet.
+security.pending_description,VirusTotal is still analyzing the download URL.,VirusTotal analysiert den Download-Link noch.
+security.clean_description,VirusTotal did not report malicious or suspicious results for the submitted URL.,VirusTotal hat für die gesendete URL keine schädlichen oder verdächtigen Ergebnisse gemeldet.
+security.suspicious_description,VirusTotal reported malicious or suspicious results. Review carefully before approving.,VirusTotal hat schädliche oder verdächtige Ergebnisse gemeldet. Vor der Genehmigung sorgfältig prüfen.
+security.failed_description,The automated VirusTotal check failed. Review the download URL manually.,Die automatische VirusTotal-Prüfung ist fehlgeschlagen. Prüfe den Download-Link manuell.
+mods.version,Version,Version
+mods.version_hint,"Use semantic versions such as 1.0.0, 1.2.0-beta1, or v2.0.0-RC1.","Nutze semantische Versionen wie 1.0.0, 1.2.0-beta1 oder v2.0.0-RC1."
+mods.changelog,Changelog,Changelog
+mods.current_version,Current version,Aktuelle Version
+mods.current_changelog,Current changelog,Aktueller Changelog
+mods.submit_version,Submit new version,Neue Version einreichen
+mods.version_history,Version history,Versionsverlauf
+mods.current,current,aktuell
+mods.download_version,Download version,Version herunterladen
+admin.moderation.version_heading,Review submitted versions,Eingereichte Versionen prüfen
+flash.mod_version_submitted,Mod version submitted for review.,Mod-Version zur Prüfung eingereicht.
+flash.mod_version_approved,Mod version approved.,Mod-Version genehmigt.
+flash.mod_version_rejected,Mod version rejected.,Mod-Version abgelehnt.
+mods.rejection_reason,Rejection reason,Ablehnungsgrund
+common.reviewed_by,Reviewed by,Geprüft von
+common.mods_count_label,mods,Mods
+common.requires_published_mods,Requires {count} published mods.,Erfordert {count} veröffentlichte Mods.
+common.requires_points,Requires {count} points.,Erfordert {count} Punkte.
+common.delete_category_confirm,"Delete category ""{name}""?","Kategorie ""{name}"" löschen?"
+common.delete_rank_confirm,"Delete rank ""{name}""?","Rang ""{name}"" löschen?"
+common.account,Account,Konto
+common.search_icons,Search icons...,Icons durchsuchen...
+common.no_icons_found,No icons found,Keine Icons gefunden
+mods.upload_type_error,Only JPEG and PNG images are allowed.,Nur JPEG- und PNG-Bilder sind erlaubt.
+mods.upload_size_error,The image must not exceed 5 MB.,Das Bild darf maximal 5 MB groß sein.
+mods.screenshot,Screenshot,Screenshot
+mods.screenshot_hint,"PNG or JPEG, minimum 512x512px, maximum 5 MB.","PNG oder JPEG, mindestens 512x512px, maximal 5 MB."
+mods.status_pending,Pending,Ausstehend
+mods.status_approved,Approved,Genehmigt
+mods.status_rejected,Rejected,Abgelehnt
+common.uncategorized,Uncategorized,Ohne Kategorie
+actions.view_details,Details anzeigen,Details anzeigen
+legal.imprint,Imprint,Impressum
+legal.privacy,Privacy Policy,Datenschutz
+legal.cookie_settings,Cookie settings,Cookie-Einstellungen
+legal.operator,Operator,Betreiber
+legal.represented_by,Represented by,Vertreten durch
+legal.contact,Contact,Kontakt
+legal.vat_id,VAT ID,USt-ID
+legal.additional_info,Additional information,Zusätzliche Angaben
+legal.not_configured,Not configured yet.,Noch nicht konfiguriert.
+legal.controller,Controller,Verantwortlicher
+legal.privacy_general_title,General processing,Allgemeine Verarbeitung
+legal.privacy_general_text,"We process personal data only where necessary to operate this website, provide user accounts, handle mod submissions, moderation, comments, reports, security, and language preferences.","Wir verarbeiten personenbezogene Daten nur, soweit dies für den Betrieb dieser Website, Benutzerkonten, Mod-Einreichungen, Moderation, Kommentare, Meldungen, Sicherheit und Spracheinstellungen erforderlich ist."
+legal.cookies_title,Cookies and local storage,Cookies und lokaler Speicher
+legal.cookies_text,"Necessary cookies and local storage are used for sessions, CSRF protection, language selection, and saving your cookie preferences. Optional analytics storage is used only after your consent.","Notwendige Cookies und lokaler Speicher werden für Sitzungen, CSRF-Schutz, Sprachauswahl und das Speichern deiner Cookie-Einstellungen verwendet. Optionales Analytics-Tracking wird nur nach deiner Einwilligung genutzt."
+legal.analytics_title,Analytics and Google Tag Manager,Analytics und Google Tag Manager
+legal.analytics_enabled_text,Google Tag Manager can be loaded after your explicit analytics consent. You can withdraw or change this consent at any time via the cookie settings link in the footer.,Google Tag Manager kann nach deiner ausdrücklichen Analytics-Einwilligung geladen werden. Du kannst diese Einwilligung jederzeit über den Cookie-Einstellungen-Link im Footer widerrufen oder ändern.
+legal.analytics_disabled_text,Analytics tracking is currently not configured.,Analytics-Tracking ist derzeit nicht konfiguriert.
+legal.rights_title,Your rights,Deine Rechte
+legal.rights_text,"Depending on applicable law, you may have rights to access, rectification, erasure, restriction, objection, data portability, and complaint to a supervisory authority.","Je nach anwendbarem Recht kannst du Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch, Datenübertragbarkeit und Beschwerde bei einer Aufsichtsbehörde haben."
+consent.title,Privacy settings,Datenschutzeinstellungen
+consent.description,We only use necessary storage by default. Analytics via Google Tag Manager is loaded only after your consent.,Wir verwenden standardmäßig nur notwendige Speicherung. Analytics über Google Tag Manager wird erst nach deiner Einwilligung geladen.
+consent.necessary,Necessary,Notwendig
+consent.necessary_description,"Required for security, language selection, sessions, and cookie choices.","Erforderlich für Sicherheit, Sprachauswahl, Sitzungen und Cookie-Einstellungen."
+consent.analytics,Analytics,Analytics
+consent.analytics_description,Allows Google Tag Manager to help us understand visitor numbers and usage.,Erlaubt Google Tag Manager, um Besucherzahlen und Nutzung besser zu verstehen.
+consent.accept_all,Accept all,Alle akzeptieren
+consent.reject_all,Reject,Ablehnen
+consent.save_selection,Save selection,Auswahl speichern
+admin.settings.localization_heading,Localization,Lokalisierung
+admin.settings.localization_hint,Choose the default language for visitors without their own preference.,Wähle die Standardsprache für Besucher ohne eigene Spracheinstellung.
+admin.settings.tracking_heading,Tracking,Tracking
+admin.settings.gtm_id,Google Tag Manager ID,Google Tag Manager ID
+admin.settings.gtm_hint,Google Tag Manager is only loaded after explicit analytics consent.,Google Tag Manager wird nur nach ausdrücklicher Analytics-Einwilligung geladen.
+admin.settings.gtm_placeholder,GTM-XXXXXXX,GTM-XXXXXXX
+admin.settings.development_heading,Development,Entwicklung
+admin.settings.debug_mode,Debug mode,Debug-Modus
+admin.settings.debug_mode_hint,Show local development helpers such as registration verification links.,Zeigt lokale Entwicklungshilfen wie Registrierungs-Bestätigungslinks an.
+admin.settings.debug_mode_description,"When enabled, newly registered users see their signed email verification URL on the verification prompt. Keep this disabled outside local development.","Wenn aktiviert, sehen neu registrierte Benutzer ihren signierten E-Mail-Bestätigungslink auf der Bestätigungsseite. Außerhalb der lokalen Entwicklung deaktiviert lassen."
+admin.settings.submissions_heading,Mod submissions,Mod-Einreichungen
+admin.settings.submissions_hint,Control how regular users can submit new mods.,Steuert wie normale Benutzer neue Mods einreichen können.
+admin.settings.block_mod_submissions,Block regular user mod submissions,Mod-Einreichungen normaler Benutzer blockieren
+admin.settings.block_mod_submissions_hint,Admins and editors can still submit mods.,Admins und Editoren können weiterhin Mods einreichen.
+admin.settings.pending_mod_limit,Pending mod submission limit,Limit für ausstehende Mod-Einreichungen
+admin.settings.pending_mod_limit_hint,0 means unlimited. Approved and rejected mods do not count.,0 bedeutet unbegrenzt. Genehmigte und abgelehnte Mods zählen nicht.
+admin.settings.legal_heading,Legal information,Rechtliche Angaben
+admin.settings.legal_hint,These details are used for the imprint and privacy pages.,Diese Angaben werden für Impressum und Datenschutzseite verwendet.
+admin.settings.legal_operator_name,Operator / company,Betreiber / Firma
+admin.settings.legal_represented_by,Represented by,Vertreten durch
+admin.settings.legal_street,Street and house number,Straße und Hausnummer
+admin.settings.legal_postal_code,Postal code,Postleitzahl
+admin.settings.legal_city,City,Ort
+admin.settings.legal_country,Country,Land
+admin.settings.legal_email,Email,E-Mail
+admin.settings.legal_phone,Phone,Telefon
+admin.settings.legal_vat_id,VAT ID,USt-ID
+admin.settings.legal_privacy_contact,Privacy contact,Datenschutzkontakt
+admin.settings.legal_additional_info,Additional legal information,Zusätzliche rechtliche Angaben

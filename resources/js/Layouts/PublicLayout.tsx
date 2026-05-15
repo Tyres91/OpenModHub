@@ -1,0 +1,62 @@
+import AppFooter from '@/Components/AppFooter';
+import BrandLogo from '@/Components/BrandLogo';
+import CookieConsentBanner from '@/Components/CookieConsentBanner';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import { PageProps } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { PropsWithChildren, ReactNode } from 'react';
+import { useTranslations } from '@/lib/translations';
+
+export default function PublicLayout({
+    header,
+    children,
+}: PropsWithChildren<{ header?: ReactNode }>) {
+    const { auth, translations } = usePage<PageProps>().props;
+    const t = useTranslations(translations);
+
+    return (
+        <div className="flex min-h-screen flex-col bg-slate-950 text-white">
+            <header className="border-b border-white/10 bg-slate-950/90">
+                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+                    <Link href={route('home')} className="text-xl font-black tracking-tight">
+                        <BrandLogo imageClassName="h-10 max-w-[180px] object-contain" fallbackIconClassName="h-9 w-auto fill-current text-cyan-200" textClassName="text-xl font-black tracking-tight text-white" />
+                    </Link>
+                    <nav className="flex items-center gap-4 text-sm font-semibold">
+                        <LanguageSwitcher />
+                        {auth.user ? (
+                            <>
+                                <Link href={route('profile.edit')} className="text-slate-200 hover:text-white" title={t('common.account', 'Account')}>
+                                    <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0v.75H4.5v-.75z" />
+                                    </svg>
+                                </Link>
+                                <Link href={route('mods.create')} className="rounded-full bg-cyan-400 px-4 py-2 text-slate-950 hover:bg-cyan-300">
+                                    {t('mods.submit_mod', 'Submit Mod')}
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link href={route('login')} className="text-slate-200 hover:text-white">
+                                    {t('auth.login', 'Log in')}
+                                </Link>
+                                <Link href={route('register')} className="rounded-full bg-cyan-400 px-4 py-2 text-slate-950 hover:bg-cyan-300">
+                                    {t('auth.register', 'Register')}
+                                </Link>
+                            </>
+                        )}
+                    </nav>
+                </div>
+            </header>
+
+            {header && (
+                <div className="mx-auto max-w-7xl px-6 py-6">
+                    {header}
+                </div>
+            )}
+
+            <main className="flex-1">{children}</main>
+            <AppFooter variant="dark" />
+            <CookieConsentBanner />
+        </div>
+    );
+}

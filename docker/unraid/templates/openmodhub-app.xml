@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>openmodhub-app</Name>
+  <Repository>openmodhub:local</Repository>
+  <Registry/>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support/>
+  <Project/>
+  <Overview>OpenModHub Laravel/Inertia mod portal. This template expects a locally built image named openmodhub:local and an existing MariaDB container reachable as openmodhub-db.</Overview>
+  <Category>Productivity: Tools:</Category>
+  <WebUI>http://[IP]:[PORT:8000]/</WebUI>
+  <TemplateURL/>
+  <Icon/>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="WebUI Port" Target="8000" Default="8088" Mode="tcp" Description="Host port used to access OpenModHub." Type="Port" Display="always" Required="true" Mask="false">8088</Config>
+  <Config Name="Application Storage" Target="/var/www/html/storage" Default="/mnt/user/appdata/openmodhub/storage" Mode="rw" Description="Persistent Laravel storage for uploads, logs, sessions, and generated files." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/openmodhub/storage</Config>
+  <Config Name="APP_NAME" Target="APP_NAME" Default="OpenModHub" Mode="" Description="Displayed application name." Type="Variable" Display="advanced" Required="true" Mask="false">OpenModHub</Config>
+  <Config Name="APP_ENV" Target="APP_ENV" Default="production" Mode="" Description="Laravel environment." Type="Variable" Display="advanced" Required="true" Mask="false">production</Config>
+  <Config Name="APP_DEBUG" Target="APP_DEBUG" Default="false" Mode="" Description="Must stay false outside development." Type="Variable" Display="advanced" Required="true" Mask="false">false</Config>
+  <Config Name="APP_URL" Target="APP_URL" Default="http://UNRAID-IP:8088" Mode="" Description="Public URL used by Laravel for links and assets." Type="Variable" Display="always" Required="true" Mask="false">http://UNRAID-IP:8088</Config>
+  <Config Name="APP_KEY" Target="APP_KEY" Default="" Mode="" Description="Persistent Laravel app key. Generate once with: docker run --rm openmodhub:local php artisan key:generate --show" Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="DB_CONNECTION" Target="DB_CONNECTION" Default="mysql" Mode="" Description="Laravel database driver." Type="Variable" Display="advanced" Required="true" Mask="false">mysql</Config>
+  <Config Name="DB_HOST" Target="DB_HOST" Default="openmodhub-db" Mode="" Description="Existing MariaDB container hostname or IP." Type="Variable" Display="always" Required="true" Mask="false">openmodhub-db</Config>
+  <Config Name="DB_PORT" Target="DB_PORT" Default="3306" Mode="" Description="MariaDB port." Type="Variable" Display="always" Required="true" Mask="false">3306</Config>
+  <Config Name="DB_DATABASE" Target="DB_DATABASE" Default="openmodhub" Mode="" Description="MariaDB database name." Type="Variable" Display="always" Required="true" Mask="false">openmodhub</Config>
+  <Config Name="DB_USERNAME" Target="DB_USERNAME" Default="openmodhub" Mode="" Description="MariaDB user name." Type="Variable" Display="always" Required="true" Mask="false">openmodhub</Config>
+  <Config Name="DB_PASSWORD" Target="DB_PASSWORD" Default="" Mode="" Description="MariaDB user password." Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="SESSION_DRIVER" Target="SESSION_DRIVER" Default="database" Mode="" Description="Session storage driver." Type="Variable" Display="advanced" Required="true" Mask="false">database</Config>
+  <Config Name="CACHE_STORE" Target="CACHE_STORE" Default="database" Mode="" Description="Cache storage backend." Type="Variable" Display="advanced" Required="true" Mask="false">database</Config>
+  <Config Name="QUEUE_CONNECTION" Target="QUEUE_CONNECTION" Default="sync" Mode="" Description="Use sync for a single-container local Unraid setup. Use database only when a queue worker is added." Type="Variable" Display="advanced" Required="true" Mask="false">sync</Config>
+  <Config Name="MAIL_MAILER" Target="MAIL_MAILER" Default="log" Mode="" Description="Mail driver. Use log for local testing or configure SMTP variables separately." Type="Variable" Display="advanced" Required="true" Mask="false">log</Config>
+  <Config Name="MAIL_FROM_ADDRESS" Target="MAIL_FROM_ADDRESS" Default="hello@example.com" Mode="" Description="Default sender email address." Type="Variable" Display="advanced" Required="false" Mask="false">hello@example.com</Config>
+  <Config Name="TURNSTILE_SITE_KEY" Target="TURNSTILE_SITE_KEY" Default="" Mode="" Description="Optional Cloudflare Turnstile site key." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="TURNSTILE_SECRET_KEY" Target="TURNSTILE_SECRET_KEY" Default="" Mode="" Description="Optional Cloudflare Turnstile secret key." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
+  <Config Name="VIRUSTOTAL_ENABLED" Target="VIRUSTOTAL_ENABLED" Default="false" Mode="" Description="Enable optional VirusTotal API checks." Type="Variable" Display="advanced" Required="true" Mask="false">false</Config>
+  <Config Name="VIRUSTOTAL_API_KEY" Target="VIRUSTOTAL_API_KEY" Default="" Mode="" Description="Optional VirusTotal API key." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
+  <Config Name="VIRUSTOTAL_POLL_DELAY_SECONDS" Target="VIRUSTOTAL_POLL_DELAY_SECONDS" Default="90" Mode="" Description="Delay before polling VirusTotal results." Type="Variable" Display="advanced" Required="false" Mask="false">90</Config>
+</Container>
