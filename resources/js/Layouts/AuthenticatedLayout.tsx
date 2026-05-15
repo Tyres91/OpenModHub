@@ -3,6 +3,7 @@ import BrandLogo from '@/Components/BrandLogo';
 import CookieConsentBanner from '@/Components/CookieConsentBanner';
 import Dropdown from '@/Components/Dropdown';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import ModerationTodoBell from '@/Components/ModerationTodoBell';
 import NavLink from '@/Components/NavLink';
 import NavDropdown, { NavDropdownLink } from '@/Components/NavDropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
@@ -21,6 +22,7 @@ export default function Authenticated({
     const t = useTranslations(translations);
     const canReview = user?.roles.includes('admin') || user?.roles.includes('editor');
     const canManageAdminData = user?.roles.includes('admin');
+    const moderationTodos = page.props.moderationTodos;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -162,6 +164,9 @@ export default function Authenticated({
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
+                            {canReview && moderationTodos && (
+                                <ModerationTodoBell todos={moderationTodos} t={t} />
+                            )}
                         </div>
 
                         <div className="-me-2 flex items-center sm:hidden">
@@ -234,20 +239,39 @@ export default function Authenticated({
                         </ResponsiveNavLink>
                         {canReview && (
                             <>
-                                <div className="mt-4 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                                    {t('navigation.moderation_group', 'Moderation')}
+                                <div className="mt-4 flex items-center justify-between px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                    <span>{t('navigation.moderation_group', 'Moderation')}</span>
+                                    {moderationTodos && moderationTodos.total > 0 && (
+                                        <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs text-white">
+                                            {moderationTodos.total}
+                                        </span>
+                                    )}
                                 </div>
                                 <ResponsiveNavLink
                                     href={route('admin.moderation.index')}
                                     active={route().current('admin.moderation.*')}
                                 >
-                                    {t('navigation.moderation_queue', 'Moderation Queue')}
+                                    <span className="inline-flex w-full items-center justify-between">
+                                        <span>{t('navigation.moderation_queue', 'Moderation Queue')}</span>
+                                        {moderationTodos && moderationTodos.pending_mods + moderationTodos.pending_versions > 0 && (
+                                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-900 dark:text-amber-100">
+                                                {moderationTodos.pending_mods + moderationTodos.pending_versions}
+                                            </span>
+                                        )}
+                                    </span>
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
                                     href={route('admin.reports.index')}
                                     active={route().current('admin.reports.*')}
                                 >
-                                    {t('navigation.reports', 'Reports')}
+                                    <span className="inline-flex w-full items-center justify-between">
+                                        <span>{t('navigation.reports', 'Reports')}</span>
+                                        {moderationTodos && moderationTodos.pending_reports > 0 && (
+                                            <span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-800 dark:bg-rose-900 dark:text-rose-100">
+                                                {moderationTodos.pending_reports}
+                                            </span>
+                                        )}
+                                    </span>
                                 </ResponsiveNavLink>
                             </>
                         )}

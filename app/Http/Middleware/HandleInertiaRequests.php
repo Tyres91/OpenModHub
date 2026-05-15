@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Mod;
+use App\Models\ModVersion;
+use App\Models\Report;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +32,7 @@ class HandleInertiaRequests extends Middleware
                     'roles' => $request->user()->roles()->pluck('slug')->all(),
                 ] : null,
             ],
+            'moderationTodos' => fn () => $this->moderationTodos($request),
             'flash' => [
                 'status' => fn () => $request->session()->get('status'),
                 'error' => fn () => $request->session()->get('error'),
@@ -52,6 +56,30 @@ class HandleInertiaRequests extends Middleware
         $path = Setting::get('site_logo_path', '');
 
         return filled($path) ? Storage::disk('public')->url($path) : null;
+    }
+
+    /** @return array<string, int>|null */
+    private function moderationTodos(Request $request): ?array
+    {
+        $user = $request->user();
+
+        if (! $user || (! $user->hasRole('admin') && ! $user->hasRole('editor'))) {
+            return null;
+        }
+
+        $pendingMods = Mod::query()->where('status', Mod::STATUS_PENDING)->count();
+        $pendingVersions = ModVersion::query()
+            ->where('status', Mod::STATUS_PENDING)
+            ->whereHas('mod', fn ($query) => $query->where('status', Mod::STATUS_APPROVED))
+            ->count();
+        $pendingReports = Report::query()->where('status', Report::STATUS_PENDING)->count();
+
+        return [
+            'pending_mods' => $pendingMods,
+            'pending_versions' => $pendingVersions,
+            'pending_reports' => $pendingReports,
+            'total' => $pendingMods + $pendingVersions + $pendingReports,
+        ];
     }
 
     private function loadTranslations(string $locale): array

@@ -156,7 +156,8 @@ Admins and editors should have a quick overview of moderation and community acti
 
 Current implementation:
 
-- Admins and editors see editorial dashboard metrics for pending mods, pending reports, visible comments, approved mods, and mods approved in the last 7 days.
+- Admins and editors see editorial dashboard metrics for pending mods, pending mod versions, pending reports, visible comments, approved mods, and mods approved in the last 7 days.
+- Admins and editors see a global open-tasks icon in the authenticated navigation. A badge is shown when mods, mod versions, or reports are waiting for review.
 - Admins additionally see total users and new users in the last 7 days.
 - Regular users see a simple authenticated dashboard without editorial metrics.
 

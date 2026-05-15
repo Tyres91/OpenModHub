@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Mod;
+use App\Models\ModVersion;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,6 +30,10 @@ class DashboardController extends Controller
     {
         $metrics = [
             'pending_mods' => Mod::query()->where('status', Mod::STATUS_PENDING)->count(),
+            'pending_versions' => ModVersion::query()
+                ->where('status', Mod::STATUS_PENDING)
+                ->whereHas('mod', fn ($query) => $query->where('status', Mod::STATUS_APPROVED))
+                ->count(),
             'pending_reports' => Report::query()->where('status', Report::STATUS_PENDING)->count(),
             'visible_comments' => Comment::query()->where('status', Comment::STATUS_VISIBLE)->count(),
             'approved_mods' => Mod::query()->where('status', Mod::STATUS_APPROVED)->count(),

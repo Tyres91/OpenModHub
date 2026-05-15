@@ -13,6 +13,12 @@ navigation.profile,Profile,Profil
 navigation.logout,Log Out,Abmelden
 navigation.admin,Admin,Admin
 navigation.moderation_queue,Moderation Queue,Moderations-Warteschlange
+navigation.moderation_group,Moderation,Moderation
+navigation.open_tasks,Open tasks,Offene Aufgaben
+navigation.open_tasks_total,open tasks,offene Aufgaben
+navigation.no_open_tasks,No open tasks.,Keine offenen Aufgaben.
+navigation.pending_reviews,Mod reviews,Mod-Prüfungen
+navigation.pending_reports,Reports,Meldungen
 actions.submit,Submit,Absenden
 actions.save,Save,Speichern
 actions.cancel,Cancel,Abbrechen
@@ -238,6 +244,7 @@ dashboard.welcome,Welcome back,Willkommen zurück
 dashboard.metrics_heading,Editorial overview,Redaktionsübersicht
 dashboard.metrics_subtitle,Current moderation and community signals.,Aktuelle Moderations- und Community-Signale.
 dashboard.pending_mods,Pending mods,Ausstehende Mods
+dashboard.pending_versions,Pending versions,Ausstehende Versionen
 dashboard.pending_reports,Pending reports,Offene Meldungen
 dashboard.visible_comments,Visible comments,Sichtbare Kommentare
 dashboard.approved_mods,Approved mods,Genehmigte Mods

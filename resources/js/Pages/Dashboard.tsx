@@ -5,6 +5,7 @@ import { useTranslations } from '@/lib/translations';
 
 type DashboardMetrics = {
     pending_mods: number;
+    pending_versions: number;
     pending_reports: number;
     visible_comments: number;
     approved_mods: number;
@@ -82,6 +83,7 @@ export default function Dashboard({ metrics, canSeeUserMetrics }: PageProps<{ me
 
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                                 <MetricCard label={t('dashboard.pending_mods', 'Pending mods')} value={metrics.pending_mods} href={route('admin.moderation.index')} tone="amber" />
+                                <MetricCard label={t('dashboard.pending_versions', 'Pending versions')} value={metrics.pending_versions} href={route('admin.moderation.index')} tone="amber" />
                                 <MetricCard label={t('dashboard.pending_reports', 'Pending reports')} value={metrics.pending_reports} href={route('admin.reports.index')} tone="rose" />
                                 <MetricCard label={t('dashboard.visible_comments', 'Visible comments')} value={metrics.visible_comments} tone="cyan" />
                                 <MetricCard label={t('dashboard.approved_mods', 'Approved mods')} value={metrics.approved_mods} href={route('mods.index')} tone="emerald" />

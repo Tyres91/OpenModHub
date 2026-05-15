@@ -161,6 +161,12 @@ export type PageProps<
         error?: string | null;
         debugVerificationUrl?: string | null;
     };
+    moderationTodos: {
+        pending_mods: number;
+        pending_versions: number;
+        pending_reports: number;
+        total: number;
+    } | null;
     locale: string;
     defaultLocale: string;
     availableLocales: Record<string, string>;

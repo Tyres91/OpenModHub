@@ -2,6 +2,7 @@ import AppFooter from '@/Components/AppFooter';
 import BrandLogo from '@/Components/BrandLogo';
 import CookieConsentBanner from '@/Components/CookieConsentBanner';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import ModerationTodoBell from '@/Components/ModerationTodoBell';
 import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode } from 'react';
@@ -11,8 +12,9 @@ export default function PublicLayout({
     header,
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-    const { auth, translations } = usePage<PageProps>().props;
+    const { auth, moderationTodos, translations } = usePage<PageProps>().props;
     const t = useTranslations(translations);
+    const canReview = auth.user?.roles.includes('admin') || auth.user?.roles.includes('editor');
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-950 text-white">
@@ -33,6 +35,9 @@ export default function PublicLayout({
                                 <Link href={route('mods.create')} className="rounded-full bg-cyan-400 px-4 py-2 text-slate-950 hover:bg-cyan-300">
                                     {t('mods.submit_mod', 'Submit Mod')}
                                 </Link>
+                                {canReview && moderationTodos && (
+                                    <ModerationTodoBell todos={moderationTodos} t={t} variant="dark" />
+                                )}
                             </>
                         ) : (
                             <>

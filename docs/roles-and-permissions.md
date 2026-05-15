@@ -45,6 +45,8 @@ Category management may be limited to Admin in the MVP. If editors should manage
 
 Current implementation: category and rank management are limited to Admin. Editors can access the moderation queue, approve or reject mods, moderate comments, and manage reports (resolve/dismiss), but cannot manage categories or ranks. User management is limited to Admin. Admins can edit user details, assign roles, change passwords, and block or unblock users. Admins cannot remove their own admin role, cannot block themselves, and the system prevents removing or blocking the last admin from the system.
 
+Admins and editors see a global open-tasks indicator in the authenticated navigation for pending mods, pending mod versions, and pending reports.
+
 ## User
 
 Users are standard authenticated community members.

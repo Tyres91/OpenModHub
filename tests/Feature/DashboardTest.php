@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Mod;
+use App\Models\ModVersion;
 use App\Models\Report;
 use App\Models\Role;
 use App\Models\User;
@@ -25,6 +26,7 @@ class DashboardTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Dashboard')
                 ->where('metrics', null)
+                ->where('moderationTodos', null)
                 ->where('canSeeUserMetrics', false)
             );
     }
@@ -39,7 +41,12 @@ class DashboardTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('metrics.pending_mods', 1)
+                ->where('metrics.pending_versions', 1)
                 ->where('metrics.pending_reports', 1)
+                ->where('moderationTodos.pending_mods', 1)
+                ->where('moderationTodos.pending_versions', 1)
+                ->where('moderationTodos.pending_reports', 1)
+                ->where('moderationTodos.total', 3)
                 ->where('metrics.visible_comments', 1)
                 ->where('metrics.approved_mods', 2)
                 ->where('metrics.approved_mods_last_7_days', 1)
@@ -75,6 +82,16 @@ class DashboardTest extends TestCase
         $approvedRecent = $this->mod($owner, $category, Mod::STATUS_APPROVED, now());
         $this->mod($owner, $category, Mod::STATUS_APPROVED, now()->subDays(10));
         $this->mod($owner, $category, Mod::STATUS_PENDING, null);
+
+        ModVersion::query()->create([
+            'mod_id' => $approvedRecent->id,
+            'submitted_by' => $owner->id,
+            'version' => '1.1.0',
+            'normalized_version' => '1.1.0.0',
+            'changelog' => 'Pending dashboard test version.',
+            'external_download_url' => 'https://example.com/mod-version',
+            'status' => Mod::STATUS_PENDING,
+        ]);
 
         Comment::query()->create([
             'user_id' => $owner->id,

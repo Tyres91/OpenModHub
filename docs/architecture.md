@@ -36,6 +36,8 @@ Inertia.js connects Laravel routes and controllers to React pages without requir
 
 Laravel controllers should return Inertia responses with only the data needed by each page. Authorization must stay server-side.
 
+The authenticated layout receives global moderation todo counts through Inertia shared props. These counts are computed from pending mods, pending mod versions, and pending reports for admins and editors only; they are not stored as persistent notification records.
+
 ## Database
 
 MariaDB or MySQL is the planned database. The schema should use Laravel migrations and clear Eloquent relationships.
