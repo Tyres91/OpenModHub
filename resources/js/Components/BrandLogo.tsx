@@ -16,16 +16,17 @@ export default function BrandLogo({
     wrapperClassName = 'flex items-center gap-3',
 }: BrandLogoProps) {
     const { branding } = usePage<PageProps>().props;
-    const logoText = branding.logoText || 'OpenModHub';
+    const logoText = branding.logoText.trim();
+    const imageAltText = logoText || 'Site logo';
 
     return (
         <span className={wrapperClassName}>
             {branding.logoUrl ? (
-                <img src={branding.logoUrl} alt={logoText} className={imageClassName} />
+                <img src={branding.logoUrl} alt={imageAltText} className={imageClassName} />
             ) : (
                 <ApplicationLogo className={fallbackIconClassName} />
             )}
-            {branding.showLogoText && <span className={textClassName}>{logoText}</span>}
+            {branding.showLogoText && logoText.length > 0 && <span className={textClassName}>{logoText}</span>}
         </span>
     );
 }
