@@ -1,56 +1,64 @@
 # CI/CD Pipeline — Build and Publish Docker Image
 
-This guide covers building the OpenModHub Docker image with GitHub Actions and publishing it to GitHub Container Registry (GHCR).
+This guide covers the automated Docker image build pipeline for OpenModHub via GitHub Actions.
 
 ## Overview
 
 ```
-git push ──▶ GitHub Actions ──▶ Build Image ──▶ Push to GHCR
+git push main ──▶ GitHub Actions ──▶ Tests ──▶ Build Image ──▶ Push to GHCR
 ```
 
-The pipeline automatically builds a production-ready image on every push to `main` and on every release.
+The Docker image is only built if all tests pass. This ensures that broken code never reaches the registry.
 
 ---
 
-## Prerequisites
+## How It Works
 
-- GitHub repository with the OpenModHub code
-- Dockerfile: `Dockerfile.unraid` (multi-stage build with frontend assets + PHP app)
+The existing `ci.yml` workflow has two jobs:
 
----
+1. **`tests-and-build`** — Runs on every push to `main` and every PR
+   - Installs PHP and Node dependencies
+   - Runs the full test suite (`php artisan test`)
+   - Builds frontend assets (`npm run build`)
 
-## GitHub Actions Workflow
+2. **`docker-publish`** — Runs only after successful tests on push to `main`
+   - Builds the production Docker image using `Dockerfile.unraid`
+   - Pushes to GitHub Container Registry (GHCR)
 
-Create `.github/workflows/docker-publish.yml`:
+### Workflow File
+
+`.github/workflows/ci.yml`:
 
 ```yaml
-name: Build and Publish Docker Image
+name: CI
 
 on:
   push:
-    branches: [main]
-  release:
-    types: [published]
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+    branches:
+      - main
+  pull_request:
 
 jobs:
-  build-and-push:
+  tests-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      # ... test steps ...
+
+  docker-publish:
+    needs: tests-and-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,11 +66,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ghcr.io/tyres91/openmodhub
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
             type=sha
+            type=raw,value=latest
 
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -78,36 +85,19 @@ jobs:
 
 ## Image Tags
 
-The workflow produces the following tags:
-
-| Trigger | Tag Example |
+| Tag | Description |
 |---|---|
-| Push to `main` | `ghcr.io/user/openmodhub:main` |
-| Release `v1.0.0` | `ghcr.io/user/openmodhub:1.0.0`, `ghcr.io/user/openmodhub:latest` |
-| Any commit | `ghcr.io/user/openmodhub:<commit-sha>` |
+| `latest` | Always the most recent successful build from `main` |
+| `<sha>` | The full commit SHA (e.g., `a1b2c3d4e5f6...`) |
 
----
-
-## Manual Build (Local)
-
-If you need to build and push an image manually:
-
-### Authenticate
+### Example
 
 ```bash
-echo <YOUR_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
-```
+# Always get the newest version
+docker pull ghcr.io/tyres91/openmodhub:latest
 
-### Build
-
-```bash
-docker build -f Dockerfile.unraid -t ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest .
-```
-
-### Push
-
-```bash
-docker push ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest
+# Pin to a specific commit
+docker pull ghcr.io/tyres91/openmodhub:a1b2c3d4e5f67890
 ```
 
 ---
@@ -137,6 +127,17 @@ To pull the image on a server, you need a Personal Access Token with `packages: 
 
 ```bash
 echo <YOUR_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
+```
+
+---
+
+## Manual Build (Local)
+
+If you need to build an image manually for testing:
+
+```bash
+docker build -f Dockerfile.unraid -t openmodhub:local .
+docker run --rm openmodhub:local php artisan key:generate --show
 ```
 
 ---

@@ -173,6 +173,12 @@ For GitHub Container Registry:
 echo <YOUR_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
 ```
 
+For this project:
+
+```bash
+echo <YOUR_TOKEN> | docker login ghcr.io -u tyres91 --password-stdin
+```
+
 This creates `/root/.docker/config.json` with your credentials.
 
 > **Security note**: For production, use a dedicated GitHub machine user or deploy token with read-only package access.
@@ -195,7 +201,7 @@ Create `/opt/openmodhub/docker-compose.yml`:
 ```yaml
 services:
   app:
-    image: ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest
+    image: ghcr.io/tyres91/openmodhub:latest
     container_name: openmodhub-app
     restart: unless-stopped
     working_dir: /var/www/html
@@ -212,7 +218,7 @@ services:
       - openmodhub
 
   queue:
-    image: ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest
+    image: ghcr.io/tyres91/openmodhub:latest
     container_name: openmodhub-queue
     restart: unless-stopped
     working_dir: /var/www/html
@@ -321,7 +327,7 @@ VITE_APP_NAME="${APP_NAME}"
 ### 4.4 Generate APP_KEY
 
 ```bash
-docker run --rm ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest php artisan key:generate --show
+docker run --rm ghcr.io/tyres91/openmodhub:latest php artisan key:generate --show
 ```
 
 Copy the `base64:...` output and add it to your `.env`:
