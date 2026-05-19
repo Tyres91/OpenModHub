@@ -1,137 +1,17 @@
-# vServer Production Deployment
+# Server Deployment Guide
 
-This guide covers deploying OpenModHub to a blank Debian 13 vServer with a domain and HTTPS.
-
-## Architecture
-
-```
-Internet
-  │
-  ▼
-┌─────────────────┐
-│   Nginx (443)   │  ← Let's Encrypt SSL
-│  Reverse Proxy  │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐     ┌──────────────┐
-│  OpenModHub     │────▶│  MariaDB     │
-│  App Container  │     │  Container   │
-│  (port 8000)    │     │  (port 3306) │
-└─────────────────┘     └──────────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Queue Worker   │  ← Background jobs
-│  Container      │
-└─────────────────┘
-```
+This guide covers installing and running OpenModHub on a blank Debian 13 vServer with a domain and HTTPS.
 
 ## Prerequisites
 
+- Docker image available in a container registry (e.g., GitHub Container Registry)
 - Debian 13 vServer with root access
 - A domain pointing to your server IP (e.g., `mods.example.com`)
-- GitHub account (for GitHub Container Registry)
 - SSH access to the server
 
 ---
 
-## Step 1: Set Up Container Registry
-
-We use **GitHub Container Registry (GHCR)** — free with any GitHub account.
-
-### 1.1 Create a Personal Access Token
-
-1. Go to GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
-2. Create a new token with:
-   - **Repository access**: Only the OpenModHub repository
-   - **Permissions**: `packages: read` (for pulling) and `packages: write` (for pushing)
-3. Save the token — you will need it once to push the image
-
-### 1.2 Authenticate Docker Locally
-
-```bash
-echo <YOUR_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
-```
-
----
-
-## Step 2: Build and Push the Docker Image
-
-### 2.1 Build the Production Image
-
-From your local project directory:
-
-```bash
-docker build -f Dockerfile.unraid -t ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest .
-```
-
-### 2.2 Push to GitHub Container Registry
-
-```bash
-docker push ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest
-```
-
-> **Tip**: Use semantic version tags for releases, e.g., `ghcr.io/<user>/openmodhub:v1.0.0`
-
-### 2.3 Optional: Set Up GitHub Actions for Automated Builds
-
-Create `.github/workflows/docker-publish.yml` in your repository:
-
-```yaml
-name: Build and Publish Docker Image
-
-on:
-  push:
-    branches: [main]
-  release:
-    types: [published]
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=sha
-
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.unraid
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-```
-
----
-
-## Step 3: Prepare the vServer
+## Step 1: Prepare the vServer
 
 SSH into your server as root:
 
@@ -139,13 +19,13 @@ SSH into your server as root:
 ssh root@<YOUR_SERVER_IP>
 ```
 
-### 3.1 Update the System
+### 1.1 Update the System
 
 ```bash
 apt update && apt upgrade -y
 ```
 
-### 3.2 Install Required Packages
+### 1.2 Install Required Packages
 
 ```bash
 apt install -y \
@@ -158,7 +38,7 @@ apt install -y \
     ufw
 ```
 
-### 3.3 Install Docker
+### 1.3 Install Docker
 
 ```bash
 # Add Docker GPG key
@@ -177,20 +57,20 @@ apt update
 apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-### 3.4 Enable and Start Docker
+### 1.4 Enable and Start Docker
 
 ```bash
 systemctl enable docker
 systemctl start docker
 ```
 
-### 3.5 Verify Docker Installation
+### 1.5 Verify Docker Installation
 
 ```bash
 docker run --rm hello-world
 ```
 
-### 3.6 Configure Firewall
+### 1.6 Configure Firewall
 
 ```bash
 ufw default deny incoming
@@ -203,15 +83,15 @@ ufw enable
 
 ---
 
-## Step 4: Set Up Nginx Reverse Proxy and SSL
+## Step 2: Set Up Nginx Reverse Proxy and SSL
 
-### 4.1 Install Nginx and Certbot
+### 2.1 Install Nginx and Certbot
 
 ```bash
 apt install -y nginx certbot python3-certbot-nginx
 ```
 
-### 4.2 Create Nginx Configuration
+### 2.2 Create Nginx Configuration
 
 Create `/etc/nginx/sites-available/openmodhub`:
 
@@ -245,7 +125,7 @@ server {
 }
 ```
 
-### 4.3 Enable the Site
+### 2.3 Enable the Site
 
 ```bash
 ln -s /etc/nginx/sites-available/openmodhub /etc/nginx/sites-enabled/
@@ -253,7 +133,7 @@ nginx -t
 systemctl reload nginx
 ```
 
-### 4.4 Obtain SSL Certificate
+### 2.4 Obtain SSL Certificate
 
 ```bash
 certbot --nginx -d mods.example.com
@@ -261,7 +141,7 @@ certbot --nginx -d mods.example.com
 
 Follow the prompts. Certbot will automatically update your Nginx config with SSL settings.
 
-### 4.5 Auto-Renew SSL Certificate
+### 2.5 Auto-Renew SSL Certificate
 
 Certbot sets up a systemd timer automatically. Verify it:
 
@@ -277,15 +157,17 @@ certbot renew --dry-run
 
 ---
 
-## Step 5: Authenticate vServer with Container Registry
+## Step 3: Authenticate with Container Registry
 
-### 5.1 Create a Docker Config Directory
+### 3.1 Create a Docker Config Directory
 
 ```bash
 mkdir -p /root/.docker
 ```
 
-### 5.2 Create Authenticated Login
+### 3.2 Log In to the Registry
+
+For GitHub Container Registry:
 
 ```bash
 echo <YOUR_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
@@ -293,20 +175,20 @@ echo <YOUR_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-st
 
 This creates `/root/.docker/config.json` with your credentials.
 
-> **Security note**: For production, consider using a dedicated GitHub machine user or deploy token with read-only package access.
+> **Security note**: For production, use a dedicated GitHub machine user or deploy token with read-only package access.
 
 ---
 
-## Step 6: Deploy the Application
+## Step 4: Deploy the Application
 
-### 6.1 Create Application Directory
+### 4.1 Create Application Directory
 
 ```bash
 mkdir -p /opt/openmodhub
 cd /opt/openmodhub
 ```
 
-### 6.2 Create Production Docker Compose File
+### 4.2 Create Production Docker Compose File
 
 Create `/opt/openmodhub/docker-compose.yml`:
 
@@ -373,7 +255,7 @@ networks:
     driver: bridge
 ```
 
-### 6.3 Create Production Environment File
+### 4.3 Create Production Environment File
 
 Create `/opt/openmodhub/.env`:
 
@@ -436,7 +318,7 @@ VITE_APP_NAME="${APP_NAME}"
 
 > **Important**: Replace all `<...>` placeholders with actual values. Generate `APP_KEY` in the next step.
 
-### 6.4 Generate APP_KEY
+### 4.4 Generate APP_KEY
 
 ```bash
 docker run --rm ghcr.io/<YOUR_GITHUB_USERNAME>/openmodhub:latest php artisan key:generate --show
@@ -448,7 +330,7 @@ Copy the `base64:...` output and add it to your `.env`:
 APP_KEY=base64:...
 ```
 
-### 6.5 Pull and Start Containers
+### 4.5 Pull and Start Containers
 
 ```bash
 cd /opt/openmodhub
@@ -456,7 +338,7 @@ docker compose pull
 docker compose up -d
 ```
 
-### 6.6 Verify Deployment
+### 4.6 Verify Deployment
 
 Check container status:
 
@@ -480,9 +362,9 @@ You should see a `200 OK` response.
 
 ---
 
-## Step 7: Post-Deployment
+## Step 5: Post-Deployment
 
-### 7.1 Create Admin Account
+### 5.1 Create Admin Account
 
 If you seeded users in development, use those credentials. Otherwise, register a new account through the web interface and promote it to admin via the database:
 
@@ -496,17 +378,17 @@ $user->role_id = \App\Models\Role::where('name', 'admin')->first()->id;
 $user->save();
 ```
 
-### 7.2 Configure SMTP for Email Verification
+### 5.2 Configure SMTP for Email Verification
 
 The application requires email verification. Configure a real SMTP provider (e.g., Mailgun, Postmark, SendGrid, or your own mail server) in the `.env` file.
 
-### 7.3 Set Up Cloudflare Turnstile (Optional but Recommended)
+### 5.3 Set Up Cloudflare Turnstile (Optional but Recommended)
 
 1. Go to https://developers.cloudflare.com/turnstile/
 2. Create a new site
 3. Add the site key and secret key to your `.env`
 
-### 7.4 Enable VirusTotal Integration (Optional)
+### 5.4 Enable VirusTotal Integration (Optional)
 
 1. Get a free API key from https://www.virustotal.com/gui/
 2. Add to `.env`:
