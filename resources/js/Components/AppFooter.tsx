@@ -16,6 +16,9 @@ export default function AppFooter({ variant = 'light' }: { variant?: 'light' | '
             <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-6 text-sm sm:flex-row sm:items-center sm:justify-between">
                 <p>&copy; {new Date().getFullYear()} OpenModHub</p>
                 <nav className="flex flex-wrap gap-4">
+                    <Link href={route('faqs.index')} className="hover:underline">
+                        {t('navigation.faqs', 'FAQs')}
+                    </Link>
                     <Link href={route('legal.imprint')} className="hover:underline">
                         {t('legal.imprint', 'Imprint')}
                     </Link>

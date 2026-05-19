@@ -80,7 +80,7 @@ export default function Authenticated({
                                 {canManageAdminData && (
                                     <NavDropdown
                                         label={t('navigation.admin', 'Admin')}
-                                        active={route().current('admin.users.*') || route().current('admin.categories.*') || route().current('admin.ranks.*') || route().current('admin.rank-point-rules.*') || route().current('admin.settings.*')}
+                                        active={route().current('admin.users.*') || route().current('admin.categories.*') || route().current('admin.faqs.*') || route().current('admin.ranks.*') || route().current('admin.rank-point-rules.*') || route().current('admin.settings.*') || route().current('admin.email-templates.*')}
                                     >
                                         <NavDropdownLink
                                             href={route('admin.users.index')}
@@ -88,12 +88,18 @@ export default function Authenticated({
                                         >
                                             {t('navigation.users', 'Users')}
                                         </NavDropdownLink>
-                                        <NavDropdownLink
-                                            href={route('admin.categories.index')}
-                                            active={route().current('admin.categories.*')}
-                                        >
-                                            {t('navigation.categories', 'Categories')}
-                                        </NavDropdownLink>
+                                    <NavDropdownLink
+                                        href={route('admin.categories.index')}
+                                        active={route().current('admin.categories.*')}
+                                    >
+                                        {t('navigation.categories', 'Categories')}
+                                    </NavDropdownLink>
+                                    <NavDropdownLink
+                                        href={route('admin.faqs.index')}
+                                        active={route().current('admin.faqs.*')}
+                                    >
+                                        {t('navigation.faqs', 'FAQs')}
+                                    </NavDropdownLink>
                                         <NavDropdownLink
                                             href={route('admin.ranks.index')}
                                             active={route().current('admin.ranks.*')}
@@ -111,6 +117,12 @@ export default function Authenticated({
                                             active={route().current('admin.settings.*')}
                                         >
                                             {t('navigation.settings', 'Settings')}
+                                        </NavDropdownLink>
+                                        <NavDropdownLink
+                                            href={route('admin.email-templates.index')}
+                                            active={route().current('admin.email-templates.*')}
+                                        >
+                                            {t('navigation.email_templates', 'Email Templates')}
                                         </NavDropdownLink>
                                     </NavDropdown>
                                 )}
@@ -293,6 +305,12 @@ export default function Authenticated({
                                     {t('navigation.categories', 'Categories')}
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
+                                    href={route('admin.faqs.index')}
+                                    active={route().current('admin.faqs.*')}
+                                >
+                                    {t('navigation.faqs', 'FAQs')}
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
                                     href={route('admin.ranks.index')}
                                     active={route().current('admin.ranks.*')}
                                 >
@@ -309,6 +327,12 @@ export default function Authenticated({
                                     active={route().current('admin.settings.*')}
                                 >
                                     {t('navigation.settings', 'Settings')}
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('admin.email-templates.index')}
+                                    active={route().current('admin.email-templates.*')}
+                                >
+                                    {t('navigation.email_templates', 'Email Templates')}
                                 </ResponsiveNavLink>
                             </>
                         )}

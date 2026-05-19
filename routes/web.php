@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\EmailTemplateController;
+use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\RankController;
 use App\Http\Controllers\Admin\RankPointRuleController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ModController;
@@ -21,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ModController::class, 'index'])->name('home');
 Route::get('/mods', [ModController::class, 'index'])->name('mods.index');
+Route::get('/faqs', [FaqController::class, 'index'])->name('faqs.index');
 Route::get('/impressum', [LegalController::class, 'imprint'])->name('legal.imprint');
 Route::get('/datenschutz', [LegalController::class, 'privacy'])->name('legal.privacy');
 
@@ -44,6 +48,12 @@ Route::middleware('auth')->group(function () {
         Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
+        Route::get('/faqs', [AdminFaqController::class, 'index'])->name('faqs.index');
+        Route::post('/faqs', [AdminFaqController::class, 'store'])->name('faqs.store');
+        Route::patch('/faqs/reorder', [AdminFaqController::class, 'reorder'])->name('faqs.reorder');
+        Route::patch('/faqs/{faq}', [AdminFaqController::class, 'update'])->name('faqs.update');
+        Route::delete('/faqs/{faq}', [AdminFaqController::class, 'destroy'])->name('faqs.destroy');
+
         Route::get('/ranks', [RankController::class, 'index'])->name('ranks.index');
         Route::post('/ranks', [RankController::class, 'store'])->name('ranks.store');
         Route::patch('/ranks/{rank}', [RankController::class, 'update'])->name('ranks.update');
@@ -60,6 +70,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/logo', [SettingsController::class, 'updateLogo'])->name('settings.logo.update');
         Route::delete('/settings/logo', [SettingsController::class, 'destroyLogo'])->name('settings.logo.destroy');
+
+        Route::get('/email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
+        Route::patch('/email-templates/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
     });
 
     Route::middleware('verified')->group(function () {

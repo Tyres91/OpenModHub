@@ -39,6 +39,24 @@ export interface Category {
     updated_at?: string;
 }
 
+export interface Faq {
+    id: number;
+    question_en: string;
+    question_de: string;
+    answer_en: string;
+    answer_de: string;
+    sort_order: number;
+    is_active: boolean;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface PublicFaq {
+    id: number;
+    question: string;
+    answer: string;
+}
+
 export interface Role {
     id: number;
     name: string;

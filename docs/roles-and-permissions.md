@@ -14,6 +14,7 @@ Allowed actions:
 - Approve mods
 - Reject mods
 - Manage categories
+- Manage FAQs
 - Manage users
 - Block and unblock users
 - Manage ranks
@@ -89,6 +90,7 @@ Unverified users may log in and request a new verification email, but cannot cre
 | Approve mods | Yes | Yes | No |
 | Reject mods | Yes | Yes | No |
 | Manage categories | Yes | No by default | No |
+| Manage FAQs | Yes | No | No |
 | Manage users | Yes | No | No |
 | Manage ranks | Yes | No | No |
 | Manage settings/legal/tracking | Yes | No | No |

@@ -7,6 +7,10 @@ use App\Http\Requests\RejectModRequest;
 use App\Models\Mod;
 use App\Models\ModVersion;
 use App\Models\SecurityCheck;
+use App\Notifications\ModApprovedNotification;
+use App\Notifications\ModRejectedNotification;
+use App\Notifications\ModVersionApprovedNotification;
+use App\Notifications\ModVersionRejectedNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -75,6 +79,10 @@ class ModerationController extends Controller
             ]);
         }
 
+        if ($mod->user && ! $mod->user->isBlocked()) {
+            $mod->user->notify(new ModApprovedNotification($mod));
+        }
+
         return back()->with('status', __('messages.flash.mod_approved'));
     }
 
@@ -94,6 +102,10 @@ class ModerationController extends Controller
             'reviewed_by' => $request->user()->id,
             'is_current' => false,
         ]);
+
+        if ($mod->user && ! $mod->user->isBlocked()) {
+            $mod->user->notify(new ModRejectedNotification($mod, $request->validated('rejection_reason')));
+        }
 
         return back()->with('status', __('messages.flash.mod_rejected'));
     }
@@ -125,6 +137,10 @@ class ModerationController extends Controller
             ]);
         }
 
+        if ($modVersion->submitter && ! $modVersion->submitter->isBlocked()) {
+            $modVersion->submitter->notify(new ModVersionApprovedNotification($modVersion));
+        }
+
         return back()->with('status', __('messages.flash.mod_version_approved'));
     }
 
@@ -139,6 +155,10 @@ class ModerationController extends Controller
             'reviewed_by' => $request->user()->id,
             'is_current' => false,
         ]);
+
+        if ($modVersion->submitter && ! $modVersion->submitter->isBlocked()) {
+            $modVersion->submitter->notify(new ModVersionRejectedNotification($modVersion, $request->validated('rejection_reason')));
+        }
 
         return back()->with('status', __('messages.flash.mod_version_rejected'));
     }

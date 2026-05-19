@@ -333,3 +333,47 @@ Relationships:
 - Belongs to `mod`
 
 Implementation note: automated VirusTotal checks create security check rows for submitted mod download URLs. If VirusTotal is disabled or missing an API key, a `not_submitted` row is stored. Completed results are stored as `clean` or `suspicious`; failed API calls are stored as `failed`. These records support moderation context only and do not change mod approval state automatically.
+
+## `faqs`
+
+Purpose: stores frequently asked questions with multilingual content.
+
+Important fields:
+
+- `id`
+- `question_en`, English question text
+- `question_de`, German question text
+- `answer_en`, English answer text
+- `answer_de`, German answer text
+- `sort_order`, integer for display ordering
+- `is_active`, boolean to show or hide the FAQ
+- `created_at`
+- `updated_at`
+
+Relationships:
+
+- No direct relationships; FAQs are standalone content entries
+
+Implementation note: The `Faq` model provides `getQuestion()` and `getAnswer()` helper methods that return the localized content based on the current application locale. Only active FAQs are shown on the public page. Admins can manage FAQs in `/admin/faqs` with full CRUD operations.
+
+## `email_templates`
+
+Purpose: stores configurable email notification templates with multilingual content.
+
+Important fields:
+
+- `id`
+- `key`, unique identifier such as `verify_email`, `mod_approved`, `mod_rejected`, `version_approved`, `version_rejected`
+- `subject_en`, English email subject
+- `subject_de`, German email subject
+- `body_en`, English email body (Blade-compatible with placeholders)
+- `body_de`, German email body (Blade-compatible with placeholders)
+- `is_active`, boolean to enable or disable the template
+- `created_at`
+- `updated_at`
+
+Relationships:
+
+- No direct relationships; templates are looked up by key
+
+Implementation note: The `EmailTemplate` model provides `getSubject($locale)`, `getBody($locale)`, and `renderBody($data, $locale)` helpers. Inactive templates fall back to hardcoded defaults in `EmailTemplateService`. Templates support dynamic placeholders such as `{user_name}`, `{mod_title}`, `{rejection_reason}`, and `{cta_url}`. The `EmailTemplate::PLACEHOLDERS` constant defines which placeholders are available per template key. Admins manage templates in `/admin/email-templates`.

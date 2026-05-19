@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(RankSeeder::class);
+        $this->call(EmailTemplateSeeder::class);
 
         $user = User::factory()->create([
             'name' => 'Test User',

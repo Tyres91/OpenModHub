@@ -24,6 +24,9 @@ export default function PublicLayout({
                         <BrandLogo imageClassName="h-10 max-w-[180px] object-contain" fallbackIconClassName="h-9 w-auto fill-current text-cyan-200" textClassName="text-xl font-black tracking-tight text-white" />
                     </Link>
                     <nav className="flex items-center gap-4 text-sm font-semibold">
+                        <Link href={route('faqs.index')} className="text-slate-200 hover:text-white">
+                            {t('navigation.faqs', 'FAQs')}
+                        </Link>
                         <LanguageSwitcher />
                         {auth.user ? (
                             <>

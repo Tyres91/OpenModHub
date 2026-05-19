@@ -187,3 +187,16 @@ Add `required_points` and `is_special` to ranks, add nullable `users.rank_id` fo
 
 Consequences:
 Admins can change point values and thresholds without backfilling point ledger rows. User ranks update immediately based on the new rules. Special ranks remain stable until an admin removes or changes the manual assignment.
+
+## 2026-05-18: Use Configurable Email Templates with Shared Layout
+
+Status: Accepted
+
+Context:
+Moderation decisions (approval/rejection) should notify users via email. The email verification flow should use the same styled layout. Templates need to be editable in the admin area and support multiple languages.
+
+Decision:
+Store email templates in a dedicated `email_templates` table with separate subject and body fields for English and German. Use a shared Blade layout with logo header, configurable body, and legal footer. Replace placeholders dynamically when sending. Override `User::sendEmailVerificationNotification()` to use the styled template. Blocked users do not receive moderation notifications.
+
+Consequences:
+Admins can edit notification content without code changes. All emails share consistent branding. The system supports per-user locale preferences. Templates fall back to hardcoded defaults if inactive or missing. Notifications are queued for reliable delivery.

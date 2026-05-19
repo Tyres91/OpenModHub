@@ -4,7 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\Setting;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
@@ -31,7 +31,7 @@ class RegistrationTest extends TestCase
 
         $this->assertAuthenticated();
         $this->assertFalse($user->hasVerifiedEmail());
-        Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertSentTo($user, VerifyEmailNotification::class);
         $response->assertRedirect(route('dashboard', absolute: false));
         $response->assertSessionMissing('debug_verification_url');
     }

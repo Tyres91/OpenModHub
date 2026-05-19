@@ -392,3 +392,22 @@ admin.settings.legal_phone,Phone,Telefon
 admin.settings.legal_vat_id,VAT ID,USt-ID
 admin.settings.legal_privacy_contact,Privacy contact,Datenschutzkontakt
 admin.settings.legal_additional_info,Additional legal information,Zusätzliche rechtliche Angaben
+navigation.faqs,FAQs,FAQs
+admin.faqs.title,FAQs,FAQs
+admin.faqs.heading,Manage FAQs,FAQs verwalten
+admin.faqs.subtitle,"Create, edit, and manage frequently asked questions.","Häufig gestellte Fragen erstellen, bearbeiten und verwalten."
+admin.faqs.new_faq,New FAQ,Neue FAQ
+admin.faqs.no_faqs,No FAQs yet.,Noch keine FAQs.
+admin.faqs.question_en,Question (English),Frage (Englisch)
+admin.faqs.question_de,Question (German),Frage (Deutsch)
+admin.faqs.answer_en,Answer (English),Antwort (Englisch)
+admin.faqs.answer_de,Answer (German),Antwort (Deutsch)
+admin.faqs.sort_order,Sort order,Sortierreihenfolge
+faqs.title,FAQs,FAQs
+faqs.heading,Frequently Asked Questions,Häufig gestellte Fragen
+faqs.subtitle,Find answers to common questions about OpenModHub.,Finde Antworten auf häufige Fragen zu OpenModHub.
+faqs.no_faqs,No FAQs available yet.,Noch keine FAQs verfügbar.
+flash.faq_created,FAQ created.,FAQ erstellt.
+flash.faq_updated,FAQ updated.,FAQ aktualisiert.
+flash.faq_deleted,FAQ deleted.,FAQ gelöscht.
+common.delete_faq_confirm,Delete this FAQ?,Diese FAQ löschen?

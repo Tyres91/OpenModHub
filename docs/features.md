@@ -233,3 +233,71 @@ Current implementation:
 - Submitted versions are pending until approved by an editor or admin.
 - Approving a version automatically makes it the current download version, including pre-release versions.
 - The mod detail page uses the current approved version for the primary download button and shows approved version history with changelogs and download links.
+
+## FAQs
+
+The application provides a public FAQ page with frequently asked questions. FAQs are managed in the admin area and support both English and German content.
+
+Current implementation:
+
+- Admins can create, edit, and delete FAQs in `/admin/faqs`.
+- Each FAQ has separate question and answer fields for English and German.
+- FAQs support a sort order for custom display ordering.
+- FAQs can be activated or deactivated; only active FAQs appear on the public page.
+- The public FAQ page at `/faqs` displays questions in an accordion-style layout.
+- The displayed language automatically matches the current application locale.
+- The FAQ link is visible in the public header navigation and footer.
+
+## Email Notifications
+
+The application sends styled email notifications to users for moderation events and email verification. All emails share a consistent layout with logo header, configurable body content, and legal footer.
+
+Current implementation:
+
+- Email templates are stored in the `email_templates` database table and managed in `/admin/email-templates`.
+- Each template has separate subject and body fields for English and German.
+- Templates support dynamic placeholders that are replaced when the email is sent.
+- Blocked users (`blocked_at` set) do not receive moderation notifications.
+- Notifications are queued via Laravel's queue system (`ShouldQueue`).
+
+### Template Types
+
+| Key | Trigger | Recipient |
+|---|---|---|
+| `verify_email` | User registration | New user |
+| `mod_approved` | Mod approved by admin/editor | Mod owner |
+| `mod_rejected` | Mod rejected by admin/editor | Mod owner |
+| `version_approved` | Mod version approved | Version submitter |
+| `version_rejected` | Mod version rejected | Version submitter |
+
+### Placeholders
+
+Placeholders vary by template type. The admin UI shows available placeholders for each template.
+
+| Placeholder | Description |
+|---|---|
+| `{user_name}` | Recipient's name |
+| `{site_name}` | Site name from branding settings |
+| `{site_url}` | Application URL |
+| `{verification_url}` | Email verification link (verify_email only) |
+| `{mod_title}` | Mod title |
+| `{mod_url}` | Link to the mod |
+| `{mod_slug}` | Mod slug |
+| `{version}` | Version number (version templates) |
+| `{rejection_reason}` | Rejection reason (rejected templates) |
+| `{reviewer_name}` | Name of the reviewing admin/editor |
+| `{cta_text}` | Call-to-action button text |
+| `{cta_url}` | Call-to-action button URL |
+
+### Email Layout
+
+All emails use a consistent table-based layout for email client compatibility:
+
+- **Header**: Uploaded logo (from branding settings) and site name
+- **Body**: Configurable template content with placeholder replacement
+- **Footer**: Legal information from settings (operator, address, contact), copyright, site URL
+- **CTA Button**: Optional call-to-action button rendered when `{cta_url}` and `{cta_text}` are present
+
+### Email Verification
+
+The default Laravel email verification uses the same styled email layout. The `User::sendEmailVerificationNotification()` method is overridden to use `VerifyEmailNotification`.
