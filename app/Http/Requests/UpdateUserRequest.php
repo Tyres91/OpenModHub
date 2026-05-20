@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Permission;
 use App\Models\Rank;
 use App\Models\Role;
 use App\Models\User;
@@ -38,6 +39,8 @@ class UpdateUserRequest extends FormRequest
             'rank_id' => ['nullable', 'integer', Rule::exists(Rank::class, 'id')->where('is_special', true)],
             'roles' => ['array'],
             'roles.*' => ['string', Rule::exists(Role::class, 'slug')],
+            'permissions' => ['array'],
+            'permissions.*' => ['string', Rule::exists(Permission::class, 'slug')],
         ];
     }
 

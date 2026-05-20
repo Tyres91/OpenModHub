@@ -1,105 +1,58 @@
 # Roles and Permissions
 
-OpenModHub uses three primary roles: Admin, Editor, and User. Server-side authorization is required for every privileged action.
+OpenModHub uses a permission-based authorization system with one primary role: Admin.
 
-## Admin
+## Admin Role
 
-Admins have full access to the system.
+The Admin role is the only role in the system. Admin users automatically have all permissions.
 
-Allowed actions:
+Allowed actions (via automatic all-permissions grant):
 
-- Create mods
-- Edit any mod
-- Delete any mod
-- Approve mods
-- Reject mods
-- Manage categories
-- Manage FAQs
-- Manage users
-- Block and unblock users
-- Manage ranks
-- Delete or moderate comments
-- Review and handle reports
-- Change global settings, including default language, legal page content, and Google Tag Manager container ID
+- All system operations
+- User management
+- Settings management
+- Content management
+- Moderation tasks
 
-## Editor
+## Permissions
 
-Editors manage submitted content and community moderation, but they should not have full system administration rights.
+All other users (non-admin) receive explicit permissions assigned individually. Every user automatically has basic community rights (create mods, rate, comment, report) without needing explicit permissions.
 
-Allowed actions:
+### Permission Groups
 
-- Create mods
-- Edit existing mod entries
-- Approve mods
-- Reject mods
-- Delete or moderate comments
-- Review and handle reports
+#### Moderation
+- `review_mods` - Approve or reject mod submissions
+- `moderate_comments` - Delete or hide comments
+- `handle_reports` - Review and resolve reports
 
-Not allowed by default:
+#### Content Management
+- `edit_any_mod` - Edit any mod (not just own)
+- `delete_any_mod` - Delete any mod
+- `manage_categories` - Create, edit, delete categories
+- `manage_faqs` - Manage FAQ entries
 
-- Manage users
-- Manage ranks
-- Manage system-level settings
-- Manage legal page content or tracking configuration
+#### Community
+- `manage_ranks` - Create, edit, delete ranks and point rules
+- `manage_users` - Edit users, assign roles, block/unblock
 
-Category management may be limited to Admin in the MVP. If editors should manage categories later, the decision must be documented.
+#### System
+- `manage_settings` - Change global settings, legal pages, tracking configuration
 
-Current implementation: category and rank management are limited to Admin. Editors can access the moderation queue, approve or reject mods, moderate comments, and manage reports (resolve/dismiss), but cannot manage categories or ranks. User management is limited to Admin. Admins can edit user details, assign roles, change passwords, and block or unblock users. Admins cannot remove their own admin role, cannot block themselves, and the system prevents removing or blocking the last admin from the system.
+## Standard User Rights
 
-Admins and editors see a global open-tasks indicator in the authenticated navigation for pending mods, pending mod versions, and pending reports.
-
-## User
-
-Users are standard authenticated community members.
-
-Community write permissions require a verified email address. Blocked users cannot log in or continue using authenticated community actions.
-
-Admins can define normal points-based ranks and special manually assigned ranks in `/admin/ranks`, and rank point rules in `/admin/rank-point-rules`. Admins can assign or remove special ranks in user management. Editors and regular users cannot manage ranks or point rules.
-
-Allowed actions:
+All authenticated users with verified email automatically have:
 
 - Create mods
-- Edit their own pending or rejected mods, depending on workflow rules
-- View their own submitted mods
+- Edit own pending/rejected mods
 - Rate approved mods
 - Comment on approved mods
-- Report mods
+- Report content
 
-Not allowed:
+Blocked users cannot perform any authenticated actions.
 
-- Edit other users' mods
-- Delete other users' mods
-- Approve mods
-- Reject mods
-- Manage categories
-- Manage users
-- Manage ranks
-- Moderate comments
-- Handle reports
+## Implementation
 
-Unverified users may log in and request a new verification email, but cannot create mods, rate, comment, or report content.
-
-## Permission Matrix
-
-| Action | Admin | Editor | User |
-| --- | --- | --- | --- |
-| Create mods | Yes | Yes | Yes |
-| Edit own mods | Yes | Yes | Limited |
-| Edit any mod | Yes | Yes | No |
-| Delete mods | Yes | No by default | No |
-| Approve mods | Yes | Yes | No |
-| Reject mods | Yes | Yes | No |
-| Manage categories | Yes | No by default | No |
-| Manage FAQs | Yes | No | No |
-| Manage users | Yes | No | No |
-| Manage ranks | Yes | No | No |
-| Manage settings/legal/tracking | Yes | No | No |
-| Delete/moderate comments | Yes | Yes | No |
-| Handle reports | Yes | Yes | No |
-
-## Implementation Notes
-
-- Use Laravel Policies and Gates for authorization.
-- Use Form Requests for request-level validation and authorization.
-- Keep frontend permission checks as UX helpers only.
-- Do not expose admin or editor actions without server-side checks.
+- Use `hasPermission()` method on User model
+- Admin users automatically pass all permission checks
+- Policies check permissions, not roles
+- Frontend permission checks are UX helpers only

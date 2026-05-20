@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BlockUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Permission;
 use App\Models\Rank;
 use App\Models\Role;
 use App\Models\User;
@@ -22,7 +23,7 @@ class UserController extends Controller
         Gate::authorize('viewAny', User::class);
 
         $users = User::query()
-            ->with(['specialRank'])
+            ->with(['specialRank', 'roles', 'permissions'])
             ->withCount(['mods as mods_count'])
             ->latest()
             ->get()
@@ -34,6 +35,7 @@ class UserController extends Controller
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
             'roles' => $roles,
+            'permissions' => Permission::query()->orderBy('group')->orderBy('name')->get(['id', 'name', 'slug', 'group']),
             'specialRanks' => Rank::query()
                 ->where('is_special', true)
                 ->orderBy('name')
@@ -59,6 +61,12 @@ class UserController extends Controller
             $roleSlugs = collect($request->input('roles', []))->map(fn ($slug) => strtolower($slug))->all();
             $roleIds = Role::query()->whereIn('slug', $roleSlugs)->pluck('id')->all();
             $user->roles()->sync($roleIds);
+        }
+
+        if ($request->has('permissions')) {
+            $permissionSlugs = collect($request->input('permissions', []))->map(fn ($slug) => strtolower($slug))->all();
+            $permissionIds = Permission::query()->whereIn('slug', $permissionSlugs)->pluck('id')->all();
+            $user->permissions()->sync($permissionIds);
         }
 
         return back()->with('status', __('messages.flash.user_updated'));
@@ -99,6 +107,7 @@ class UserController extends Controller
             'email' => $user->email,
             'locale' => $user->locale,
             'roles' => $user->roles->pluck('slug')->all(),
+            'permissions' => $user->permissions->pluck('slug')->all(),
             'rank_id' => $user->rank_id,
             'special_rank' => $user->specialRank ? [
                 'id' => $user->specialRank->id,

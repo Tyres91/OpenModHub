@@ -79,7 +79,7 @@ class ModController extends Controller
     {
         Gate::authorize('view', $mod);
 
-        $canModerateComments = $request->user()?->hasRole('admin') || $request->user()?->hasRole('editor');
+        $canModerateComments = $request->user()?->hasPermission('moderate_comments');
 
         $mod->load([
             'category:id,name,slug',

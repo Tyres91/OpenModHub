@@ -8,6 +8,6 @@ class SettingPolicy
 {
     public function manageSettings(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_settings');
     }
 }

@@ -14,7 +14,7 @@ export default function PublicLayout({
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const { auth, moderationTodos, translations } = usePage<PageProps>().props;
     const t = useTranslations(translations);
-    const canReview = auth.user?.roles.includes('admin') || auth.user?.roles.includes('editor');
+    const canReview = auth.user?.permissions?.includes('review_mods') || auth.user?.permissions?.includes('moderate_comments') || auth.user?.permissions?.includes('handle_reports');
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-950 text-white">

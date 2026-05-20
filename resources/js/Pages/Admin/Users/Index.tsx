@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { PageProps, Rank, Role } from '@/types';
+import { PageProps, Permission, Rank, Role } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
 import { useTranslations } from '@/lib/translations';
@@ -10,6 +10,7 @@ interface AdminUserEntry {
     email: string;
     locale: string | null;
     roles: string[];
+    permissions: string[];
     email_verified_at: string | null;
     mods_count: number;
     rank_id: number | null;
@@ -19,7 +20,7 @@ interface AdminUserEntry {
     created_at: string;
 }
 
-function UserRow({ user, roles, specialRanks, availableLocales }: { user: AdminUserEntry; roles: Role[]; specialRanks: Pick<Rank, 'id' | 'name' | 'color' | 'icon'>[]; availableLocales: Record<string, string> }) {
+function UserRow({ user, roles, permissions, specialRanks, availableLocales }: { user: AdminUserEntry; roles: Role[]; permissions: Permission[]; specialRanks: Pick<Rank, 'id' | 'name' | 'color' | 'icon'>[]; availableLocales: Record<string, string> }) {
     const { translations } = usePage<PageProps>().props;
     const t = useTranslations(translations);
     const [editing, setEditing] = useState(false);
@@ -32,6 +33,7 @@ function UserRow({ user, roles, specialRanks, availableLocales }: { user: AdminU
         password_confirmation: '',
         rank_id: user.rank_id ? String(user.rank_id) : '',
         roles: [...user.roles],
+        permissions: [...user.permissions],
     });
 
     const submit = (event: FormEvent) => {
@@ -53,6 +55,23 @@ function UserRow({ user, roles, specialRanks, availableLocales }: { user: AdminU
             setData('roles', [...current, slug]);
         }
     };
+
+    const togglePermission = (slug: string) => {
+        const current = data.permissions;
+        if (current.includes(slug)) {
+            setData('permissions', current.filter((p) => p !== slug));
+        } else {
+            setData('permissions', [...current, slug]);
+        }
+    };
+
+    const groupedPermissions = permissions.reduce((acc, perm) => {
+        if (!acc[perm.group]) {
+            acc[perm.group] = [];
+        }
+        acc[perm.group].push(perm);
+        return acc;
+    }, {} as Record<string, Permission[]>);
 
     const blockUser = () => {
         const reason = window.prompt(t('admin.users.block_reason_prompt', 'Reason for blocking this user (optional)'));
@@ -131,6 +150,33 @@ function UserRow({ user, roles, specialRanks, availableLocales }: { user: AdminU
                     {errors.roles && <p className="mt-1 text-sm text-red-600">{errors.roles}</p>}
                 </div>
 
+                <div className="mt-6">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('admin.users.permissions_label', 'Permissions')}</label>
+                    <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                        {Object.entries(groupedPermissions).map(([group, groupPermissions]) => (
+                            <div key={group} className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
+                                <h4 className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                    {t(`permissions.groups.${group}`, group.charAt(0).toUpperCase() + group.slice(1))}
+                                </h4>
+                                <div className="space-y-2">
+                                    {groupPermissions.map((permission) => (
+                                        <label key={permission.slug} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                            <input
+                                                type="checkbox"
+                                                checked={data.permissions.includes(permission.slug)}
+                                                onChange={() => togglePermission(permission.slug)}
+                                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800"
+                                            />
+                                            {t(`permissions.permissions.${permission.slug}`, permission.name)}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {errors.permissions && <p className="mt-1 text-sm text-red-600">{errors.permissions}</p>}
+                </div>
+
                 <div className="mt-4 flex gap-2">
                     <button disabled={processing} className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">{t('actions.save', 'Save')}</button>
                     <button type="button" onClick={() => { setEditing(false); reset('password', 'password_confirmation'); }} className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{t('actions.cancel', 'Cancel')}</button>
@@ -183,7 +229,7 @@ function UserRow({ user, roles, specialRanks, availableLocales }: { user: AdminU
     );
 }
 
-export default function Index({ users, roles, specialRanks, availableLocales, flash }: PageProps<{ users: AdminUserEntry[]; roles: Role[]; specialRanks: Pick<Rank, 'id' | 'name' | 'color' | 'icon'>[]; availableLocales: Record<string, string> }>) {
+export default function Index({ users, roles, permissions, specialRanks, availableLocales, flash }: PageProps<{ users: AdminUserEntry[]; roles: Role[]; permissions: Permission[]; specialRanks: Pick<Rank, 'id' | 'name' | 'color' | 'icon'>[]; availableLocales: Record<string, string> }>) {
     const { translations } = usePage<PageProps>().props;
     const t = useTranslations(translations);
 
@@ -202,7 +248,7 @@ export default function Index({ users, roles, specialRanks, availableLocales, fl
 
                     <div className="space-y-4">
                         {users.map((user) => (
-                            <UserRow key={user.id} user={user} roles={roles} specialRanks={specialRanks} availableLocales={availableLocales} />
+                            <UserRow key={user.id} user={user} roles={roles} permissions={permissions} specialRanks={specialRanks} availableLocales={availableLocales} />
                         ))}
                     </div>
 

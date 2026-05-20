@@ -15,11 +15,11 @@ class ReportPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('editor');
+        return $user->hasPermission('handle_reports');
     }
 
     public function review(User $user, Report $report): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('editor');
+        return $user->hasPermission('handle_reports');
     }
 }

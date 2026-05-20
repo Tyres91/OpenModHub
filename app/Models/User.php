@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Permission;
 
 #[Fillable(['name', 'email', 'password', 'locale', 'rank_id', 'blocked_at', 'blocked_by', 'block_reason'])]
 #[Hidden(['password', 'remember_token'])]
@@ -27,6 +28,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class)->withTimestamps();
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class)->withTimestamps();
+    }
+
+    public function hasPermission(string $slug): bool
+    {
+        if ($this->hasRole('admin')) {
+            return true;
+        }
+
+        return $this->permissions()->where('slug', $slug)->exists();
     }
 
     /** @return BelongsTo<Rank, $this> */

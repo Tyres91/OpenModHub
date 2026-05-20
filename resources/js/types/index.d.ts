@@ -63,6 +63,13 @@ export interface Role {
     slug: string;
 }
 
+export interface Permission {
+    id: number;
+    name: string;
+    slug: string;
+    group: string;
+}
+
 export interface ModImage {
     id: number;
     mod_id: number;
