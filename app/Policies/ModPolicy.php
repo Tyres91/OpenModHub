@@ -62,6 +62,11 @@ class ModPolicy
         return $user->hasRole('admin');
     }
 
+    public function forceDelete(User $user, Mod $mod): bool
+    {
+        return $user->hasRole('admin');
+    }
+
     public function approve(User $user, Mod $mod): bool
     {
         return $user->hasRole('admin') || $user->hasRole('editor');

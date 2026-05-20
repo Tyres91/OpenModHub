@@ -148,6 +148,66 @@ function VersionRejectForm({ version }: { version: ModVersionEntry }) {
     );
 }
 
+function DeleteButtons({ mod }: { mod: ModEntry }) {
+    const { translations } = usePage().props;
+    const t = useTranslations(translations);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [showPermanent, setShowPermanent] = useState(false);
+
+    const handleSoftDelete = () => {
+        router.delete(route('admin.moderation.delete', mod.slug), { preserveScroll: true });
+    };
+
+    const handleForceDelete = () => {
+        router.delete(route('admin.moderation.force-delete', mod.slug), { preserveScroll: true });
+    };
+
+    if (showConfirm) {
+        return (
+            <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('admin.moderation.confirm_delete', 'Delete this mod?')}</p>
+                <div className="flex flex-col gap-2">
+                    <button onClick={handleSoftDelete} className="w-full rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-300">
+                        {t('admin.moderation.soft_delete', 'Move to trash')}
+                    </button>
+                    <button onClick={() => { setShowConfirm(false); setShowPermanent(true); }} className="w-full rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+                        {t('admin.moderation.permanent_delete', 'Permanently delete')}
+                    </button>
+                    <button onClick={() => setShowConfirm(false)} className="w-full rounded-md px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                        {t('actions.cancel', 'Cancel')}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (showPermanent) {
+        return (
+            <div className="space-y-2">
+                <p className="text-sm font-medium text-red-700 dark:text-red-300">{t('admin.moderation.confirm_permanent', 'This cannot be undone. All data will be lost.')}</p>
+                <div className="flex gap-2">
+                    <button onClick={handleForceDelete} className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500">
+                        {t('admin.moderation.confirm_permanent_delete', 'Confirm permanent delete')}
+                    </button>
+                    <button onClick={() => setShowPermanent(false)} className="rounded-md px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                        {t('actions.cancel', 'Cancel')}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <button
+            type="button"
+            onClick={() => setShowConfirm(true)}
+            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+            {t('actions.delete', 'Delete')}
+        </button>
+    );
+}
+
 export default function Index({ mods, modVersions, status, flash }: PageProps<{ mods: Paginated<ModEntry>; modVersions: Paginated<ModVersionEntry>; status: string }>) {
     const { translations } = usePage().props;
     const t = useTranslations(translations);
@@ -227,6 +287,7 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                             </button>
                                         )}
                                         {mod.status !== 'rejected' && <RejectForm mod={mod} />}
+                                        <DeleteButtons mod={mod} />
                                         {mod.rejection_reason && (
                                             <p className="rounded-md bg-red-50 p-3 text-sm text-red-800 dark:bg-red-950 dark:text-red-200">{mod.rejection_reason}</p>
                                         )}

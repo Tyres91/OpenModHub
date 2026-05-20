@@ -374,6 +374,8 @@ return [
         'rank_point_rules_updated' => 'Rank point rules updated.',
         'mod_approved' => 'Mod approved.',
         'mod_rejected' => 'Mod rejected.',
+        'mod_deleted' => 'Mod moved to trash.',
+        'mod_permanently_deleted' => 'Mod permanently deleted.',
         'comment_posted' => 'Comment posted.',
         'comment_hidden' => 'Comment hidden.',
         'comment_shown' => 'Comment shown.',

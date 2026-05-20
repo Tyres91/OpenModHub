@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
         Route::patch('/moderation/{mod:slug}/approve', [ModerationController::class, 'approve'])->name('moderation.approve');
         Route::patch('/moderation/{mod:slug}/reject', [ModerationController::class, 'reject'])->name('moderation.reject');
+        Route::delete('/moderation/{mod:slug}/delete', [ModerationController::class, 'destroy'])->name('moderation.delete');
+        Route::delete('/moderation/{mod:slug}/force-delete', [ModerationController::class, 'forceDestroy'])->name('moderation.force-delete');
         Route::patch('/moderation/versions/{modVersion}/approve', [ModerationController::class, 'approveVersion'])->name('moderation.versions.approve');
         Route::patch('/moderation/versions/{modVersion}/reject', [ModerationController::class, 'rejectVersion'])->name('moderation.versions.reject');
 

@@ -374,6 +374,8 @@ return [
         'rank_point_rules_updated' => 'Rang-Punkteregeln aktualisiert.',
         'mod_approved' => 'Mod genehmigt.',
         'mod_rejected' => 'Mod abgelehnt.',
+        'mod_deleted' => 'Mod in den Papierkorb verschoben.',
+        'mod_permanently_deleted' => 'Mod endgültig gelöscht.',
         'comment_posted' => 'Kommentar gesendet.',
         'comment_hidden' => 'Kommentar verborgen.',
         'comment_shown' => 'Kommentar sichtbar gemacht.',
