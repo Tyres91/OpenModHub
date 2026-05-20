@@ -54,6 +54,7 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
                 'cta_url' => $verificationUrl,
                 'cta_text' => 'Verify Email',
                 'show_unsubscribe' => false,
-            ]);
+            ])
+            ->text(strip_tags($body) . "\n\n" . 'Verify Email: ' . $verificationUrl);
     }
 }
