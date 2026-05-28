@@ -17,12 +17,12 @@ class FaqPolicy
         return $user->hasPermission('manage_faqs');
     }
 
-    public function update(User $user, Faq $faq): bool
+    public function update(User $user, Faq $_faq): bool
     {
         return $user->hasPermission('manage_faqs');
     }
 
-    public function delete(User $user, Faq $faq): bool
+    public function delete(User $user, Faq $_faq): bool
     {
         return $user->hasPermission('manage_faqs');
     }

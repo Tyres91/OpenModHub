@@ -8,7 +8,7 @@ use App\Models\User;
 
 class RatingPolicy
 {
-    public function create(User $user, Mod $mod): bool
+    public function create(User $_user, Mod $mod): bool
     {
         return $mod->isApproved();
     }

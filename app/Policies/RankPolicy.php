@@ -17,12 +17,12 @@ class RankPolicy
         return $user->hasPermission('manage_ranks');
     }
 
-    public function update(User $user, Rank $rank): bool
+    public function update(User $user, Rank $_rank): bool
     {
         return $user->hasPermission('manage_ranks');
     }
 
-    public function delete(User $user, Rank $rank): bool
+    public function delete(User $user, Rank $_rank): bool
     {
         return $user->hasPermission('manage_ranks');
     }

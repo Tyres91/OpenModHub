@@ -55,7 +55,7 @@ class GenerateTranslations extends Command
             return $translations;
         }
 
-        $header = fgetcsv($handle);
+        fgetcsv($handle);
 
         while (($row = fgetcsv($handle)) !== false) {
             if (count($row) < 3) {

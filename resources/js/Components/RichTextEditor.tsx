@@ -12,11 +12,10 @@ type RichTextEditorProps = {
     onChange: (value: string) => void;
     placeholder?: string;
     placeholders?: Record<string, string>;
-    onInsertPlaceholder?: (placeholder: string) => void;
     error?: string;
 };
 
-export default function RichTextEditor({ value, onChange, placeholder = 'Start typing...', placeholders = {}, onInsertPlaceholder, error }: RichTextEditorProps) {
+export default function RichTextEditor({ value, onChange, placeholder = 'Start typing...', placeholders = {}, error }: RichTextEditorProps) {
     const [isSourceMode, setIsSourceMode] = useState(false);
     const [sourceHtml, setSourceHtml] = useState(value);
     const textareaRef = useRef<HTMLTextAreaElement>(null);

@@ -11,7 +11,7 @@ class UserPolicy
         return $user->hasPermission('manage_users') || $user->hasPermission('moderate_users');
     }
 
-    public function update(User $user, User $target): bool
+    public function update(User $user, User $_target): bool
     {
         return $user->hasPermission('manage_users');
     }

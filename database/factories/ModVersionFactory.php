@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ModVersion>
+ * @extends Factory<ModVersion>
  */
 class ModVersionFactory extends Factory
 {
@@ -17,8 +17,8 @@ class ModVersionFactory extends Factory
     public function definition(): array
     {
         return [
-            'mod_id' => \App\Models\Mod::factory()->approved(),
-            'submitted_by' => \App\Models\User::factory(),
+            'mod_id' => Mod::factory()->approved(),
+            'submitted_by' => User::factory(),
             'version' => '1.0.0',
             'normalized_version' => '1.0.0.0',
             'changelog' => 'Initial release',

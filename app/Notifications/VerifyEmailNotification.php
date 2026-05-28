@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Models\User;
 use App\Services\EmailTemplateService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +13,7 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function via(object $notifiable): array
+    public function via(object $_notifiable): array
     {
         return ['mail'];
     }
@@ -54,7 +53,6 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
                 'cta_url' => $verificationUrl,
                 'cta_text' => 'Verify Email',
                 'show_unsubscribe' => false,
-            ])
-            ->text(strip_tags($body) . "\n\n" . 'Verify Email: ' . $verificationUrl);
+            ]);
     }
 }

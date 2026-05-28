@@ -411,3 +411,58 @@ flash.faq_created,FAQ created.,FAQ erstellt.
 flash.faq_updated,FAQ updated.,FAQ aktualisiert.
 flash.faq_deleted,FAQ deleted.,FAQ gelöscht.
 common.delete_faq_confirm,Delete this FAQ?,Diese FAQ löschen?
+sanctions.upload_ban_reason,Automatic upload ban due to :points active warning points.,Automatische Upload-Sperre aufgrund von :points aktiven Verwarnungspunkten.
+sanctions.account_lock_reason,Automatic account lock due to :points active warning points.,Automatische Account-Sperre aufgrund von :points aktiven Verwarnungspunkten.
+sanctions.upload_banned,You are banned from uploading until :date. Reason: :reason,Du bist bis :date vom Upload gesperrt. Grund: :reason
+sanctions.account_locked,Your account is locked until :date. Reason: :reason,Dein Account ist bis :date gesperrt. Grund: :reason
+sanctions.account_locked_permanent,Your account is locked. Reason: :reason,Dein Account ist gesperrt. Grund: :reason
+warnings.title,Warnings,Verwarnungen
+warnings.add_warning,Add warning,Verwarnung hinzufügen
+warnings.remove_warning,Remove warning,Verwarnung entfernen
+warnings.points,Points,Punkte
+warnings.reason,Reason,Grund
+warnings.issued_by,Issued by,Vergeben von
+warnings.issued_at,Issued at,Vergeben am
+warnings.expires_at,Expires at,Läuft ab am
+warnings.status,Status,Status
+warnings.status_active,Active,Aktiv
+warnings.status_expired,Expired,Abgelaufen
+warnings.status_removed,Removed,Entfernt
+warnings.active_points,Active warning points,Aktive Verwarnungspunkte
+warnings.history,Warning history,Verwarnungshistorie
+warnings.no_warnings,No warnings.,Keine Verwarnungen.
+warnings.confirm_remove,Are you sure you want to remove this warning?,Bist du sicher, dass du diese Verwarnung entfernen möchtest?
+user_sanctions.title,Sanctions,Sanktionen
+user_sanctions.add_sanction,Add sanction,Sanktion hinzufügen
+user_sanctions.remove_sanction,Remove sanction,Sanktion entfernen
+user_sanctions.type,Type,Typ
+user_sanctions.type_upload_ban,Upload ban,Upload-Sperre
+user_sanctions.type_account_lock,Account lock,Account-Sperre
+user_sanctions.reason,Reason,Grund
+user_sanctions.expires_at,Expires at,Läuft ab am
+user_sanctions.no_sanctions,No active sanctions.,Keine aktiven Sanktionen.
+user_sanctions.confirm_remove,Are you sure you want to remove this sanction?,Bist du sicher, dass du diese Sanktion entfernen möchtest?
+admin.users.delete_user,Delete user permanently,Benutzer endgültig löschen
+admin.users.delete_confirm_title,Delete user permanently?,Benutzer endgültig löschen?
+admin.users.delete_confirm_text,"This action cannot be undone. All data of user "":name"" will be permanently deleted.","Diese Aktion kann nicht rückgängig gemacht werden. Alle Daten von Benutzer "":name"" werden dauerhaft gelöscht."
+admin.users.delete_type_name,"Type the username "":name"" to confirm.","Gib den Benutzernamen "":name"" ein, um zu bestätigen."
+admin.users.user_deleted,User permanently deleted.,Benutzer endgültig gelöscht.
+admin.users.cannot_delete_self,You cannot delete your own account.,Du kannst dein eigenes Konto nicht löschen.
+admin.users.cannot_delete_last_admin,At least one admin must remain in the system.,Mindestens ein Admin muss im System verbleiben.
+admin.users.block_reason_required,A reason is required to block a user.,Ein Grund ist erforderlich, um einen Benutzer zu sperren.
+admin.users.blocked_until,Blocked until,Gesperrt bis
+admin.users.blocked_permanently,Permanently blocked,Dauerhaft gesperrt
+admin.users.blocked_temporarily,Blocked until :date,Gesperrt bis :date
+admin.settings.moderation_heading,Moderation and sanctions,Moderation und Sanktionen
+admin.settings.moderation_hint,Configure warning expiry and automatic sanction thresholds.,Konfiguriere Verwarnungsablauf und automatische Sanktionsschwellen.
+admin.settings.warning_expiry_days,Warning expiry (days),Verwarnungsablauf (Tage)
+admin.settings.warning_expiry_days_hint,Active warnings expire after this many days.,Aktive Verwarnungen laufen nach dieser Anzahl an Tagen ab.
+admin.settings.sanction_upload_ban_threshold,Upload ban threshold (points),Upload-Sperre Schwelle (Punkte)
+admin.settings.sanction_upload_ban_threshold_hint,Active warning points at which an upload ban is applied.,Aktive Verwarnungspunkte ab denen eine Upload-Sperre verhängt wird.
+admin.settings.sanction_upload_ban_days,Upload ban duration (days),Upload-Sperre Dauer (Tage)
+admin.settings.sanction_upload_ban_days_hint,How long an automatic upload ban lasts.,Wie lange eine automatische Upload-Sperre dauert.
+admin.settings.sanction_account_lock_threshold,Account lock threshold (points),Account-Sperre Schwelle (Punkte)
+admin.settings.sanction_account_lock_threshold_hint,Active warning points at which an account lock is applied.,Aktive Verwarnungspunkte ab denen eine Account-Sperre verhängt wird.
+admin.settings.sanction_account_lock_days,Account lock duration (days),Account-Sperre Dauer (Tage)
+admin.settings.sanction_account_lock_days_hint,How long an automatic account lock lasts.,Wie lange eine automatische Account-Sperre dauert.
+auth.login_or_username,Email or username,E-Mail oder Benutzername

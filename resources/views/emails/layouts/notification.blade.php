@@ -20,8 +20,8 @@
     </style>
 </head>
 <body>
-    <center class="wrapper">
-        <table class="main" width="100%">
+    <div class="wrapper">
+        <table class="main" style="width: 100%;">
             <tr>
                 <td>
                     @include('emails.partials.header')
@@ -44,6 +44,6 @@
                 </td>
             </tr>
         </table>
-    </center>
+    </div>
 </body>
 </html>

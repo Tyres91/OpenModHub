@@ -13,7 +13,6 @@ use App\Models\UserSanction;
 use App\Models\Warning;
 use App\Services\WarningService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -21,7 +20,7 @@ use Inertia\Response;
 
 class UserController extends Controller
 {
-    public function index(Request $request, WarningService $warningService): Response
+    public function index(WarningService $warningService): Response
     {
         Gate::authorize('viewAny', User::class);
 
@@ -95,7 +94,7 @@ class UserController extends Controller
         return back()->with('status', __('messages.flash.user_blocked'));
     }
 
-    public function unblock(Request $request, User $user): RedirectResponse
+    public function unblock(User $user): RedirectResponse
     {
         Gate::authorize('update', $user);
 
@@ -109,7 +108,7 @@ class UserController extends Controller
         return back()->with('status', __('messages.flash.user_unblocked'));
     }
 
-    public function destroy(Request $request, User $user): RedirectResponse
+    public function destroy(User $user): RedirectResponse
     {
         Gate::authorize('delete', $user);
 

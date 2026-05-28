@@ -1,5 +1,3 @@
-type TranslationValue = string | Record<string, unknown>;
-
 function resolveKey(translations: Record<string, unknown>, key: string): string | null {
     const parts = key.split('.');
     let current: unknown = translations;

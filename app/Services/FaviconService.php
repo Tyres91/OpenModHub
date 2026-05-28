@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
 class FaviconService
@@ -11,12 +11,12 @@ class FaviconService
 
     public function __construct()
     {
-        $this->manager = new ImageManager(new Driver());
+        $this->manager = new ImageManager(new Driver);
     }
 
     public function generateFromLogo(string $logoPath): void
     {
-        $fullPath = storage_path('app/public/' . $logoPath);
+        $fullPath = storage_path('app/public/'.$logoPath);
 
         if (! file_exists($fullPath)) {
             return;

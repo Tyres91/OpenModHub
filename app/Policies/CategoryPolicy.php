@@ -17,12 +17,12 @@ class CategoryPolicy
         return $user->hasPermission('manage_categories');
     }
 
-    public function update(User $user, Category $category): bool
+    public function update(User $user, Category $_category): bool
     {
         return $user->hasPermission('manage_categories');
     }
 
-    public function delete(User $user, Category $category): bool
+    public function delete(User $user, Category $_category): bool
     {
         return $user->hasPermission('manage_categories');
     }

@@ -103,7 +103,7 @@ export default function UpdateProfileInformation({
                     <InputError className="mt-2" message={errors.locale} />
                 </div>
 
-                {mustVerifyEmail && user.email_verified_at === null && (
+                {mustVerifyEmail && !user.email_verified_at && (
                     <div>
                         <p className="mt-2 text-sm text-gray-800 dark:text-gray-200">
                             {t('profile.unverified', 'Your email address is unverified.')}
