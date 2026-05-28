@@ -101,7 +101,7 @@ class HandleInertiaRequests extends Middleware
 
     private function loadTranslations(string $locale): array
     {
-        $path = lang_path("{$locale}/messages.php");
+        $path = base_path("lang/{$locale}/messages.php");
 
         if (! file_exists($path)) {
             return [];
