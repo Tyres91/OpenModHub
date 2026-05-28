@@ -127,6 +127,15 @@ class CommunityInteractionTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach($role);
 
+        if ($slug === 'editor') {
+            $moderateComments = \App\Models\Permission::query()->create([
+                'name' => 'Moderate Comments',
+                'slug' => 'moderate_comments',
+                'group' => 'moderation',
+            ]);
+            $user->permissions()->attach($moderateComments);
+        }
+
         return $user;
     }
 

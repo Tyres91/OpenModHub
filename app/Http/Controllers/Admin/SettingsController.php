@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Services\FaviconService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -28,6 +29,11 @@ class SettingsController extends Controller
         'legal_additional_info',
     ];
 
+    public function __construct(
+        private FaviconService $faviconService
+    ) {
+    }
+
     public function index(): Response
     {
         Gate::authorize('manageSettings', Setting::class);
@@ -42,6 +48,13 @@ class SettingsController extends Controller
             'siteLogoUrl' => $this->siteLogoUrl(),
             'siteLogoText' => Setting::get('site_logo_text', 'OpenModHub'),
             'siteLogoShowText' => Setting::get('site_logo_show_text', '1') === '1',
+            'faviconMode' => Setting::get('favicon_mode', 'auto'),
+            'hasFavicons' => $this->faviconService->hasGeneratedFavicons(),
+            'warningExpiryDays' => (int) Setting::get('warning_expiry_days', 90),
+            'sanctionUploadBanThreshold' => (int) Setting::get('sanction_upload_ban_threshold', 5),
+            'sanctionUploadBanDays' => (int) Setting::get('sanction_upload_ban_days', 7),
+            'sanctionAccountLockThreshold' => (int) Setting::get('sanction_account_lock_threshold', 10),
+            'sanctionAccountLockDays' => (int) Setting::get('sanction_account_lock_days', 14),
             'legalSettings' => collect(self::LEGAL_KEYS)
                 ->mapWithKeys(fn (string $key): array => [$key => Setting::get($key, '')])
                 ->all(),
@@ -60,6 +73,11 @@ class SettingsController extends Controller
             'mod_pending_submission_limit' => ['sometimes', 'integer', 'min:0', 'max:100'],
             'site_logo_text' => ['nullable', 'string', 'max:80'],
             'site_logo_show_text' => ['sometimes', 'boolean'],
+            'warning_expiry_days' => ['sometimes', 'integer', 'min:1', 'max:3650'],
+            'sanction_upload_ban_threshold' => ['sometimes', 'integer', 'min:1', 'max:1000'],
+            'sanction_upload_ban_days' => ['sometimes', 'integer', 'min:1', 'max:3650'],
+            'sanction_account_lock_threshold' => ['sometimes', 'integer', 'min:1', 'max:1000'],
+            'sanction_account_lock_days' => ['sometimes', 'integer', 'min:1', 'max:3650'],
             'legal_operator_name' => ['nullable', 'string', 'max:255'],
             'legal_represented_by' => ['nullable', 'string', 'max:255'],
             'legal_street' => ['nullable', 'string', 'max:255'],
@@ -80,6 +98,11 @@ class SettingsController extends Controller
         Setting::set('mod_pending_submission_limit', (string) ($validated['mod_pending_submission_limit'] ?? Setting::get('mod_pending_submission_limit', 5)));
         Setting::set('site_logo_text', $validated['site_logo_text'] ?? '');
         Setting::set('site_logo_show_text', $request->boolean('site_logo_show_text') ? '1' : '0');
+        Setting::set('warning_expiry_days', (string) ($validated['warning_expiry_days'] ?? Setting::get('warning_expiry_days', 90)));
+        Setting::set('sanction_upload_ban_threshold', (string) ($validated['sanction_upload_ban_threshold'] ?? Setting::get('sanction_upload_ban_threshold', 5)));
+        Setting::set('sanction_upload_ban_days', (string) ($validated['sanction_upload_ban_days'] ?? Setting::get('sanction_upload_ban_days', 7)));
+        Setting::set('sanction_account_lock_threshold', (string) ($validated['sanction_account_lock_threshold'] ?? Setting::get('sanction_account_lock_threshold', 10)));
+        Setting::set('sanction_account_lock_days', (string) ($validated['sanction_account_lock_days'] ?? Setting::get('sanction_account_lock_days', 14)));
 
         foreach (self::LEGAL_KEYS as $key) {
             Setting::set($key, $validated[$key] ?? '');
@@ -104,6 +127,9 @@ class SettingsController extends Controller
         $path = $validated['logo']->store('branding', 'public');
         Setting::set('site_logo_path', $path);
 
+        $this->faviconService->generateFromLogo($path);
+        Setting::set('favicon_mode', 'auto');
+
         return back()->with('status', __('messages.flash.logo_updated'));
     }
 
@@ -117,8 +143,57 @@ class SettingsController extends Controller
         }
 
         Setting::set('site_logo_path', '');
+        $this->faviconService->clearGenerated();
 
         return back()->with('status', __('messages.flash.logo_deleted'));
+    }
+
+    public function uploadFavicon(Request $request): RedirectResponse
+    {
+        Gate::authorize('manageSettings', Setting::class);
+
+        $validated = $request->validate([
+            'favicon' => ['nullable', 'image', 'mimes:png,jpg,jpeg,ico,webp', 'max:2048'],
+        ]);
+
+        if (isset($validated['favicon'])) {
+            $this->faviconService->clearAll();
+            $this->faviconService->uploadManual(['favicon' => $validated['favicon']]);
+            Setting::set('favicon_mode', 'manual');
+        }
+
+        return back()->with('status', __('messages.flash.favicon_updated'));
+    }
+
+    public function destroyFavicon(): RedirectResponse
+    {
+        Gate::authorize('manageSettings', Setting::class);
+
+        $this->faviconService->clearAll();
+
+        $logoPath = Setting::get('site_logo_path', '');
+        if (filled($logoPath)) {
+            $this->faviconService->generateFromLogo($logoPath);
+            Setting::set('favicon_mode', 'auto');
+        }
+
+        return back()->with('status', __('messages.flash.favicon_reset'));
+    }
+
+    public function regenerateFavicons(): RedirectResponse
+    {
+        Gate::authorize('manageSettings', Setting::class);
+
+        $logoPath = Setting::get('site_logo_path', '');
+        if (filled($logoPath)) {
+            $this->faviconService->clearAll();
+            $this->faviconService->generateFromLogo($logoPath);
+            Setting::set('favicon_mode', 'auto');
+
+            return back()->with('status', __('messages.flash.favicon_regenerated'));
+        }
+
+        return back()->with('error', __('messages.flash.no_logo_for_favicon'));
     }
 
     private function siteLogoUrl(): ?string

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Permission;
 use App\Models\Rank;
 use App\Models\Role;
 use App\Models\User;
@@ -24,7 +25,7 @@ class UpdateUserRequest extends FormRequest
         $user = $this->route('user');
 
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:30', 'regex:/^[a-zA-Z0-9_]+$/', Rule::unique(User::class, 'name')->ignore($user->id)],
             'email' => [
                 'required',
                 'string',
@@ -38,6 +39,8 @@ class UpdateUserRequest extends FormRequest
             'rank_id' => ['nullable', 'integer', Rule::exists(Rank::class, 'id')->where('is_special', true)],
             'roles' => ['array'],
             'roles.*' => ['string', Rule::exists(Role::class, 'slug')],
+            'permissions' => ['array'],
+            'permissions.*' => ['string', Rule::exists(Permission::class, 'slug')],
         ];
     }
 

@@ -10,9 +10,13 @@ RUN apt-get update \
         libjpeg-dev \
         libpng-dev \
         libfreetype-dev \
+        libmagickcore-dev \
+        libmagickwand-dev \
         unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl pdo_mysql zip gd \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

@@ -7,8 +7,10 @@ use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\RankController;
 use App\Http\Controllers\Admin\RankPointRuleController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
+use App\Http\Controllers\Admin\SanctionController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WarningController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FaqController;
@@ -36,10 +38,17 @@ Route::middleware('auth')->group(function () {
         Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::patch('/users/{user}/block', [UserController::class, 'block'])->name('users.block');
         Route::patch('/users/{user}/unblock', [UserController::class, 'unblock'])->name('users.unblock');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::post('/users/{user}/warnings', [WarningController::class, 'store'])->name('users.warnings.store');
+        Route::delete('/warnings/{warning}', [WarningController::class, 'destroy'])->name('warnings.destroy');
+        Route::post('/users/{user}/sanctions', [SanctionController::class, 'store'])->name('users.sanctions.store');
+        Route::delete('/sanctions/{sanction}', [SanctionController::class, 'destroy'])->name('sanctions.destroy');
 
         Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
         Route::patch('/moderation/{mod:slug}/approve', [ModerationController::class, 'approve'])->name('moderation.approve');
         Route::patch('/moderation/{mod:slug}/reject', [ModerationController::class, 'reject'])->name('moderation.reject');
+        Route::delete('/moderation/{mod:slug}/delete', [ModerationController::class, 'destroy'])->name('moderation.delete');
+        Route::delete('/moderation/{mod:slug}/force-delete', [ModerationController::class, 'forceDestroy'])->name('moderation.force-delete');
         Route::patch('/moderation/versions/{modVersion}/approve', [ModerationController::class, 'approveVersion'])->name('moderation.versions.approve');
         Route::patch('/moderation/versions/{modVersion}/reject', [ModerationController::class, 'rejectVersion'])->name('moderation.versions.reject');
 
@@ -70,6 +79,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/logo', [SettingsController::class, 'updateLogo'])->name('settings.logo.update');
         Route::delete('/settings/logo', [SettingsController::class, 'destroyLogo'])->name('settings.logo.destroy');
+        Route::post('/settings/favicon', [SettingsController::class, 'uploadFavicon'])->name('settings.favicon.update');
+        Route::delete('/settings/favicon', [SettingsController::class, 'destroyFavicon'])->name('settings.favicon.destroy');
+        Route::post('/settings/favicon/regenerate', [SettingsController::class, 'regenerateFavicons'])->name('settings.favicon.regenerate');
 
         Route::get('/email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
         Route::patch('/email-templates/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email-templates.update');

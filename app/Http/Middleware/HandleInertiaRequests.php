@@ -21,6 +21,10 @@ class HandleInertiaRequests extends Middleware
 
     public function share(Request $request): array
     {
+        if ($request->user()) {
+            $request->user()->load(['roles', 'permissions']);
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -30,6 +34,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'locale' => $request->user()->locale,
                     'roles' => $request->user()->roles()->pluck('slug')->all(),
+                    'permissions' => $request->user()->permissions()->pluck('slug')->all(),
                 ] : null,
             ],
             'moderationTodos' => fn () => $this->moderationTodos($request),
@@ -63,7 +68,7 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
 
-        if (! $user || (! $user->hasRole('admin') && ! $user->hasRole('editor'))) {
+        if (! $user || (! $user->hasPermission('review_mods') && ! $user->hasPermission('moderate_comments') && ! $user->hasPermission('handle_reports'))) {
             return null;
         }
 

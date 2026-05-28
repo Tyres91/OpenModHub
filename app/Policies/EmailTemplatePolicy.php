@@ -9,11 +9,11 @@ class EmailTemplatePolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_settings');
     }
 
     public function update(User $user, EmailTemplate $emailTemplate): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_settings');
     }
 }

@@ -17,7 +17,8 @@ class BlockUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'block_reason' => ['nullable', 'string', 'max:1000'],
+            'block_reason' => ['required', 'string', 'max:1000'],
+            'blocked_until' => ['nullable', 'date', 'after:now'],
         ];
     }
 
@@ -38,9 +39,10 @@ class BlockUserRequest extends FormRequest
             if ($target->hasRole('admin')) {
                 $otherAdmins = User::query()
                     ->where('id', '!=', $target->id)
-                    ->whereNull('blocked_at')
                     ->whereHas('roles', fn ($query) => $query->where('slug', 'admin'))
-                    ->exists();
+                    ->get()
+                    ->filter(fn (User $admin) => ! $admin->hasActiveBlock())
+                    ->isNotEmpty();
 
                 if (! $otherAdmins) {
                     $validator->errors()->add('user', __('messages.admin.users.cannot_block_last_admin'));

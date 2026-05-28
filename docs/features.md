@@ -170,12 +170,63 @@ Current implementation:
 - Admins can view a list of all users at `/admin/users`.
 - Admins can edit user name, email, language preference, and password.
 - Admins can assign or remove roles for any user.
-- Admins can block and unblock users.
+- Admins can block and unblock users with a mandatory reason and optional expiry date.
+- Admins can permanently delete users with a confirmation dialog requiring username input.
 - Admins cannot remove their own admin role.
+- Admins cannot delete their own account.
 - The system prevents removing the last admin role from the system.
 - The system prevents blocking yourself and prevents blocking the last unblocked admin.
 - Blocked users cannot log in or continue using authenticated community actions.
-- User deletion is not yet implemented to avoid breaking mod/comment/report ownership.
+- Temporary blocks automatically expire after the configured date.
+
+## Warning and Sanction System
+
+Admins and moderators can issue warnings to users for rule violations. Warnings carry points and can trigger automatic sanctions.
+
+Current implementation:
+
+- Admins and users with the `moderate_users` permission can issue warnings with points, reason, and optional expiry date.
+- Warnings expire after a configurable number of days (default: 90 days, configurable in `/admin/settings`).
+- Removed warnings no longer count toward active points.
+- Expired warnings no longer count toward active points.
+- The admin user management page shows active warning points, warning history, and active sanctions per user.
+- Warnings can be removed by admins and moderators.
+
+### Automatic Sanctions
+
+When a user's active warning points reach configurable thresholds, automatic sanctions are applied:
+
+- **Upload ban**: Applied when active points reach the upload ban threshold (default: 5 points). The user can still log in but cannot submit mods or new versions. Duration is configurable (default: 7 days).
+- **Account lock**: Applied when active points reach the account lock threshold (default: 10 points). The user cannot log in. Duration is configurable (default: 14 days).
+- Sanction thresholds and durations are configurable in `/admin/settings`.
+- When a user attempts to log in with an active account lock, they see a message with the expiry date and reason.
+- When a user with an active upload ban attempts to create a mod, they see a message with the expiry date and reason.
+
+### Manual Sanctions
+
+Admins and moderators can also manually create sanctions (upload bans or account locks) with a reason and optional expiry date. Manual sanctions are managed from the user moderation panel.
+
+## Login with Email or Username
+
+Users can log in using either their email address or their username.
+
+Current implementation:
+
+- The login form accepts a single field labeled "Email or username".
+- The backend detects whether the input is an email address or a username and authenticates accordingly.
+- Usernames must be unique and consist of alphanumeric characters and underscores (3-30 characters).
+- Error messages are neutral and do not reveal whether the email/username or password was incorrect.
+- Password reset continues to work via email only.
+
+## Moderation and Sanction Settings
+
+Admins can configure warning and sanction parameters in `/admin/settings`:
+
+- Warning expiry days (default: 90)
+- Upload ban threshold in points (default: 5)
+- Upload ban duration in days (default: 7)
+- Account lock threshold in points (default: 10)
+- Account lock duration in days (default: 14)
 
 ## Localization and Language Switcher
 
@@ -301,3 +352,76 @@ All emails use a consistent table-based layout for email client compatibility:
 ### Email Verification
 
 The default Laravel email verification uses the same styled email layout. The `User::sendEmailVerificationNotification()` method is overridden to use `VerifyEmailNotification`.
+
+## Warning and Sanction System
+
+Admins and moderators can issue warnings to users for rule violations. Warnings carry points and can trigger automatic sanctions.
+
+Current implementation:
+
+- Admins and users with the `moderate_users` permission can issue warnings with points, reason, and optional expiry date.
+- Warnings expire after a configurable number of days (default: 90 days, configurable in `/admin/settings`).
+- Removed warnings no longer count toward active points.
+- Expired warnings no longer count toward active points.
+- The admin user management page shows active warning points, warning history, and active sanctions per user.
+- Warnings can be removed by admins and moderators.
+
+### Automatic Sanctions
+
+When a user's active warning points reach configurable thresholds, automatic sanctions are applied:
+
+- **Upload ban**: Applied when active points reach the upload ban threshold (default: 5 points). The user can still log in but cannot submit mods or new versions. Duration is configurable (default: 7 days).
+- **Account lock**: Applied when active points reach the account lock threshold (default: 10 points). The user cannot log in. Duration is configurable (default: 14 days).
+- Sanction thresholds and durations are configurable in `/admin/settings`.
+- When a user attempts to log in with an active account lock, they see a message with the expiry date and reason.
+- When a user with an active upload ban attempts to create a mod, they see a message with the expiry date and reason.
+
+### Manual Sanctions
+
+Admins and moderators can also manually create sanctions (upload bans or account locks) with a reason and optional expiry date. Manual sanctions are managed from the user moderation panel.
+
+## Login with Email or Username
+
+Users can log in using either their email address or their username.
+
+Current implementation:
+
+- The login form accepts a single field labeled "Email or username".
+- The backend detects whether the input is an email address or a username and authenticates accordingly.
+- Usernames must be unique and consist of alphanumeric characters and underscores (3-30 characters).
+- Error messages are neutral and do not reveal whether the email/username or password was incorrect.
+- Password reset continues to work via email only.
+
+## User Deletion
+
+Admins can permanently delete user accounts.
+
+Current implementation:
+
+- Only admins can delete users.
+- Admins cannot delete their own account.
+- The system prevents deleting the last admin.
+- Deletion requires explicit confirmation by typing the username.
+- All user data (mods, comments, ratings, reports, warnings, sanctions) is permanently removed.
+
+## Temporary Blocks
+
+Admins can temporarily block users with an optional expiry date.
+
+Current implementation:
+
+- Block reason is mandatory.
+- Optional expiry date can be set.
+- Temporary blocks automatically expire after the configured date.
+- The `EnsureUserIsNotBlocked` middleware checks both permanent and temporary blocks.
+- Expired temporary blocks are automatically cleared on the next request.
+
+## Moderation and Sanction Settings
+
+Admins can configure warning and sanction parameters in `/admin/settings`:
+
+- Warning expiry days (default: 90)
+- Upload ban threshold in points (default: 5)
+- Upload ban duration in days (default: 7)
+- Account lock threshold in points (default: 10)
+- Account lock duration in days (default: 14)

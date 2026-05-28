@@ -9,21 +9,21 @@ class RankPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_ranks');
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_ranks');
     }
 
     public function update(User $user, Rank $rank): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_ranks');
     }
 
     public function delete(User $user, Rank $rank): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_ranks');
     }
 }

@@ -30,12 +30,12 @@ function FaqItem({ faq }: { faq: PublicFaq }) {
             </button>
             <div
                 className={`overflow-hidden transition-all duration-300 ${
-                    isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                    isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
                 }`}
             >
                 <div className="border-t border-white/5 px-4 pb-4 pt-2">
                     <div
-                        className="prose prose-invert prose-sm max-w-none text-slate-300"
+                        className="prose prose-invert prose-sm max-w-none overflow-y-auto text-slate-300"
                         dangerouslySetInnerHTML={{ __html: faq.answer }}
                     />
                 </div>

@@ -125,7 +125,7 @@ class RegistrationTest extends TestCase
     private function validRegistrationData(array $overrides = []): array
     {
         return array_merge([
-            'name' => 'Test User',
+            'name' => 'testuser',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',

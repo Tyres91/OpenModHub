@@ -200,3 +200,16 @@ Store email templates in a dedicated `email_templates` table with separate subje
 
 Consequences:
 Admins can edit notification content without code changes. All emails share consistent branding. The system supports per-user locale preferences. Templates fall back to hardcoded defaults if inactive or missing. Notifications are queued for reliable delivery.
+
+## 2026-05-28: Add Warning System with Automatic Sanctions and Login with Username
+
+Status: Accepted
+
+Context:
+The platform needs a moderation system to warn users for rule violations and automatically apply sanctions (upload bans, account locks) when warning points reach configurable thresholds. Users should also be able to log in with their username in addition to email. Admins need the ability to permanently delete users.
+
+Decision:
+Add `warnings` and `user_sanctions` tables. Implement `WarningService` to manage warnings and evaluate automatic sanctions. Add `moderate_users` permission for warning/sanction management. Extend login to accept email or username. Add `blocked_until` for temporary blocks. Make usernames unique with alphanumeric + underscore validation. Allow admins to permanently delete users with confirmation dialog. Configure sanction thresholds and durations in admin settings.
+
+Consequences:
+Admins and moderators can issue warnings that automatically trigger upload bans or account locks. Users see clear messages when blocked or banned. Login is more flexible with username support. User deletion is available but requires explicit confirmation. The warning system is configurable without code changes.

@@ -9,21 +9,21 @@ class CategoryPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_categories');
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_categories');
     }
 
     public function update(User $user, Category $category): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_categories');
     }
 
     public function delete(User $user, Category $category): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('manage_categories');
     }
 }

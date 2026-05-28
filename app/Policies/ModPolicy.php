@@ -6,6 +6,7 @@ use App\Models\Mod;
 use App\Models\ModVersion;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\WarningService;
 
 class ModPolicy
 {
@@ -15,7 +16,7 @@ class ModPolicy
             return true;
         }
 
-        return $user !== null && ($mod->user_id === $user->id || $user->hasRole('admin') || $user->hasRole('editor'));
+        return $user !== null && ($mod->user_id === $user->id || $user->hasPermission('review_mods'));
     }
 
     public function create(User $user): bool
@@ -24,7 +25,11 @@ class ModPolicy
             return false;
         }
 
-        if ($user->hasRole('admin') || $user->hasRole('editor')) {
+        if (app(WarningService::class)->isUploadBanned($user)) {
+            return false;
+        }
+
+        if ($user->hasPermission('review_mods')) {
             return true;
         }
 
@@ -45,12 +50,12 @@ class ModPolicy
 
     public function reviewAny(User $user): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('editor');
+        return $user->hasPermission('review_mods');
     }
 
     public function update(User $user, Mod $mod): bool
     {
-        if ($user->hasRole('admin') || $user->hasRole('editor')) {
+        if ($user->hasPermission('edit_any_mod')) {
             return true;
         }
 
@@ -59,17 +64,22 @@ class ModPolicy
 
     public function delete(User $user, Mod $mod): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasPermission('delete_any_mod');
+    }
+
+    public function forceDelete(User $user, Mod $mod): bool
+    {
+        return $user->hasPermission('delete_any_mod');
     }
 
     public function approve(User $user, Mod $mod): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('editor');
+        return $user->hasPermission('review_mods');
     }
 
     public function reject(User $user, Mod $mod): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('editor');
+        return $user->hasPermission('review_mods');
     }
 
     public function rate(User $user, Mod $mod): bool
@@ -92,6 +102,6 @@ class ModPolicy
             return true;
         }
 
-        return $user !== null && ($mod->user_id === $user->id || $user->hasRole('admin') || $user->hasRole('editor'));
+        return $user !== null && ($mod->user_id === $user->id || $user->hasPermission('review_mods'));
     }
 }

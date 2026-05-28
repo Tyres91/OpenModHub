@@ -20,8 +20,8 @@ export default function Authenticated({
     const user = page.props.auth.user;
     const { translations } = page.props;
     const t = useTranslations(translations);
-    const canReview = user?.roles.includes('admin') || user?.roles.includes('editor');
-    const canManageAdminData = user?.roles.includes('admin');
+    const canReview = user?.permissions?.includes('review_mods') || user?.permissions?.includes('moderate_comments') || user?.permissions?.includes('handle_reports');
+    const canManageAdminData = user?.permissions?.includes('manage_users') || user?.permissions?.includes('manage_categories') || user?.permissions?.includes('manage_faqs') || user?.permissions?.includes('manage_ranks') || user?.permissions?.includes('manage_settings');
     const moderationTodos = page.props.moderationTodos;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =

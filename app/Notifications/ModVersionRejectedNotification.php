@@ -55,6 +55,7 @@ class ModVersionRejectedNotification extends Notification implements ShouldQueue
                 'cta_url' => $modUrl,
                 'cta_text' => 'View Mod',
                 'show_unsubscribe' => true,
-            ]);
+            ])
+            ->text(strip_tags($body) . "\n\n" . 'View Mod: ' . $modUrl);
     }
 }

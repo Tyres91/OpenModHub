@@ -146,6 +146,15 @@ class DashboardTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach($role);
 
+        if ($slug === 'editor') {
+            $reviewMods = \App\Models\Permission::query()->create([
+                'name' => 'Review Mods',
+                'slug' => 'review_mods',
+                'group' => 'moderation',
+            ]);
+            $user->permissions()->attach($reviewMods);
+        }
+
         return $user;
     }
 }

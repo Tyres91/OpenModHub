@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
     'user_id',
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Mod extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public const STATUS_PENDING = 'pending';
 

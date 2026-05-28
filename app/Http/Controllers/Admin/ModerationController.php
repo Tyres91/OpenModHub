@@ -163,6 +163,54 @@ class ModerationController extends Controller
         return back()->with('status', __('messages.flash.mod_version_rejected'));
     }
 
+    public function destroy(Mod $mod): RedirectResponse
+    {
+        Gate::authorize('delete', $mod);
+
+        $mod->delete();
+
+        return back()->with('status', __('messages.flash.mod_deleted'));
+    }
+
+    public function forceDestroy(Mod $mod): RedirectResponse
+    {
+        Gate::authorize('forceDelete', $mod);
+
+        $this->deleteModFiles($mod);
+
+        $mod->comments()->delete();
+        $mod->ratings()->delete();
+        $mod->reports()->delete();
+        $mod->securityChecks()->delete();
+
+        foreach ($mod->versions as $version) {
+            $this->deleteVersionFiles($version);
+            $version->securityChecks()->delete();
+        }
+
+        $mod->versions()->delete();
+        $mod->images()->delete();
+        $mod->forceDelete();
+
+        return back()->with('status', __('messages.flash.mod_permanently_deleted'));
+    }
+
+    private function deleteModFiles(Mod $mod): void
+    {
+        foreach ($mod->images as $image) {
+            if ($image->file_path) {
+                Storage::disk('public')->delete($image->file_path);
+            }
+        }
+    }
+
+    private function deleteVersionFiles(ModVersion $version): void
+    {
+        if ($version->file_path) {
+            Storage::disk('public')->delete($version->file_path);
+        }
+    }
+
     /**
      * @return array<string, mixed>
      */

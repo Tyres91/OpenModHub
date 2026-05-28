@@ -100,6 +100,15 @@ class ReportModTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach($role);
 
+        if ($slug === 'editor') {
+            $handleReports = \App\Models\Permission::query()->create([
+                'name' => 'Handle Reports',
+                'slug' => 'handle_reports',
+                'group' => 'moderation',
+            ]);
+            $user->permissions()->attach($handleReports);
+        }
+
         return $user;
     }
 

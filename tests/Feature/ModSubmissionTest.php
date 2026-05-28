@@ -684,6 +684,12 @@ class ModSubmissionTest extends TestCase
         $editor = User::factory()->create();
         $editorRole = Role::query()->create(['name' => 'Editor', 'slug' => 'editor']);
         $editor->roles()->attach($editorRole);
+        $reviewMods = \App\Models\Permission::query()->create([
+            'name' => 'Review Mods',
+            'slug' => 'review_mods',
+            'group' => 'moderation',
+        ]);
+        $editor->permissions()->attach($reviewMods);
 
         $this->actingAs($user)->post(route('mods.store'), $this->validModPayload($category, 'Regular Blocked Mod'))
             ->assertForbidden();

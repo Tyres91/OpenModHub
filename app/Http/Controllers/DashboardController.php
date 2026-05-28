@@ -16,8 +16,8 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         $user = $request->user();
-        $canSeeEditorialMetrics = $user->hasRole('admin') || $user->hasRole('editor');
-        $canSeeUserMetrics = $user->hasRole('admin');
+        $canSeeEditorialMetrics = $user->hasPermission('review_mods') || $user->hasPermission('moderate_comments') || $user->hasPermission('handle_reports');
+        $canSeeUserMetrics = $user->hasPermission('manage_users');
 
         return Inertia::render('Dashboard', [
             'metrics' => $canSeeEditorialMetrics ? $this->metrics($canSeeUserMetrics) : null,

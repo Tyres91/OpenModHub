@@ -15,11 +15,11 @@ class CommentPolicy
 
     public function moderate(User $user, Comment $comment): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('editor');
+        return $user->hasPermission('moderate_comments');
     }
 
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('editor');
+        return $user->hasPermission('moderate_comments');
     }
 }
