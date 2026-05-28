@@ -23,6 +23,12 @@ class SetLocale
 
     private function resolveLocale(Request $request, array $available): string
     {
+        $urlLocale = $request->query('locale');
+
+        if ($urlLocale && in_array($urlLocale, $available, true)) {
+            return $urlLocale;
+        }
+
         $user = $request->user();
 
         if ($user && $user->locale && in_array($user->locale, $available, true)) {

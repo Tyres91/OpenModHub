@@ -13,18 +13,18 @@ class LocaleController extends Controller
             'locale' => ['required', 'string', 'in:'.implode(',', array_keys(config('locales.available')))],
         ]);
 
-        if ($request->user()) {
-            $locale = $validated['locale'];
+        $locale = $validated['locale'];
 
+        if ($request->user()) {
             if ($locale === config('locales.default') && ! $request->filled('force')) {
                 $request->user()->update(['locale' => null]);
             } else {
-                $request->user()->update(['locale' => $validated['locale']]);
+                $request->user()->update(['locale' => $locale]);
             }
         } else {
-            $request->session()->put('locale', $validated['locale']);
+            $request->session()->put('locale', $locale);
         }
 
-        return back();
+        return redirect('/?locale='.$locale);
     }
 }
