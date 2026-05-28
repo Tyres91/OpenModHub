@@ -31,18 +31,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $userRole = Role::query()->where('slug', 'user')->firstOrFail();
-        $editorRole = Role::query()->where('slug', 'editor')->firstOrFail();
         $adminRole = Role::query()->where('slug', 'admin')->firstOrFail();
 
         $user->roles()->sync([$userRole->id]);
-
-        $editor = User::factory()->create([
-            'name' => 'Editor User',
-            'email' => 'editor@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        $editor->roles()->sync([$editorRole->id]);
 
         $admin = User::factory()->create([
             'name' => 'Admin User',

@@ -1,6 +1,6 @@
 # OpenModHub
 
-OpenModHub is a moderated mod portal built as a modern Laravel portfolio project. Users can submit mods with screenshots, metadata, external download links, and security information. Submissions are reviewed by editors or administrators before they become publicly visible.
+OpenModHub is a moderated mod portal built as a modern Laravel portfolio project. Users can submit mods with screenshots, metadata, external download links, and security information. Submissions are reviewed by administrators or users with moderation permissions before they become publicly visible.
 
 The goal is to demonstrate a clean, maintainable full-stack architecture without relying on WordPress or a generic CMS.
 
@@ -20,13 +20,13 @@ The goal is to demonstrate a clean, maintainable full-stack architecture without
 - Public mod listing with search and filters
 - Mod detail pages
 - User-submitted mods with moderation workflow
-- Admin and editorial review process
+- Admin and permission-based review process
 - Category and topic management
-- User roles: Admin, Editor, User
+- User roles: Admin and User, with optional direct permissions for moderation tasks
 - Email verification for new accounts with honeypot and adaptive captcha protection
 - Ratings with one rating per user and mod
 - Comments with moderation support
-- Report system for mods with admin/editor management
+- Report system for mods with admin and permission-based management
 - Localization with English and German, language switcher, and admin default language setting
 - Admin-configurable legal pages and consent-gated Google Tag Manager integration
 - Rank system based on published mod count
@@ -37,12 +37,12 @@ The goal is to demonstrate a clean, maintainable full-stack architecture without
 - Laravel, Inertia, React, Tailwind setup
 - Docker-based local development environment
 - Authentication
-- Role model with Admin, Editor, and User
+- Role model with Admin and User plus direct permissions
 - Mod submission form
 - Pending, approved, and rejected mod workflow
 - Public approved mod index
 - Public mod detail page
-- Basic admin/editor moderation queue
+- Basic moderation queue for admins and users with review permissions
 - Category management
 - Initial rank display
 - VirusTotal link field
@@ -77,7 +77,6 @@ For a local Unraid deployment with an Unraid Docker template, see `docs/deployme
 Seeded development accounts use the password `password`:
 
 - `admin@example.com`
-- `editor@example.com`
 - `test@example.com`
 
 ## Screenshots
@@ -96,7 +95,7 @@ Planned screenshots:
 
 - Phase 1: Foundation, Docker, auth, roles, base layout
 - Phase 2: Mod core, submission, listing, detail pages, moderation states
-- Phase 3: Admin/editorial area, categories, ranks
+- Phase 3: Admin and moderation area, categories, ranks
 - Phase 4: Community features, ratings, comments, reports, profiles
 - Phase 5: Security automation, VirusTotal API checks, jobs, CI, tests
 

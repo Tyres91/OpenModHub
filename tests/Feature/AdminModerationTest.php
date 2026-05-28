@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Mod;
 use App\Models\ModVersion;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\SecurityCheck;
 use App\Models\User;
@@ -15,28 +16,28 @@ class AdminModerationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_editor_can_approve_pending_mod(): void
+    public function test_user_with_review_permission_can_approve_pending_mod(): void
     {
-        $editor = $this->userWithRole('editor');
+        $reviewer = $this->userWithPermission('review_mods');
         $mod = $this->pendingMod();
 
-        $response = $this->actingAs($editor)->patch(route('admin.moderation.approve', $mod));
+        $response = $this->actingAs($reviewer)->patch(route('admin.moderation.approve', $mod));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('mods', [
             'id' => $mod->id,
             'status' => Mod::STATUS_APPROVED,
-            'reviewed_by' => $editor->id,
+            'reviewed_by' => $reviewer->id,
         ]);
         $this->assertNotNull($mod->refresh()->approved_at);
     }
 
-    public function test_editor_can_reject_pending_mod_with_reason(): void
+    public function test_user_with_review_permission_can_reject_pending_mod_with_reason(): void
     {
-        $editor = $this->userWithRole('editor');
+        $reviewer = $this->userWithPermission('review_mods');
         $mod = $this->pendingMod();
 
-        $response = $this->actingAs($editor)->patch(route('admin.moderation.reject', $mod), [
+        $response = $this->actingAs($reviewer)->patch(route('admin.moderation.reject', $mod), [
             'rejection_reason' => 'The external download link is not reachable.',
         ]);
 
@@ -45,7 +46,7 @@ class AdminModerationTest extends TestCase
             'id' => $mod->id,
             'status' => Mod::STATUS_REJECTED,
             'rejection_reason' => 'The external download link is not reachable.',
-            'reviewed_by' => $editor->id,
+            'reviewed_by' => $reviewer->id,
         ]);
     }
 
@@ -60,7 +61,7 @@ class AdminModerationTest extends TestCase
 
     public function test_moderation_queue_includes_latest_security_check(): void
     {
-        $editor = $this->userWithRole('editor');
+        $reviewer = $this->userWithPermission('review_mods');
         $mod = $this->pendingMod();
 
         $mod->securityChecks()->create([
@@ -71,7 +72,7 @@ class AdminModerationTest extends TestCase
             'checked_at' => now(),
         ]);
 
-        $this->actingAs($editor)
+        $this->actingAs($reviewer)
             ->get(route('admin.moderation.index'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
@@ -80,9 +81,9 @@ class AdminModerationTest extends TestCase
             );
     }
 
-    public function test_editor_can_approve_pending_mod_version_and_make_it_current(): void
+    public function test_user_with_review_permission_can_approve_pending_mod_version_and_make_it_current(): void
     {
-        $editor = $this->userWithRole('editor');
+        $reviewer = $this->userWithPermission('review_mods');
         $mod = $this->approvedMod();
         $current = ModVersion::query()->create([
             'mod_id' => $mod->id,
@@ -105,7 +106,7 @@ class AdminModerationTest extends TestCase
             'status' => Mod::STATUS_PENDING,
         ]);
 
-        $response = $this->actingAs($editor)->patch(route('admin.moderation.versions.approve', $pending));
+        $response = $this->actingAs($reviewer)->patch(route('admin.moderation.versions.approve', $pending));
 
         $response->assertRedirect();
         $this->assertFalse($current->refresh()->is_current);
@@ -117,9 +118,9 @@ class AdminModerationTest extends TestCase
         ]);
     }
 
-    public function test_editor_can_reject_pending_mod_version_with_reason(): void
+    public function test_user_with_review_permission_can_reject_pending_mod_version_with_reason(): void
     {
-        $editor = $this->userWithRole('editor');
+        $reviewer = $this->userWithPermission('review_mods');
         $mod = $this->approvedMod();
         $pending = ModVersion::query()->create([
             'mod_id' => $mod->id,
@@ -131,7 +132,7 @@ class AdminModerationTest extends TestCase
             'status' => Mod::STATUS_PENDING,
         ]);
 
-        $this->actingAs($editor)->patch(route('admin.moderation.versions.reject', $pending), [
+        $this->actingAs($reviewer)->patch(route('admin.moderation.versions.reject', $pending), [
             'rejection_reason' => 'The new download link is not reachable.',
         ])->assertRedirect();
 
@@ -139,7 +140,7 @@ class AdminModerationTest extends TestCase
             'id' => $pending->id,
             'status' => Mod::STATUS_REJECTED,
             'rejection_reason' => 'The new download link is not reachable.',
-            'reviewed_by' => $editor->id,
+            'reviewed_by' => $reviewer->id,
         ]);
     }
 
@@ -153,14 +154,18 @@ class AdminModerationTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach($role);
 
-        if ($slug === 'editor') {
-            $reviewMods = \App\Models\Permission::query()->create([
-                'name' => 'Review Mods',
-                'slug' => 'review_mods',
-                'group' => 'moderation',
-            ]);
-            $user->permissions()->attach($reviewMods);
-        }
+        return $user;
+    }
+
+    private function userWithPermission(string $slug): User
+    {
+        $user = User::factory()->create();
+        $permission = Permission::query()->create([
+            'name' => ucwords(str_replace('_', ' ', $slug)),
+            'slug' => $slug,
+            'group' => 'moderation',
+        ]);
+        $user->permissions()->attach($permission);
 
         return $user;
     }

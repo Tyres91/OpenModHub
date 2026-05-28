@@ -16,11 +16,11 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         $user = $request->user();
-        $canSeeEditorialMetrics = $user->hasPermission('review_mods') || $user->hasPermission('moderate_comments') || $user->hasPermission('handle_reports');
+        $canSeeModerationMetrics = $user->hasPermission('review_mods') || $user->hasPermission('moderate_comments') || $user->hasPermission('handle_reports');
         $canSeeUserMetrics = $user->hasPermission('manage_users');
 
         return Inertia::render('Dashboard', [
-            'metrics' => $canSeeEditorialMetrics ? $this->metrics($canSeeUserMetrics) : null,
+            'metrics' => $canSeeModerationMetrics ? $this->metrics($canSeeUserMetrics) : null,
             'canSeeUserMetrics' => $canSeeUserMetrics,
         ]);
     }

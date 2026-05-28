@@ -276,7 +276,7 @@ export default function Index({ defaultLocale, availableLocales, googleTagManage
                                 />
                                 <span>
                                     <span className="block font-semibold">{t('admin.settings.block_mod_submissions', 'Block regular user mod submissions')}</span>
-                                    <span className="mt-1 block text-gray-600 dark:text-gray-400">{t('admin.settings.block_mod_submissions_hint', 'Admins and editors can still submit mods.')}</span>
+                                    <span className="mt-1 block text-gray-600 dark:text-gray-400">{t('admin.settings.block_mod_submissions_hint', 'Admins and users with review permissions can still submit mods.')}</span>
                                 </span>
                             </label>
                             {form.errors.mod_submissions_blocked && <p className="mt-1 text-sm text-red-600">{form.errors.mod_submissions_blocked}</p>}

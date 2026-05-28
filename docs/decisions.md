@@ -60,7 +60,7 @@ The MVP can focus on moderation, discovery, metadata, and community workflows. E
 
 ## 2026-05-12: Use Admin, Editor, and User Roles
 
-Status: Accepted
+Status: Superseded by 2026-05-28 role simplification
 
 Context:
 The platform requires different permission levels for administration, editorial review, and normal user participation.
@@ -112,7 +112,7 @@ Frontend code gets stronger type checking and clearer contracts. Developers must
 
 ## 2026-05-12: Use Pivot-Based Roles Without a Permission Package for the MVP
 
-Status: Accepted
+Status: Superseded by 2026-05-28 role simplification
 
 Context:
 The MVP needs Admin, Editor, and User roles, but a full permission package would add complexity before granular permissions are required.
@@ -160,7 +160,7 @@ Decision:
 Store automated VirusTotal results in `security_checks` through queued submit and poll jobs. Display the latest status in mod and moderation screens, but do not automatically approve or reject mods based on scan results.
 
 Consequences:
-Editors keep explicit responsibility for publication decisions. The system gains useful security context without depending on VirusTotal availability for the core submission workflow.
+Reviewers keep explicit responsibility for publication decisions. The system gains useful security context without depending on VirusTotal availability for the core submission workflow.
 
 ## 2026-05-14: Use Moderated Mod Versions for Releases
 
@@ -173,7 +173,7 @@ Decision:
 Add `mod_versions` as an additive release table. Validate versions with Composer-compatible semantic version parsing through `composer/semver`. New versions for approved mods are moderated before publication. Approving any version, including pre-release versions, makes it the current public download. Existing mods are backfilled into initial `1.0.0` versions without deleting or recreating users.
 
 Consequences:
-Release-specific data such as changelog, download link, VirusTotal context, and download count lives on versions. The legacy mod-level download fields remain for compatibility and aggregate sorting. Editors retain control over every new downloadable release.
+Release-specific data such as changelog, download link, VirusTotal context, and download count lives on versions. The legacy mod-level download fields remain for compatibility and aggregate sorting. Reviewers retain control over every new downloadable release.
 
 ## 2026-05-14: Calculate Normal Ranks from Retroactive Points and Preserve Special Ranks
 
@@ -213,3 +213,16 @@ Add `warnings` and `user_sanctions` tables. Implement `WarningService` to manage
 
 Consequences:
 Admins and moderators can issue warnings that automatically trigger upload bans or account locks. Users see clear messages when blocked or banned. Login is more flexible with username support. User deletion is available but requires explicit confirmation. The warning system is configurable without code changes.
+
+## 2026-05-28: Simplify Roles to Admin and User with Direct Permissions
+
+Status: Accepted
+
+Context:
+The Editor role is no longer needed as a distinct role. The application already supports direct permissions for moderation and management tasks.
+
+Decision:
+Remove the Editor role. Keep Admin as the only privileged role, with admins implicitly receiving all permissions. Non-admin users remain regular users unless specific permissions are assigned directly.
+
+Consequences:
+User management is simpler and avoids overlapping role semantics. Existing `editor` role assignments are removed by migration. Moderation access now depends on direct permissions such as `review_mods`, `moderate_comments`, `handle_reports`, and `moderate_users`.

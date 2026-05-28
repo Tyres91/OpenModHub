@@ -2,7 +2,7 @@
 
 ## Core Concept
 
-OpenModHub is a moderated mod portal where users can submit mods. Submitted mods are not published immediately. They enter a review workflow and become public only after approval by an editor or administrator.
+OpenModHub is a moderated mod portal where users can submit mods. Submitted mods are not published immediately. They enter a review workflow and become public only after approval by an administrator or a user with moderation permissions.
 
 ## Mod Fields
 
@@ -35,12 +35,12 @@ Current implementation:
 
 - Users can submit mods into the `pending` state.
 - Regular users can have only a limited number of pending mod submissions at the same time. Admins can configure the pending limit in settings; `0` means unlimited.
-- Admins can temporarily block regular user mod submissions from settings. Admins and editors remain exempt from this global submission block.
+- Admins can temporarily block regular user mod submissions from settings. Admins and users with review permissions remain exempt from this global submission block.
 - Public mod overview and detail pages only expose `approved` mods.
-- Owners, admins, and editors may view non-public submitted mods.
-- Admins and editors can review submitted mods in a moderation queue.
-- Admins and editors can approve mods for publication.
-- Admins and editors can reject mods with a rejection reason.
+- Owners, admins, and users with review permissions may view non-public submitted mods.
+- Admins and users with review permissions can review submitted mods in a moderation queue.
+- Admins and users with review permissions can approve mods for publication.
+- Admins and users with review permissions can reject mods with a rejection reason.
 - New versions for approved mods enter the same review workflow before they become the current public download.
 
 ## Category Management
@@ -67,15 +67,9 @@ Admins can:
 - Manage system settings, legal page content, and tracking configuration
 - Manage comments and reports
 
-### Editor
+### Direct Permissions
 
-Editors can:
-
-- Review submitted mods
-- Approve mods
-- Reject mods
-- Edit existing mod entries
-- Review comments and reports
+Non-admin users can receive direct permissions for limited privileged actions, such as reviewing mods, moderating comments, handling reports, or managing selected content areas.
 
 ### User
 
@@ -140,26 +134,26 @@ Current implementation: authenticated users can rate approved mods from 1 to 5. 
 
 ## Comments
 
-Users can comment on mods. Comments can be moderated or deleted by authorized editors or administrators.
+Users can comment on mods. Comments can be moderated or deleted by administrators or users with comment moderation permission.
 
-Current implementation: authenticated users can comment on approved mods. Visible comments are shown on mod detail pages. Admins and editors can hide, show, or delete comments from the detail page.
+Current implementation: authenticated users can comment on approved mods. Visible comments are shown on mod detail pages. Admins and users with `moderate_comments` can hide, show, or delete comments from the detail page.
 
 ## Reports
 
-Users can report mods. Reports should be visible in the admin or editorial area. Admins and editors can review, process, and close reports.
+Users can report mods. Reports should be visible in the admin moderation area. Admins and users with report handling permission can review, process, and close reports.
 
-Current implementation: authenticated users can report approved mods with a reason (broken_link, malware, spam, other) and optional message. Reports appear in the admin reports management page. Admins and editors can resolve or dismiss reports. Resolved and dismissed reports track the reviewer and review timestamp.
+Current implementation: authenticated users can report approved mods with a reason (broken_link, malware, spam, other) and optional message. Reports appear in the admin reports management page. Admins and users with `handle_reports` can resolve or dismiss reports. Resolved and dismissed reports track the reviewer and review timestamp.
 
 ## Dashboard Metrics
 
-Admins and editors should have a quick overview of moderation and community activity.
+Admins and users with moderation permissions should have a quick overview of moderation and community activity.
 
 Current implementation:
 
-- Admins and editors see editorial dashboard metrics for pending mods, pending mod versions, pending reports, visible comments, approved mods, and mods approved in the last 7 days.
-- Admins and editors see a global open-tasks icon in the authenticated navigation. A badge is shown when mods, mod versions, or reports are waiting for review.
+- Admins and users with moderation permissions see moderation dashboard metrics for pending mods, pending mod versions, pending reports, visible comments, approved mods, and mods approved in the last 7 days.
+- Admins and users with moderation permissions see a global open-tasks icon in the authenticated navigation. A badge is shown when mods, mod versions, or reports are waiting for review.
 - Admins additionally see total users and new users in the last 7 days.
-- Regular users see a simple authenticated dashboard without editorial metrics.
+- Regular users see a simple authenticated dashboard without moderation metrics.
 
 ## User Management
 
@@ -281,7 +275,7 @@ Current implementation:
 - New mod submissions create an initial version with version number and changelog.
 - Existing mods are backfilled into initial `1.0.0` versions by migration without deleting users or mods.
 - New versions for approved mods can be submitted by the mod owner.
-- Submitted versions are pending until approved by an editor or admin.
+- Submitted versions are pending until approved by an admin or a user with review permissions.
 - Approving a version automatically makes it the current download version, including pre-release versions.
 - The mod detail page uses the current approved version for the primary download button and shows approved version history with changelogs and download links.
 
@@ -316,8 +310,8 @@ Current implementation:
 | Key | Trigger | Recipient |
 |---|---|---|
 | `verify_email` | User registration | New user |
-| `mod_approved` | Mod approved by admin/editor | Mod owner |
-| `mod_rejected` | Mod rejected by admin/editor | Mod owner |
+| `mod_approved` | Mod approved by admin or reviewer | Mod owner |
+| `mod_rejected` | Mod rejected by admin or reviewer | Mod owner |
 | `version_approved` | Mod version approved | Version submitter |
 | `version_rejected` | Mod version rejected | Version submitter |
 
@@ -336,7 +330,7 @@ Placeholders vary by template type. The admin UI shows available placeholders fo
 | `{mod_slug}` | Mod slug |
 | `{version}` | Version number (version templates) |
 | `{rejection_reason}` | Rejection reason (rejected templates) |
-| `{reviewer_name}` | Name of the reviewing admin/editor |
+| `{reviewer_name}` | Name of the reviewing admin or reviewer |
 | `{cta_text}` | Call-to-action button text |
 | `{cta_url}` | Call-to-action button URL |
 

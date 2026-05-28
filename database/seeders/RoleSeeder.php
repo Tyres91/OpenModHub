@@ -14,11 +14,12 @@ class RoleSeeder extends Seeder
     {
         collect([
             ['name' => 'Admin', 'slug' => 'admin'],
-            ['name' => 'Editor', 'slug' => 'editor'],
             ['name' => 'User', 'slug' => 'user'],
         ])->each(fn (array $role) => Role::query()->updateOrCreate(
             ['slug' => $role['slug']],
             ['name' => $role['name']],
         ));
+
+        Role::query()->where('slug', 'editor')->delete();
     }
 }

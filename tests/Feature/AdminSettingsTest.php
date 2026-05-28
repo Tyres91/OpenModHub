@@ -120,12 +120,12 @@ class AdminSettingsTest extends TestCase
         ])->assertSessionHasErrors('logo');
     }
 
-    public function test_editor_cannot_upload_logo(): void
+    public function test_regular_user_cannot_upload_logo(): void
     {
         Storage::fake('public');
-        $editor = $this->userWithRole('editor');
+        $user = $this->userWithRole('user');
 
-        $this->actingAs($editor)->post(route('admin.settings.logo.update'), [
+        $this->actingAs($user)->post(route('admin.settings.logo.update'), [
             'logo' => UploadedFile::fake()->image('logo.png', 300, 120)->size(100),
         ])->assertForbidden();
     }
@@ -197,11 +197,11 @@ class AdminSettingsTest extends TestCase
         ])->assertSessionHasErrors('mod_pending_submission_limit');
     }
 
-    public function test_editor_cannot_update_tracking_or_legal_settings(): void
+    public function test_regular_user_cannot_update_tracking_or_legal_settings(): void
     {
-        $editor = $this->userWithRole('editor');
+        $user = $this->userWithRole('user');
 
-        $this->actingAs($editor)->patch(route('admin.settings.update'), [
+        $this->actingAs($user)->patch(route('admin.settings.update'), [
             'default_locale' => 'en',
             'google_tag_manager_id' => 'GTM-ABC1234',
             'legal_operator_name' => 'OpenModHub GmbH',

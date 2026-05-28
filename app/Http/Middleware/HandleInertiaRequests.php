@@ -4,8 +4,10 @@ namespace App\Http\Middleware;
 
 use App\Models\Mod;
 use App\Models\ModVersion;
+use App\Models\Permission;
 use App\Models\Report;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
@@ -34,7 +36,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'locale' => $request->user()->locale,
                     'roles' => $request->user()->roles()->pluck('slug')->all(),
-                    'permissions' => $request->user()->permissions()->pluck('slug')->all(),
+                    'permissions' => $this->effectivePermissions($request->user()),
                 ] : null,
             ],
             'moderationTodos' => fn () => $this->moderationTodos($request),
@@ -61,6 +63,16 @@ class HandleInertiaRequests extends Middleware
         $path = Setting::get('site_logo_path', '');
 
         return filled($path) ? Storage::disk('public')->url($path) : null;
+    }
+
+    /** @return list<string> */
+    private function effectivePermissions(User $user): array
+    {
+        if ($user->hasRole('admin')) {
+            return Permission::query()->pluck('slug')->all();
+        }
+
+        return $user->permissions()->pluck('slug')->all();
     }
 
     /** @return array<string, int>|null */

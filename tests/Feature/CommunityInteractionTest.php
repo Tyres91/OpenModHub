@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Mod;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -61,9 +62,9 @@ class CommunityInteractionTest extends TestCase
         ]);
     }
 
-    public function test_editor_can_hide_comment(): void
+    public function test_user_with_comment_moderation_permission_can_hide_comment(): void
     {
-        $editor = $this->userWithRole('editor');
+        $moderator = $this->userWithPermission('moderate_comments');
         $comment = Comment::query()->create([
             'user_id' => User::factory()->create()->id,
             'mod_id' => $this->approvedMod()->id,
@@ -71,18 +72,18 @@ class CommunityInteractionTest extends TestCase
             'status' => Comment::STATUS_VISIBLE,
         ]);
 
-        $this->actingAs($editor)->patch(route('comments.hide', $comment))->assertRedirect();
+        $this->actingAs($moderator)->patch(route('comments.hide', $comment))->assertRedirect();
 
         $this->assertDatabaseHas('comments', [
             'id' => $comment->id,
             'status' => Comment::STATUS_HIDDEN,
-            'moderated_by' => $editor->id,
+            'moderated_by' => $moderator->id,
         ]);
     }
 
-    public function test_editor_can_show_hidden_comment(): void
+    public function test_user_with_comment_moderation_permission_can_show_hidden_comment(): void
     {
-        $editor = $this->userWithRole('editor');
+        $moderator = $this->userWithPermission('moderate_comments');
         $comment = Comment::query()->create([
             'user_id' => User::factory()->create()->id,
             'mod_id' => $this->approvedMod()->id,
@@ -90,12 +91,12 @@ class CommunityInteractionTest extends TestCase
             'status' => Comment::STATUS_HIDDEN,
         ]);
 
-        $this->actingAs($editor)->patch(route('comments.show', $comment))->assertRedirect();
+        $this->actingAs($moderator)->patch(route('comments.show', $comment))->assertRedirect();
 
         $this->assertDatabaseHas('comments', [
             'id' => $comment->id,
             'status' => Comment::STATUS_VISIBLE,
-            'moderated_by' => $editor->id,
+            'moderated_by' => $moderator->id,
         ]);
     }
 
@@ -127,14 +128,18 @@ class CommunityInteractionTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach($role);
 
-        if ($slug === 'editor') {
-            $moderateComments = \App\Models\Permission::query()->create([
-                'name' => 'Moderate Comments',
-                'slug' => 'moderate_comments',
-                'group' => 'moderation',
-            ]);
-            $user->permissions()->attach($moderateComments);
-        }
+        return $user;
+    }
+
+    private function userWithPermission(string $slug): User
+    {
+        $user = User::factory()->create();
+        $permission = Permission::query()->create([
+            'name' => ucwords(str_replace('_', ' ', $slug)),
+            'slug' => $slug,
+            'group' => 'moderation',
+        ]);
+        $user->permissions()->attach($permission);
 
         return $user;
     }

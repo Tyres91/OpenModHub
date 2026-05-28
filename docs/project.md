@@ -2,7 +2,7 @@
 
 ## Project Goal
 
-OpenModHub is a moderated portal for game or application mods. Users can submit mods, editors can review them, and only approved mods are published publicly.
+OpenModHub is a moderated portal for game or application mods. Users can submit mods, administrators or users with review permissions can review them, and only approved mods are published publicly.
 
 The project should be clean enough for a public GitHub portfolio while remaining practical and understandable. The target is not to build the largest possible platform, but a well-structured full-stack application with professional engineering habits.
 
@@ -10,7 +10,7 @@ The project should be clean enough for a public GitHub portfolio while remaining
 
 - Mod creators who want to submit and present their work
 - Users who want to discover approved mods in a curated portal
-- Editors who review submitted content before publication
+- Users with review permissions who review submitted content before publication
 - Administrators who manage users, categories, ranks, reports, and moderation
 - Recruiters or developers reviewing the repository as a portfolio project
 

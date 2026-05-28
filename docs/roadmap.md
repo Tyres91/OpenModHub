@@ -23,20 +23,20 @@
 - Pending, approved, and rejected workflow
 - Basic policies and form requests for mod actions
 
-Current status: the Mod Core foundation is implemented for user submissions, seeded categories, public approved browsing, public approved detail pages, owner visibility for submitted mods, validation, and initial policy coverage. Admin/editor review screens are still planned for Phase 3.
+Current status: the Mod Core foundation is implemented for user submissions, seeded categories, public approved browsing, public approved detail pages, owner visibility for submitted mods, validation, and initial policy coverage. Permission-based review screens are still planned for Phase 3.
 
-## Phase 3: Admin and Editorial
+## Phase 3: Admin and Moderation
 
-- Admin/editor area
+- Admin and moderation area
 - Moderation queue
 - Approve and reject actions
 - Category management
 - Rank management
 - System settings for localization, legal pages, and tracking configuration
-- Admin/editor navigation
+- Admin and moderation navigation
 - Basic dashboard metrics
 
-Current status: moderation queue, approve/reject actions, admin-only category management, admin-only rank management, admin-only user management, admin-only settings for localization/legal/tracking, admin/editor navigation, and basic dashboard metrics are implemented.
+Current status: moderation queue, approve/reject actions, admin-only category management, admin-only rank management, admin-only user management, admin-only settings for localization/legal/tracking, permission-based moderation navigation, and basic dashboard metrics are implemented.
 
 ## Phase 4: Community Features
 
@@ -49,7 +49,7 @@ Current status: moderation queue, approve/reject actions, admin-only category ma
 - User profiles
 - Rank display in profiles and mod entries
 
-Current status: ratings, comments, reports, public user profiles, and user-facing rank display are implemented for approved mods. Users can rate, comment, and report approved mods. Admins and editors can moderate comments and manage reports (resolve/dismiss). Localization with English and German is implemented, including a language switcher, admin default language setting, and user profile language preference.
+Current status: ratings, comments, reports, public user profiles, and user-facing rank display are implemented for approved mods. Users can rate, comment, and report approved mods. Admins and users with moderation permissions can moderate comments and manage reports (resolve/dismiss). Localization with English and German is implemented, including a language switcher, admin default language setting, and user profile language preference.
 
 ## Phase 5: Security and Automation
 

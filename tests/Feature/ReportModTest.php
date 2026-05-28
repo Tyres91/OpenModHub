@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Mod;
+use App\Models\Permission;
 use App\Models\Report;
 use App\Models\Role;
 use App\Models\User;
@@ -42,9 +43,9 @@ class ReportModTest extends TestCase
         ])->assertForbidden();
     }
 
-    public function test_editor_can_review_reports(): void
+    public function test_user_with_report_permission_can_review_reports(): void
     {
-        $editor = $this->userWithRole('editor');
+        $reportHandler = $this->userWithPermission('handle_reports');
         $mod = $this->approvedMod();
         $report = Report::query()->create([
             'user_id' => User::factory()->create()->id,
@@ -54,18 +55,18 @@ class ReportModTest extends TestCase
             'status' => Report::STATUS_PENDING,
         ]);
 
-        $this->actingAs($editor)->patch(route('admin.reports.resolve', $report))->assertRedirect();
+        $this->actingAs($reportHandler)->patch(route('admin.reports.resolve', $report))->assertRedirect();
 
         $this->assertDatabaseHas('reports', [
             'id' => $report->id,
             'status' => Report::STATUS_RESOLVED,
-            'reviewed_by' => $editor->id,
+            'reviewed_by' => $reportHandler->id,
         ]);
     }
 
-    public function test_editor_can_dismiss_reports(): void
+    public function test_user_with_report_permission_can_dismiss_reports(): void
     {
-        $editor = $this->userWithRole('editor');
+        $reportHandler = $this->userWithPermission('handle_reports');
         $mod = $this->approvedMod();
         $report = Report::query()->create([
             'user_id' => User::factory()->create()->id,
@@ -74,12 +75,12 @@ class ReportModTest extends TestCase
             'status' => Report::STATUS_PENDING,
         ]);
 
-        $this->actingAs($editor)->patch(route('admin.reports.dismiss', $report))->assertRedirect();
+        $this->actingAs($reportHandler)->patch(route('admin.reports.dismiss', $report))->assertRedirect();
 
         $this->assertDatabaseHas('reports', [
             'id' => $report->id,
             'status' => Report::STATUS_DISMISSED,
-            'reviewed_by' => $editor->id,
+            'reviewed_by' => $reportHandler->id,
         ]);
     }
 
@@ -100,14 +101,18 @@ class ReportModTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach($role);
 
-        if ($slug === 'editor') {
-            $handleReports = \App\Models\Permission::query()->create([
-                'name' => 'Handle Reports',
-                'slug' => 'handle_reports',
-                'group' => 'moderation',
-            ]);
-            $user->permissions()->attach($handleReports);
-        }
+        return $user;
+    }
+
+    private function userWithPermission(string $slug): User
+    {
+        $user = User::factory()->create();
+        $permission = Permission::query()->create([
+            'name' => ucwords(str_replace('_', ' ', $slug)),
+            'slug' => $slug,
+            'group' => 'moderation',
+        ]);
+        $user->permissions()->attach($permission);
 
         return $user;
     }

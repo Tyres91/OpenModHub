@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Mod;
 use App\Models\ModVersion;
+use App\Models\Permission;
 use App\Models\Report;
 use App\Models\Role;
 use App\Models\User;
@@ -16,7 +17,7 @@ class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_regular_user_sees_dashboard_without_editorial_metrics(): void
+    public function test_regular_user_sees_dashboard_without_moderation_metrics(): void
     {
         $user = User::factory()->create();
 
@@ -31,12 +32,12 @@ class DashboardTest extends TestCase
             );
     }
 
-    public function test_editor_sees_editorial_metrics_without_user_metrics(): void
+    public function test_user_with_moderation_permission_sees_moderation_metrics_without_user_metrics(): void
     {
-        $editor = $this->userWithRole('editor');
+        $moderator = $this->userWithPermission('review_mods');
         $this->seedDashboardData();
 
-        $this->actingAs($editor)
+        $this->actingAs($moderator)
             ->get(route('dashboard'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
@@ -57,6 +58,7 @@ class DashboardTest extends TestCase
 
     public function test_admin_sees_user_metrics(): void
     {
+        Permission::query()->create(['name' => 'Manage Users', 'slug' => 'manage_users', 'group' => 'community']);
         $admin = $this->userWithRole('admin');
         User::factory()->create(['created_at' => now()->subDays(10)]);
 
@@ -66,6 +68,7 @@ class DashboardTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('metrics.total_users', 2)
                 ->where('metrics.new_users_last_7_days', 1)
+                ->where('auth.user.permissions.0', 'manage_users')
                 ->where('canSeeUserMetrics', true)
             );
     }
@@ -146,14 +149,18 @@ class DashboardTest extends TestCase
         $user = User::factory()->create();
         $user->roles()->attach($role);
 
-        if ($slug === 'editor') {
-            $reviewMods = \App\Models\Permission::query()->create([
-                'name' => 'Review Mods',
-                'slug' => 'review_mods',
-                'group' => 'moderation',
-            ]);
-            $user->permissions()->attach($reviewMods);
-        }
+        return $user;
+    }
+
+    private function userWithPermission(string $slug): User
+    {
+        $user = User::factory()->create();
+        $permission = Permission::query()->create([
+            'name' => ucwords(str_replace('_', ' ', $slug)),
+            'slug' => $slug,
+            'group' => 'moderation',
+        ]);
+        $user->permissions()->attach($permission);
 
         return $user;
     }

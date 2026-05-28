@@ -104,20 +104,20 @@ class AdminRankTest extends TestCase
         ]);
     }
 
-    public function test_editor_cannot_manage_rank_point_rules(): void
+    public function test_regular_user_cannot_manage_rank_point_rules(): void
     {
-        $editor = $this->userWithRole('editor');
+        $user = $this->userWithRole('user');
 
-        $this->actingAs($editor)
+        $this->actingAs($user)
             ->get(route('admin.rank-point-rules.index'))
             ->assertForbidden();
     }
 
-    public function test_editor_cannot_manage_ranks(): void
+    public function test_regular_user_cannot_manage_ranks(): void
     {
-        $editor = $this->userWithRole('editor');
+        $user = $this->userWithRole('user');
 
-        $this->actingAs($editor)
+        $this->actingAs($user)
             ->get(route('admin.ranks.index'))
             ->assertForbidden();
     }

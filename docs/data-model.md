@@ -212,7 +212,7 @@ Relationships:
 - Belongs to `mod`
 - May belong to a moderator user through `moderated_by`
 
-Implementation note: Phase 4 implements visible and hidden comments. Admins and editors can hide or delete comments.
+Implementation note: Phase 4 implements visible and hidden comments. Admins and users with `moderate_comments` can hide or delete comments.
 
 ## `reports`
 
@@ -237,7 +237,7 @@ Relationships:
 - Belongs to `mod`
 - May belong to a reviewer user through `reviewed_by`
 
-Implementation note: Phase 4 implements reports for approved mods only. Admins and editors can resolve or dismiss reports. Each report tracks the reviewer and review timestamp.
+Implementation note: Phase 4 implements reports for approved mods only. Admins and users with `handle_reports` can resolve or dismiss reports. Each report tracks the reviewer and review timestamp.
 
 ## `ranks`
 
