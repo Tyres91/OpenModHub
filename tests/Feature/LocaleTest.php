@@ -105,15 +105,6 @@ class LocaleTest extends TestCase
         $this->assertEquals('de', Setting::get('default_locale'));
     }
 
-    public function test_editor_cannot_change_default_locale(): void
-    {
-        $editor = $this->userWithRole('editor');
-
-        $this->actingAs($editor)->patch(route('admin.settings.update'), [
-            'default_locale' => 'de',
-        ])->assertForbidden();
-    }
-
     public function test_user_cannot_change_default_locale(): void
     {
         $user = $this->userWithRole('user');

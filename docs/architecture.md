@@ -25,7 +25,7 @@ React with TypeScript handles:
 - Inertia pages
 - Reusable UI components
 - Interactive forms
-- Admin/editor screens
+- Admin and moderation screens
 - Public browsing and detail pages
 
 Tailwind CSS is used for styling.
@@ -36,7 +36,7 @@ Inertia.js connects Laravel routes and controllers to React pages without requir
 
 Laravel controllers should return Inertia responses with only the data needed by each page. Authorization must stay server-side.
 
-The authenticated layout receives global moderation todo counts through Inertia shared props. These counts are computed from pending mods, pending mod versions, and pending reports for admins and editors only; they are not stored as persistent notification records.
+The authenticated layout receives global moderation todo counts through Inertia shared props. These counts are computed from pending mods, pending mod versions, and pending reports for admins and users with moderation permissions only; they are not stored as persistent notification records.
 
 ## Database
 
@@ -197,10 +197,10 @@ Use Form Requests for validation and authorization when handling forms such as:
 
 Queues are used for automated VirusTotal checks when `VIRUSTOTAL_ENABLED=true` and `VIRUSTOTAL_API_KEY` is configured. Submitted mod download URLs are sent to VirusTotal in `SubmitUrlToVirusTotalJob`, then `PollVirusTotalResultJob` fetches the analysis result after the configured delay.
 
-VirusTotal automation stores moderation context only. It never auto-approves mods; editors and administrators still make the publication decision.
+VirusTotal automation stores moderation context only. It never auto-approves mods; administrators and users with review permissions still make the publication decision.
 
 ## Mod Releases
 
-Mods use `mod_versions` for release-specific download links, changelogs, VirusTotal checks, and download counters. New mod submissions create an initial pending version. New versions for approved mods can be submitted by the owner and must be approved by an editor or admin before they become public.
+Mods use `mod_versions` for release-specific download links, changelogs, VirusTotal checks, and download counters. New mod submissions create an initial pending version. New versions for approved mods can be submitted by the owner and must be approved by an admin or a user with review permissions before they become public.
 
 Approving a version clears `is_current` from other versions of the same mod and marks the approved version as current. The public mod download route resolves to the current approved version; version-specific download routes count clicks per version.

@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Mod;
 use App\Models\ModImage;
 use App\Models\ModVersion;
+use App\Models\Permission;
 use App\Models\Rating;
 use App\Models\Role;
 use App\Models\SecurityCheck;
@@ -681,20 +682,18 @@ class ModSubmissionTest extends TestCase
             'is_active' => true,
         ]);
         $user = User::factory()->create();
-        $editor = User::factory()->create();
-        $editorRole = Role::query()->create(['name' => 'Editor', 'slug' => 'editor']);
-        $editor->roles()->attach($editorRole);
-        $reviewMods = \App\Models\Permission::query()->create([
+        $reviewer = User::factory()->create();
+        $reviewMods = Permission::query()->create([
             'name' => 'Review Mods',
             'slug' => 'review_mods',
             'group' => 'moderation',
         ]);
-        $editor->permissions()->attach($reviewMods);
+        $reviewer->permissions()->attach($reviewMods);
 
         $this->actingAs($user)->post(route('mods.store'), $this->validModPayload($category, 'Regular Blocked Mod'))
             ->assertForbidden();
 
-        $this->actingAs($editor)->post(route('mods.store'), $this->validModPayload($category, 'Editor Allowed Mod'))
+        $this->actingAs($reviewer)->post(route('mods.store'), $this->validModPayload($category, 'Reviewer Allowed Mod'))
             ->assertRedirect(route('mods.mine'));
     }
 

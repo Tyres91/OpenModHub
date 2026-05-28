@@ -29,17 +29,6 @@ class AdminUserTest extends TestCase
         );
     }
 
-    public function test_editor_cannot_access_user_management(): void
-    {
-        $editor = User::factory()->create();
-        $editorRole = Role::query()->create(['name' => 'Editor', 'slug' => 'editor']);
-        $editor->roles()->attach($editorRole);
-
-        $response = $this->actingAs($editor)->get(route('admin.users.index'));
-
-        $response->assertForbidden();
-    }
-
     public function test_regular_user_cannot_access_user_management(): void
     {
         $user = User::factory()->create();
@@ -122,7 +111,6 @@ class AdminUserTest extends TestCase
     {
         $admin = User::factory()->create();
         $adminRole = Role::query()->create(['name' => 'Admin', 'slug' => 'admin']);
-        $editorRole = Role::query()->create(['name' => 'Editor', 'slug' => 'editor']);
         $userRole = Role::query()->create(['name' => 'User', 'slug' => 'user']);
         $admin->roles()->attach($adminRole);
 
@@ -132,13 +120,12 @@ class AdminUserTest extends TestCase
         $response = $this->actingAs($admin)->patch(route('admin.users.update', $user), [
             'name' => $user->name,
             'email' => $user->email,
-            'roles' => ['editor', 'user'],
+            'roles' => ['user'],
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHasNoErrors();
 
-        $this->assertTrue($user->fresh()->hasRole('editor'));
         $this->assertTrue($user->fresh()->hasRole('user'));
         $this->assertFalse($user->fresh()->hasRole('admin'));
     }

@@ -32,6 +32,9 @@ export default function PublicLayout({
                         <LanguageSwitcher />
                         {auth.user ? (
                             <>
+                                <Link href={route('dashboard')} className="text-slate-200 hover:text-white">
+                                    {t('navigation.dashboard', 'Dashboard')}
+                                </Link>
                                 <Link href={route('profile.edit')} className="text-slate-200 hover:text-white" title={t('common.account', 'Account')}>
                                     <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0v.75H4.5v-.75z" />
@@ -81,6 +84,9 @@ export default function PublicLayout({
                             </div>
                             {auth.user ? (
                                 <>
+                                    <Link href={route('dashboard')} className="block rounded-md px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
+                                        {t('navigation.dashboard', 'Dashboard')}
+                                    </Link>
                                     <Link href={route('profile.edit')} className="block rounded-md px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
                                         {t('common.account', 'Account')}
                                     </Link>

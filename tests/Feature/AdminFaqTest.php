@@ -105,30 +105,21 @@ class AdminFaqTest extends TestCase
             );
     }
 
-    public function test_editor_cannot_manage_faqs(): void
+    public function test_regular_user_cannot_manage_faqs(): void
     {
-        $editor = $this->userWithRole('editor');
+        $user = $this->userWithRole('user');
 
-        $this->actingAs($editor)
+        $this->actingAs($user)
             ->get(route('admin.faqs.index'))
             ->assertForbidden();
 
-        $this->actingAs($editor)
+        $this->actingAs($user)
             ->post(route('admin.faqs.store'), [
                 'question_en' => 'Question',
                 'question_de' => 'Frage',
                 'answer_en' => '<p>Answer</p>',
                 'answer_de' => '<p>Antwort</p>',
             ])
-            ->assertForbidden();
-    }
-
-    public function test_user_cannot_manage_faqs(): void
-    {
-        $user = $this->userWithRole('user');
-
-        $this->actingAs($user)
-            ->get(route('admin.faqs.index'))
             ->assertForbidden();
     }
 
@@ -194,11 +185,11 @@ class AdminFaqTest extends TestCase
         $this->assertDatabaseHas('faqs', ['id' => $faq1->id, 'sort_order' => 20]);
     }
 
-    public function test_editor_cannot_reorder_faqs(): void
+    public function test_regular_user_cannot_reorder_faqs(): void
     {
-        $editor = $this->userWithRole('editor');
+        $user = $this->userWithRole('user');
 
-        $this->actingAs($editor)
+        $this->actingAs($user)
             ->patch(route('admin.faqs.reorder'), [
                 'faqs' => [
                     ['id' => 1, 'sort_order' => 10],

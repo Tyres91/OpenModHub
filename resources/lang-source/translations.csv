@@ -241,7 +241,7 @@ dashboard.title,Dashboard,Dashboard
 dashboard.heading,Dashboard,Dashboard
 dashboard.logged_in,You're logged in!,Du bist angemeldet!
 dashboard.welcome,Welcome back,Willkommen zurück
-dashboard.metrics_heading,Editorial overview,Redaktionsübersicht
+dashboard.metrics_heading,Moderation overview,Moderationsübersicht
 dashboard.metrics_subtitle,Current moderation and community signals.,Aktuelle Moderations- und Community-Signale.
 dashboard.pending_mods,Pending mods,Ausstehende Mods
 dashboard.pending_versions,Pending versions,Ausstehende Versionen
@@ -376,7 +376,7 @@ admin.settings.debug_mode_description,"When enabled, newly registered users see 
 admin.settings.submissions_heading,Mod submissions,Mod-Einreichungen
 admin.settings.submissions_hint,Control how regular users can submit new mods.,Steuert wie normale Benutzer neue Mods einreichen können.
 admin.settings.block_mod_submissions,Block regular user mod submissions,Mod-Einreichungen normaler Benutzer blockieren
-admin.settings.block_mod_submissions_hint,Admins and editors can still submit mods.,Admins und Editoren können weiterhin Mods einreichen.
+admin.settings.block_mod_submissions_hint,Admins and users with review permissions can still submit mods.,Admins und Benutzer mit Review-Berechtigung können weiterhin Mods einreichen.
 admin.settings.pending_mod_limit,Pending mod submission limit,Limit für ausstehende Mod-Einreichungen
 admin.settings.pending_mod_limit_hint,0 means unlimited. Approved and rejected mods do not count.,0 bedeutet unbegrenzt. Genehmigte und abgelehnte Mods zählen nicht.
 admin.settings.legal_heading,Legal information,Rechtliche Angaben

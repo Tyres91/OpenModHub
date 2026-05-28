@@ -76,7 +76,7 @@ export default function Dashboard({ metrics, canSeeUserMetrics }: PageProps<{ me
                         <section className="mt-8">
                             <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                                 <div>
-                                    <h2 className="text-xl font-black text-gray-950 dark:text-white">{t('dashboard.metrics_heading', 'Editorial overview')}</h2>
+                                    <h2 className="text-xl font-black text-gray-950 dark:text-white">{t('dashboard.metrics_heading', 'Moderation overview')}</h2>
                                     <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('dashboard.metrics_subtitle', 'Current moderation and community signals.')}</p>
                                 </div>
                             </div>

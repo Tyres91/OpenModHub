@@ -53,11 +53,11 @@ class AdminCategoryTest extends TestCase
         ]);
     }
 
-    public function test_editor_cannot_manage_categories(): void
+    public function test_regular_user_cannot_manage_categories(): void
     {
-        $editor = $this->userWithRole('editor');
+        $user = $this->userWithRole('user');
 
-        $this->actingAs($editor)
+        $this->actingAs($user)
             ->get(route('admin.categories.index'))
             ->assertForbidden();
     }
