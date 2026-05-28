@@ -12,7 +12,7 @@ class EmailTemplatePolicy
         return $user->hasPermission('manage_settings');
     }
 
-    public function update(User $user, EmailTemplate $emailTemplate): bool
+    public function update(User $user, EmailTemplate $_emailTemplate): bool
     {
         return $user->hasPermission('manage_settings');
     }

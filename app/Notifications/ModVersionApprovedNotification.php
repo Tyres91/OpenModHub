@@ -13,11 +13,9 @@ class ModVersionApprovedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public ModVersion $modVersion)
-    {
-    }
+    public function __construct(public ModVersion $modVersion) {}
 
-    public function via(object $notifiable): array
+    public function via(object $_notifiable): array
     {
         return ['mail'];
     }
@@ -54,7 +52,6 @@ class ModVersionApprovedNotification extends Notification implements ShouldQueue
                 'cta_url' => $modUrl,
                 'cta_text' => 'View Mod',
                 'show_unsubscribe' => true,
-            ])
-            ->text(strip_tags($body) . "\n\n" . 'View Mod: ' . $modUrl);
+            ]);
     }
 }

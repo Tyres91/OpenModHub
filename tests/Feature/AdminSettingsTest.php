@@ -14,6 +14,47 @@ class AdminSettingsTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const FAVICON_FILES = [
+        'favicon.ico',
+        'favicon-16x16.png',
+        'favicon-32x32.png',
+        'apple-touch-icon.png',
+        'android-chrome-192x192.png',
+        'android-chrome-512x512.png',
+        'site.webmanifest',
+    ];
+
+    private array $faviconFileBackups = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        foreach (self::FAVICON_FILES as $file) {
+            $path = public_path($file);
+            $this->faviconFileBackups[$file] = file_exists($path) ? file_get_contents($path) : null;
+        }
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->faviconFileBackups as $file => $contents) {
+            $path = public_path($file);
+
+            if ($contents === null) {
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+
+                continue;
+            }
+
+            file_put_contents($path, $contents);
+        }
+
+        parent::tearDown();
+    }
+
     public function test_admin_can_update_tracking_and_legal_settings(): void
     {
         $admin = $this->userWithRole('admin');

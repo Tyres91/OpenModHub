@@ -1,4 +1,4 @@
-<table class="footer" width="100%">
+<table class="footer" style="width: 100%;">
     <tr>
         <td>
             @php

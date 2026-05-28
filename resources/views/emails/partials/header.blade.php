@@ -1,4 +1,4 @@
-<table class="header" width="100%">
+<table class="header" style="width: 100%;">
     <tr>
         <td>
             @php

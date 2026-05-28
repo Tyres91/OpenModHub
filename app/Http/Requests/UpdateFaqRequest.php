@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Faq;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFaqRequest extends FormRequest

@@ -12,7 +12,7 @@ use Inertia\Response;
 
 class ReportController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(): Response
     {
         Gate::authorize('viewAny', Report::class);
 

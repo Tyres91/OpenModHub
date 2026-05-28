@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Mod>
+ * @extends Factory<Mod>
  */
 class ModFactory extends Factory
 {
@@ -19,8 +19,8 @@ class ModFactory extends Factory
         $title = $this->faker->unique()->words(3, true);
 
         return [
-            'user_id' => \App\Models\User::factory(),
-            'category_id' => \App\Models\Category::factory(),
+            'user_id' => User::factory(),
+            'category_id' => Category::factory(),
             'title' => $title,
             'slug' => \Str::slug($title),
             'description' => $this->faker->paragraph(),

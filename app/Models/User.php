@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Permission;
 
 #[Fillable(['name', 'email', 'password', 'locale', 'rank_id', 'blocked_at', 'blocked_until', 'blocked_by', 'block_reason'])]
 #[Hidden(['password', 'remember_token'])]
@@ -63,7 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendEmailVerificationNotification(): void
     {
-        $this->notify(new VerifyEmailNotification());
+        $this->notify(new VerifyEmailNotification);
     }
 
     public function hasRole(string $slug): bool

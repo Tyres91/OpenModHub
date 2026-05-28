@@ -8,7 +8,7 @@ use App\Models\User;
 
 class ReportPolicy
 {
-    public function create(User $user, Mod $mod): bool
+    public function create(User $_user, Mod $mod): bool
     {
         return $mod->isApproved();
     }
@@ -18,7 +18,7 @@ class ReportPolicy
         return $user->hasPermission('handle_reports');
     }
 
-    public function review(User $user, Report $report): bool
+    public function review(User $user, Report $_report): bool
     {
         return $user->hasPermission('handle_reports');
     }

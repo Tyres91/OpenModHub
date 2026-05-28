@@ -62,27 +62,27 @@ class ModPolicy
         return $mod->user_id === $user->id && in_array($mod->status, [Mod::STATUS_PENDING, Mod::STATUS_REJECTED], true);
     }
 
-    public function delete(User $user, Mod $mod): bool
+    public function delete(User $user, Mod $_mod): bool
     {
         return $user->hasPermission('delete_any_mod');
     }
 
-    public function forceDelete(User $user, Mod $mod): bool
+    public function forceDelete(User $user, Mod $_mod): bool
     {
         return $user->hasPermission('delete_any_mod');
     }
 
-    public function approve(User $user, Mod $mod): bool
+    public function approve(User $user, Mod $_mod): bool
     {
         return $user->hasPermission('review_mods');
     }
 
-    public function reject(User $user, Mod $mod): bool
+    public function reject(User $user, Mod $_mod): bool
     {
         return $user->hasPermission('review_mods');
     }
 
-    public function rate(User $user, Mod $mod): bool
+    public function rate(User $_user, Mod $mod): bool
     {
         return $mod->isApproved();
     }

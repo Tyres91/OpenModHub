@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -11,7 +10,7 @@ return new class extends Migration
         if (DB::getDriverName() !== 'sqlite') {
             try {
                 DB::statement('ALTER TABLE ratings ADD CONSTRAINT ratings_score_check CHECK (score >= 1 AND score <= 5)');
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 if (! str_contains($e->getMessage(), 'duplicate')) {
                     throw $e;
                 }
