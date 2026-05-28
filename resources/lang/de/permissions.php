@@ -11,6 +11,7 @@ return [
         'review_mods' => 'Mods approve/reject',
         'moderate_comments' => 'Kommentare moderieren',
         'handle_reports' => 'Reports bearbeiten',
+        'moderate_users' => 'Benutzer moderieren (Verwarnungen, Sanktionen)',
         'edit_any_mod' => 'Beliebige Mods bearbeiten',
         'delete_any_mod' => 'Beliebige Mods löschen',
         'manage_categories' => 'Kategorien verwalten',

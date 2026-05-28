@@ -24,6 +24,7 @@ All other users (non-admin) receive explicit permissions assigned individually. 
 - `review_mods` - Approve or reject mod submissions
 - `moderate_comments` - Delete or hide comments
 - `handle_reports` - Review and resolve reports
+- `moderate_users` - Issue and remove warnings, create and remove sanctions, view user moderation data
 
 #### Content Management
 - `edit_any_mod` - Edit any mod (not just own)
@@ -33,7 +34,7 @@ All other users (non-admin) receive explicit permissions assigned individually. 
 
 #### Community
 - `manage_ranks` - Create, edit, delete ranks and point rules
-- `manage_users` - Edit users, assign roles, block/unblock
+- `manage_users` - Edit users, assign roles, block/unblock, permanently delete users
 
 #### System
 - `manage_settings` - Change global settings, legal pages, tracking configuration

@@ -4,6 +4,30 @@ import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
 import { useTranslations } from '@/lib/translations';
 
+interface WarningEntry {
+    id: number;
+    points: number;
+    reason: string;
+    status: 'active' | 'expired' | 'removed';
+    issued_by: string | null;
+    issued_at: string;
+    expires_at: string | null;
+    removed_by: string | null;
+    removed_at: string | null;
+}
+
+interface SanctionEntry {
+    id: number;
+    type: 'upload_ban' | 'account_lock';
+    reason: string;
+    active: boolean;
+    issued_by: string | null;
+    issued_at: string;
+    expires_at: string | null;
+    removed_by: string | null;
+    removed_at: string | null;
+}
+
 interface AdminUserEntry {
     id: number;
     name: string;
@@ -16,14 +40,287 @@ interface AdminUserEntry {
     rank_id: number | null;
     special_rank: Pick<Rank, 'id' | 'name' | 'color' | 'icon'> | null;
     blocked_at: string | null;
+    blocked_until: string | null;
+    blocked_by: number | null;
     block_reason: string | null;
     created_at: string;
+    active_warning_points: number;
+    warnings: WarningEntry[];
+    sanctions: SanctionEntry[];
 }
 
-function UserRow({ user, roles, permissions, specialRanks, availableLocales }: { user: AdminUserEntry; roles: Role[]; permissions: Permission[]; specialRanks: Pick<Rank, 'id' | 'name' | 'color' | 'icon'>[]; availableLocales: Record<string, string> }) {
+function WarningSection({ user }: { user: AdminUserEntry }) {
+    const { translations } = usePage<PageProps>().props;
+    const t = useTranslations(translations);
+    const [showForm, setShowForm] = useState(false);
+    const { data, setData, post, processing, errors, reset } = useForm({
+        points: '1',
+        reason: '',
+        expires_at: '',
+    });
+
+    const submitWarning = (e: FormEvent) => {
+        e.preventDefault();
+        post(route('admin.users.warnings.store', user.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowForm(false);
+                reset();
+            },
+        });
+    };
+
+    const removeWarning = (warningId: number) => {
+        if (!confirm(t('warnings.confirm_remove', 'Are you sure you want to remove this warning?'))) {
+            return;
+        }
+        router.delete(route('admin.warnings.destroy', warningId), { preserveScroll: true });
+    };
+
+    return (
+        <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+            <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    {t('warnings.title', 'Warnings')} ({t('warnings.active_points', 'Active points')}: {user.active_warning_points})
+                </h3>
+                <button
+                    onClick={() => setShowForm(!showForm)}
+                    className="rounded-md bg-amber-600 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-500"
+                >
+                    {t('warnings.add_warning', 'Add warning')}
+                </button>
+            </div>
+
+            {showForm && (
+                <form onSubmit={submitWarning} className="mt-3 space-y-3 rounded-md border border-gray-300 bg-white p-3 dark:border-gray-600 dark:bg-gray-800">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200">{t('warnings.points', 'Points')}</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="100"
+                            value={data.points}
+                            onChange={(e) => setData('points', e.target.value)}
+                            className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                        {errors.points && <p className="mt-1 text-xs text-red-600">{errors.points}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200">{t('warnings.reason', 'Reason')}</label>
+                        <textarea
+                            value={data.reason}
+                            onChange={(e) => setData('reason', e.target.value)}
+                            className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                            rows={2}
+                        />
+                        {errors.reason && <p className="mt-1 text-xs text-red-600">{errors.reason}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200">{t('warnings.expires_at', 'Expires at')} (optional)</label>
+                        <input
+                            type="datetime-local"
+                            value={data.expires_at}
+                            onChange={(e) => setData('expires_at', e.target.value)}
+                            className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                        {errors.expires_at && <p className="mt-1 text-xs text-red-600">{errors.expires_at}</p>}
+                    </div>
+                    <div className="flex gap-2">
+                        <button disabled={processing} className="rounded-md bg-amber-600 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-500 disabled:opacity-50">
+                            {t('actions.save', 'Save')}
+                        </button>
+                        <button type="button" onClick={() => setShowForm(false)} className="rounded-md px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                            {t('actions.cancel', 'Cancel')}
+                        </button>
+                    </div>
+                </form>
+            )}
+
+            {user.warnings.length === 0 ? (
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t('warnings.no_warnings', 'No warnings.')}</p>
+            ) : (
+                <div className="mt-3 space-y-2">
+                    {user.warnings.map((warning) => (
+                        <div key={warning.id} className={`rounded-md border p-2 text-xs ${
+                            warning.status === 'active'
+                                ? 'border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30'
+                                : warning.status === 'removed'
+                                    ? 'border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800'
+                                    : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800'
+                        }`}>
+                            <div className="flex items-start justify-between gap-2">
+                                <div>
+                                    <span className="font-semibold">{warning.points} {t('warnings.points', 'points')}</span>
+                                    <span className={`ml-2 rounded px-1 py-0.5 text-xs ${
+                                        warning.status === 'active' ? 'bg-amber-200 text-amber-800 dark:bg-amber-800 dark:text-amber-200' :
+                                        warning.status === 'removed' ? 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400' :
+                                        'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                                    }`}>
+                                        {t(`warnings.status_${warning.status}`, warning.status)}
+                                    </span>
+                                    <p className="mt-1 text-gray-600 dark:text-gray-300">{warning.reason}</p>
+                                    <p className="mt-1 text-gray-500 dark:text-gray-400">
+                                        {t('warnings.issued_by', 'Issued by')} {warning.issued_by ?? '—'} · {new Date(warning.issued_at).toLocaleDateString()}
+                                        {warning.expires_at && ` · ${t('warnings.expires_at', 'Expires')} ${new Date(warning.expires_at).toLocaleDateString()}`}
+                                    </p>
+                                    {warning.removed_by && (
+                                        <p className="text-gray-500 dark:text-gray-400">
+                                            {t('warnings.status_removed', 'Removed')} by {warning.removed_by} · {new Date(warning.removed_at!).toLocaleDateString()}
+                                        </p>
+                                    )}
+                                </div>
+                                {warning.status === 'active' && (
+                                    <button
+                                        onClick={() => removeWarning(warning.id)}
+                                        className="shrink-0 rounded border border-red-300 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-200 dark:hover:bg-red-950/40"
+                                    >
+                                        {t('warnings.remove_warning', 'Remove')}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function SanctionSection({ user }: { user: AdminUserEntry }) {
+    const { translations } = usePage<PageProps>().props;
+    const t = useTranslations(translations);
+    const [showForm, setShowForm] = useState(false);
+    const { data, setData, post, processing, errors, reset } = useForm({
+        type: 'upload_ban' as string,
+        reason: '',
+        expires_at: '',
+    });
+
+    const submitSanction = (e: FormEvent) => {
+        e.preventDefault();
+        post(route('admin.users.sanctions.store', user.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowForm(false);
+                reset();
+            },
+        });
+    };
+
+    const removeSanction = (sanctionId: number) => {
+        if (!confirm(t('user_sanctions.confirm_remove', 'Are you sure you want to remove this sanction?'))) {
+            return;
+        }
+        router.delete(route('admin.sanctions.destroy', sanctionId), { preserveScroll: true });
+    };
+
+    const activeSanctions = user.sanctions.filter((s) => s.active);
+
+    return (
+        <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+            <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    {t('user_sanctions.title', 'Sanctions')} ({activeSanctions.length} active)
+                </h3>
+                <button
+                    onClick={() => setShowForm(!showForm)}
+                    className="rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-500"
+                >
+                    {t('user_sanctions.add_sanction', 'Add sanction')}
+                </button>
+            </div>
+
+            {showForm && (
+                <form onSubmit={submitSanction} className="mt-3 space-y-3 rounded-md border border-gray-300 bg-white p-3 dark:border-gray-600 dark:bg-gray-800">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200">{t('user_sanctions.type', 'Type')}</label>
+                        <select
+                            value={data.type}
+                            onChange={(e) => setData('type', e.target.value)}
+                            className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        >
+                            <option value="upload_ban">{t('user_sanctions.type_upload_ban', 'Upload ban')}</option>
+                            <option value="account_lock">{t('user_sanctions.type_account_lock', 'Account lock')}</option>
+                        </select>
+                        {errors.type && <p className="mt-1 text-xs text-red-600">{errors.type}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200">{t('user_sanctions.reason', 'Reason')}</label>
+                        <textarea
+                            value={data.reason}
+                            onChange={(e) => setData('reason', e.target.value)}
+                            className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                            rows={2}
+                        />
+                        {errors.reason && <p className="mt-1 text-xs text-red-600">{errors.reason}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200">{t('user_sanctions.expires_at', 'Expires at')} (optional)</label>
+                        <input
+                            type="datetime-local"
+                            value={data.expires_at}
+                            onChange={(e) => setData('expires_at', e.target.value)}
+                            className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                        {errors.expires_at && <p className="mt-1 text-xs text-red-600">{errors.expires_at}</p>}
+                    </div>
+                    <div className="flex gap-2">
+                        <button disabled={processing} className="rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-500 disabled:opacity-50">
+                            {t('actions.save', 'Save')}
+                        </button>
+                        <button type="button" onClick={() => setShowForm(false)} className="rounded-md px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                            {t('actions.cancel', 'Cancel')}
+                        </button>
+                    </div>
+                </form>
+            )}
+
+            {activeSanctions.length === 0 ? (
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t('user_sanctions.no_sanctions', 'No active sanctions.')}</p>
+            ) : (
+                <div className="mt-3 space-y-2">
+                    {activeSanctions.map((sanction) => (
+                        <div key={sanction.id} className="rounded-md border border-red-300 bg-red-50 p-2 text-xs dark:border-red-800 dark:bg-red-950/30">
+                            <div className="flex items-start justify-between gap-2">
+                                <div>
+                                    <span className="font-semibold">
+                                        {sanction.type === 'upload_ban'
+                                            ? t('user_sanctions.type_upload_ban', 'Upload ban')
+                                            : t('user_sanctions.type_account_lock', 'Account lock')}
+                                    </span>
+                                    <p className="mt-1 text-gray-600 dark:text-gray-300">{sanction.reason}</p>
+                                    <p className="mt-1 text-gray-500 dark:text-gray-400">
+                                        {t('warnings.issued_by', 'Issued by')} {sanction.issued_by ?? '—'} · {new Date(sanction.issued_at).toLocaleDateString()}
+                                        {sanction.expires_at && ` · ${t('user_sanctions.expires_at', 'Expires')} ${new Date(sanction.expires_at).toLocaleDateString()}`}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => removeSanction(sanction.id)}
+                                    className="shrink-0 rounded border border-red-300 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-200 dark:hover:bg-red-950/40"
+                                >
+                                    {t('user_sanctions.remove_sanction', 'Remove')}
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function UserRow({ user, roles, permissions, specialRanks, availableLocales, authUserId, authUserPermissions, authUserRoles }: { user: AdminUserEntry; roles: Role[]; permissions: Permission[]; specialRanks: Pick<Rank, 'id' | 'name' | 'color' | 'icon'>[]; availableLocales: Record<string, string>; authUserId: number | null; authUserPermissions: string[]; authUserRoles: string[] }) {
     const { translations } = usePage<PageProps>().props;
     const t = useTranslations(translations);
     const [editing, setEditing] = useState(false);
+    const [showModeration, setShowModeration] = useState(false);
+    const [showBlockModal, setShowBlockModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteConfirmName, setDeleteConfirmName] = useState('');
+
+    const canModerate = authUserPermissions.includes('moderate_users') || authUserRoles.includes('admin');
+    const canManageUsers = authUserPermissions.includes('manage_users') || authUserRoles.includes('admin');
+    const canDelete = authUserRoles.includes('admin') && user.id !== authUserId;
 
     const { data, setData, patch, processing, errors, reset } = useForm({
         name: user.name,
@@ -34,6 +331,11 @@ function UserRow({ user, roles, permissions, specialRanks, availableLocales }: {
         rank_id: user.rank_id ? String(user.rank_id) : '',
         roles: [...user.roles],
         permissions: [...user.permissions],
+    });
+
+    const blockForm = useForm({
+        block_reason: '',
+        blocked_until: '',
     });
 
     const submit = (event: FormEvent) => {
@@ -73,18 +375,29 @@ function UserRow({ user, roles, permissions, specialRanks, availableLocales }: {
         return acc;
     }, {} as Record<string, Permission[]>);
 
-    const blockUser = () => {
-        const reason = window.prompt(t('admin.users.block_reason_prompt', 'Reason for blocking this user (optional)'));
-
-        if (reason === null) {
-            return;
-        }
-
-        router.patch(route('admin.users.block', user.id), { block_reason: reason }, { preserveScroll: true });
+    const submitBlock = (e: FormEvent) => {
+        e.preventDefault();
+        blockForm.patch(route('admin.users.block', user.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowBlockModal(false);
+                blockForm.reset();
+            },
+        });
     };
 
     const unblockUser = () => {
         router.patch(route('admin.users.unblock', user.id), {}, { preserveScroll: true });
+    };
+
+    const deleteUser = () => {
+        if (deleteConfirmName !== user.name) {
+            return;
+        }
+        router.delete(route('admin.users.destroy', user.id), {
+            preserveScroll: true,
+            onSuccess: () => setShowDeleteModal(false),
+        });
     };
 
     if (editing) {
@@ -205,32 +518,136 @@ function UserRow({ user, roles, permissions, specialRanks, availableLocales }: {
                                 {t('admin.users.blocked', 'Blocked')}
                             </span>
                         )}
+                        {user.active_warning_points > 0 && (
+                            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">
+                                {user.active_warning_points} {t('warnings.points', 'pts')}
+                            </span>
+                        )}
                     </div>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                         {user.mods_count} {t('common.mods_count_label', 'mods')} &middot; {t('admin.users.joined', 'Joined')} {new Date(user.created_at).toLocaleDateString()}
                     </p>
                     {user.blocked_at && (
                         <p className="mt-2 text-sm text-red-700 dark:text-red-300">
-                            {t('admin.users.blocked_since', 'Blocked since')} {new Date(user.blocked_at).toLocaleDateString()}
+                            {user.blocked_until
+                                ? t('admin.users.blocked_temporarily', 'Blocked until').replace(':date', new Date(user.blocked_until).toLocaleString())
+                                : t('admin.users.blocked_permanently', 'Permanently blocked')
+                            }
                             {user.block_reason ? ` · ${user.block_reason}` : ''}
                         </p>
                     )}
                 </div>
-                <div className="flex gap-2">
-                    <button onClick={() => setEditing(true)} className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700">{t('actions.edit', 'Edit')}</button>
-                    {user.blocked_at ? (
-                        <button onClick={unblockUser} className="rounded-md border border-green-300 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-200 dark:hover:bg-green-950/40">{t('actions.unblock', 'Unblock')}</button>
-                    ) : (
-                        <button onClick={blockUser} className="rounded-md border border-red-300 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-200 dark:hover:bg-red-950/40">{t('actions.block', 'Block')}</button>
+                <div className="flex flex-wrap gap-2">
+                    {canManageUsers && (
+                        <button onClick={() => setEditing(true)} className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700">{t('actions.edit', 'Edit')}</button>
+                    )}
+                    {canModerate && (
+                        <button onClick={() => setShowModeration(!showModeration)} className="rounded-md border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-200 dark:hover:bg-amber-950/40">
+                            {showModeration ? t('actions.hide', 'Hide') : t('warnings.title', 'Moderation')}
+                        </button>
+                    )}
+                    {canManageUsers && (
+                        user.blocked_at ? (
+                            <button onClick={unblockUser} className="rounded-md border border-green-300 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-200 dark:hover:bg-green-950/40">{t('actions.unblock', 'Unblock')}</button>
+                        ) : (
+                            <button onClick={() => setShowBlockModal(true)} className="rounded-md border border-red-300 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-200 dark:hover:bg-red-950/40">{t('actions.block', 'Block')}</button>
+                        )
+                    )}
+                    {canDelete && (
+                        <button onClick={() => setShowDeleteModal(true)} className="rounded-md border border-red-600 bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500">{t('admin.users.delete_user', 'Delete')}</button>
                     )}
                 </div>
             </div>
+
+            {showModeration && canModerate && (
+                <div>
+                    <WarningSection user={user} />
+                    <SanctionSection user={user} />
+                </div>
+            )}
+
+            {showBlockModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('actions.block', 'Block')} {user.name}</h3>
+                        <form onSubmit={submitBlock} className="mt-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {t('admin.users.block_reason_required', 'Reason')} *
+                                </label>
+                                <textarea
+                                    value={blockForm.data.block_reason}
+                                    onChange={(e) => blockForm.setData('block_reason', e.target.value)}
+                                    className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                                    rows={3}
+                                    required
+                                />
+                                {blockForm.errors.block_reason && <p className="mt-1 text-sm text-red-600">{blockForm.errors.block_reason}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {t('admin.users.blocked_until', 'Blocked until')} (optional)
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    value={blockForm.data.blocked_until}
+                                    onChange={(e) => blockForm.setData('blocked_until', e.target.value)}
+                                    className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                                />
+                                {blockForm.errors.blocked_until && <p className="mt-1 text-sm text-red-600">{blockForm.errors.blocked_until}</p>}
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <button type="button" onClick={() => { setShowBlockModal(false); blockForm.reset(); }} className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                                    {t('actions.cancel', 'Cancel')}
+                                </button>
+                                <button type="submit" disabled={blockForm.processing} className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50">
+                                    {t('actions.block', 'Block')}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
+                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">{t('admin.users.delete_confirm_title', 'Delete user permanently?')}</h3>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                            {t('admin.users.delete_confirm_text', 'This action cannot be undone. All data will be permanently deleted.')}
+                        </p>
+                        <div className="mt-4">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                {t('admin.users.delete_type_name', 'Type the username to confirm.')}
+                            </label>
+                            <input
+                                type="text"
+                                value={deleteConfirmName}
+                                onChange={(e) => setDeleteConfirmName(e.target.value)}
+                                className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                            />
+                        </div>
+                        <div className="mt-4 flex justify-end gap-2">
+                            <button onClick={() => { setShowDeleteModal(false); setDeleteConfirmName(''); }} className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                                {t('actions.cancel', 'Cancel')}
+                            </button>
+                            <button
+                                onClick={deleteUser}
+                                disabled={deleteConfirmName !== user.name}
+                                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+                            >
+                                {t('admin.users.delete_user', 'Delete permanently')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </article>
     );
 }
 
 export default function Index({ users, roles, permissions, specialRanks, availableLocales, flash }: PageProps<{ users: AdminUserEntry[]; roles: Role[]; permissions: Permission[]; specialRanks: Pick<Rank, 'id' | 'name' | 'color' | 'icon'>[]; availableLocales: Record<string, string> }>) {
-    const { translations } = usePage<PageProps>().props;
+    const { translations, auth } = usePage<PageProps>().props;
     const t = useTranslations(translations);
 
     return (
@@ -245,10 +662,11 @@ export default function Index({ users, roles, permissions, specialRanks, availab
                     </div>
 
                     {flash.status && <div className="mb-6 rounded-md bg-green-50 p-4 text-sm font-medium text-green-800">{flash.status}</div>}
+                    {flash.error && <div className="mb-6 rounded-md bg-red-50 p-4 text-sm font-medium text-red-800">{flash.error}</div>}
 
                     <div className="space-y-4">
                         {users.map((user) => (
-                            <UserRow key={user.id} user={user} roles={roles} permissions={permissions} specialRanks={specialRanks} availableLocales={availableLocales} />
+                            <UserRow key={user.id} user={user} roles={roles} permissions={permissions} specialRanks={specialRanks} availableLocales={availableLocales} authUserId={auth.user?.id ?? null} authUserPermissions={auth.user?.permissions ?? []} authUserRoles={auth.user?.roles ?? []} />
                         ))}
                     </div>
 

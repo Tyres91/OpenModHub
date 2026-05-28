@@ -11,6 +11,7 @@ return [
         'review_mods' => 'Mods approve/reject',
         'moderate_comments' => 'Moderate comments',
         'handle_reports' => 'Handle reports',
+        'moderate_users' => 'Moderate users (warnings, sanctions)',
         'edit_any_mod' => 'Edit any mod',
         'delete_any_mod' => 'Delete any mod',
         'manage_categories' => 'Manage categories',

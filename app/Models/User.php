@@ -15,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Permission;
 
-#[Fillable(['name', 'email', 'password', 'locale', 'rank_id', 'blocked_at', 'blocked_by', 'block_reason'])]
+#[Fillable(['name', 'email', 'password', 'locale', 'rank_id', 'blocked_at', 'blocked_until', 'blocked_by', 'block_reason'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -58,7 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isBlocked(): bool
     {
-        return $this->blocked_at !== null;
+        return $this->hasActiveBlock();
     }
 
     public function sendEmailVerificationNotification(): void
@@ -97,6 +97,36 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Report::class);
     }
 
+    /** @return HasMany<Warning, $this> */
+    public function warnings(): HasMany
+    {
+        return $this->hasMany(Warning::class);
+    }
+
+    /** @return HasMany<UserSanction, $this> */
+    public function sanctions(): HasMany
+    {
+        return $this->hasMany(UserSanction::class);
+    }
+
+    public function isTemporarilyBlocked(): bool
+    {
+        return $this->blocked_until !== null && $this->blocked_until->isFuture();
+    }
+
+    public function hasActiveBlock(): bool
+    {
+        if ($this->blocked_at === null) {
+            return false;
+        }
+
+        if ($this->blocked_until !== null && $this->blocked_until->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -107,6 +137,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'blocked_at' => 'datetime',
+            'blocked_until' => 'datetime',
             'password' => 'hashed',
         ];
     }

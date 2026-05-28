@@ -28,10 +28,17 @@ type SettingsProps = PageProps<{
     siteLogoUrl: string | null;
     siteLogoText: string;
     siteLogoShowText: boolean;
+    faviconMode: 'auto' | 'manual';
+    hasFavicons: boolean;
+    warningExpiryDays: number;
+    sanctionUploadBanThreshold: number;
+    sanctionUploadBanDays: number;
+    sanctionAccountLockThreshold: number;
+    sanctionAccountLockDays: number;
     legalSettings: LegalSettings;
 }>;
 
-export default function Index({ defaultLocale, availableLocales, googleTagManagerId, debugMode, modSubmissionsBlocked, modPendingSubmissionLimit, siteLogoUrl, siteLogoText, siteLogoShowText, legalSettings, flash }: SettingsProps) {
+export default function Index({ defaultLocale, availableLocales, googleTagManagerId, debugMode, modSubmissionsBlocked, modPendingSubmissionLimit, siteLogoUrl, siteLogoText, siteLogoShowText, faviconMode, hasFavicons, warningExpiryDays, sanctionUploadBanThreshold, sanctionUploadBanDays, sanctionAccountLockThreshold, sanctionAccountLockDays, legalSettings, flash }: SettingsProps) {
     const { translations } = usePage<PageProps>().props;
     const t = useTranslations(translations);
     const form = useForm({
@@ -42,9 +49,15 @@ export default function Index({ defaultLocale, availableLocales, googleTagManage
         mod_pending_submission_limit: modPendingSubmissionLimit,
         site_logo_text: siteLogoText,
         site_logo_show_text: siteLogoShowText,
+        warning_expiry_days: warningExpiryDays,
+        sanction_upload_ban_threshold: sanctionUploadBanThreshold,
+        sanction_upload_ban_days: sanctionUploadBanDays,
+        sanction_account_lock_threshold: sanctionAccountLockThreshold,
+        sanction_account_lock_days: sanctionAccountLockDays,
         ...legalSettings,
     });
     const logoForm = useForm<{ logo: File | null }>({ logo: null });
+    const faviconForm = useForm<{ favicon: File | null }>({ favicon: null });
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
@@ -60,6 +73,21 @@ export default function Index({ defaultLocale, availableLocales, googleTagManage
 
     const removeLogo = () => {
         logoForm.delete(route('admin.settings.logo.destroy'), { preserveScroll: true });
+    };
+
+    const submitFavicon = () => {
+        faviconForm.post(route('admin.settings.favicon.update'), {
+            forceFormData: true,
+            onSuccess: () => faviconForm.reset('favicon'),
+        });
+    };
+
+    const resetFavicon = () => {
+        faviconForm.delete(route('admin.settings.favicon.destroy'), { preserveScroll: true });
+    };
+
+    const regenerateFavicons = () => {
+        faviconForm.post(route('admin.settings.favicon.regenerate'), { preserveScroll: true });
     };
 
     return (
@@ -142,6 +170,57 @@ export default function Index({ defaultLocale, availableLocales, googleTagManage
                             </div>
                         </section>
 
+                        <section className="max-w-2xl space-y-4 border-t border-gray-200 pt-6 dark:border-gray-700">
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-950 dark:text-white">{t('admin.settings.favicon_heading', 'Favicon')}</h2>
+                                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                    {faviconMode === 'auto' 
+                                        ? t('admin.settings.favicon_auto_hint', 'Favicons werden automatisch aus dem Logo generiert.')
+                                        : t('admin.settings.favicon_manual_hint', 'Ein manuelles Favicon wurde hochgeladen.')
+                                    }
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
+                                    <img src="/favicon-32x32.png" alt="Favicon Preview" className="h-8 w-8 object-contain" onError={(e) => (e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiNlNWU3ZWIiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzZiNzI4MCI+PC90ZXh0Pjwvc3ZnPg==')} />
+                                </div>
+                                <div className="text-sm">
+                                    <p className="font-medium text-gray-700 dark:text-gray-300">
+                                        {hasFavicons ? t('admin.settings.favicon_status_generated', 'Favicon generiert') : t('admin.settings.favicon_status_missing', 'Kein Favicon vorhanden')}
+                                    </p>
+                                    <p className="text-gray-500 dark:text-gray-400">
+                                        {faviconMode === 'auto' ? t('admin.settings.favicon_mode_auto', 'Automatisch aus Logo') : t('admin.settings.favicon_mode_manual', 'Manuell hochgeladen')}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-end gap-3">
+                                <div className="min-w-0 flex-1">
+                                    <input
+                                        type="file"
+                                        accept="image/png,image/jpeg,image/webp,image/x-icon"
+                                        onChange={(event) => faviconForm.setData('favicon', event.target.files?.[0] ?? null)}
+                                        className="block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-500 dark:text-gray-300"
+                                    />
+                                    {faviconForm.errors.favicon && <p className="mt-1 text-sm text-red-600">{faviconForm.errors.favicon}</p>}
+                                </div>
+                                <button type="button" onClick={submitFavicon} disabled={faviconForm.processing || !faviconForm.data.favicon} className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">
+                                    {t('admin.settings.upload_favicon', 'Favicon hochladen')}
+                                </button>
+                                {hasFavicons && faviconMode === 'manual' && (
+                                    <button type="button" onClick={resetFavicon} disabled={faviconForm.processing} className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
+                                        {t('admin.settings.reset_favicon', 'Zurücksetzen')}
+                                    </button>
+                                )}
+                                {siteLogoUrl && (
+                                    <button type="button" onClick={regenerateFavicons} disabled={faviconForm.processing} className="rounded-md border border-indigo-300 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-50 disabled:opacity-50 dark:border-indigo-800 dark:text-indigo-200 dark:hover:bg-indigo-950/40">
+                                        {t('admin.settings.regenerate_favicon', 'Aus Logo generieren')}
+                                    </button>
+                                )}
+                            </div>
+                        </section>
+
                         <section className="max-w-2xl space-y-4">
                             <div>
                                 <h2 className="text-lg font-semibold text-gray-950 dark:text-white">{t('admin.settings.localization_heading', 'Localization')}</h2>
@@ -216,6 +295,95 @@ export default function Index({ defaultLocale, availableLocales, googleTagManage
                                 />
                                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('admin.settings.pending_mod_limit_hint', '0 means unlimited. Approved and rejected mods do not count.')}</p>
                                 {form.errors.mod_pending_submission_limit && <p className="mt-1 text-sm text-red-600">{form.errors.mod_pending_submission_limit}</p>}
+                            </div>
+                        </section>
+
+                        <section className="max-w-2xl space-y-4 border-t border-gray-200 pt-6 dark:border-gray-700">
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-950 dark:text-white">{t('admin.settings.moderation_heading', 'Moderation and sanctions')}</h2>
+                                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('admin.settings.moderation_hint', 'Configure warning expiry and automatic sanction thresholds.')}</p>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {t('admin.settings.warning_expiry_days', 'Warning expiry (days)')}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={3650}
+                                        value={form.data.warning_expiry_days}
+                                        onChange={(e) => form.setData('warning_expiry_days', Number(e.target.value))}
+                                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('admin.settings.warning_expiry_days_hint', 'Active warnings expire after this many days.')}</p>
+                                    {form.errors.warning_expiry_days && <p className="mt-1 text-sm text-red-600">{form.errors.warning_expiry_days}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {t('admin.settings.sanction_upload_ban_threshold', 'Upload ban threshold (points)')}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={1000}
+                                        value={form.data.sanction_upload_ban_threshold}
+                                        onChange={(e) => form.setData('sanction_upload_ban_threshold', Number(e.target.value))}
+                                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('admin.settings.sanction_upload_ban_threshold_hint', 'Active warning points at which an upload ban is applied.')}</p>
+                                    {form.errors.sanction_upload_ban_threshold && <p className="mt-1 text-sm text-red-600">{form.errors.sanction_upload_ban_threshold}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {t('admin.settings.sanction_upload_ban_days', 'Upload ban duration (days)')}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={3650}
+                                        value={form.data.sanction_upload_ban_days}
+                                        onChange={(e) => form.setData('sanction_upload_ban_days', Number(e.target.value))}
+                                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('admin.settings.sanction_upload_ban_days_hint', 'How long an automatic upload ban lasts.')}</p>
+                                    {form.errors.sanction_upload_ban_days && <p className="mt-1 text-sm text-red-600">{form.errors.sanction_upload_ban_days}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {t('admin.settings.sanction_account_lock_threshold', 'Account lock threshold (points)')}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={1000}
+                                        value={form.data.sanction_account_lock_threshold}
+                                        onChange={(e) => form.setData('sanction_account_lock_threshold', Number(e.target.value))}
+                                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('admin.settings.sanction_account_lock_threshold_hint', 'Active warning points at which an account lock is applied.')}</p>
+                                    {form.errors.sanction_account_lock_threshold && <p className="mt-1 text-sm text-red-600">{form.errors.sanction_account_lock_threshold}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {t('admin.settings.sanction_account_lock_days', 'Account lock duration (days)')}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={3650}
+                                        value={form.data.sanction_account_lock_days}
+                                        onChange={(e) => form.setData('sanction_account_lock_days', Number(e.target.value))}
+                                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('admin.settings.sanction_account_lock_days_hint', 'How long an automatic account lock lasts.')}</p>
+                                    {form.errors.sanction_account_lock_days && <p className="mt-1 text-sm text-red-600">{form.errors.sanction_account_lock_days}</p>}
+                                </div>
                             </div>
                         </section>
 

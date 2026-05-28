@@ -18,7 +18,7 @@ class AdminUserTest extends TestCase
         $adminRole = Role::query()->create(['name' => 'Admin', 'slug' => 'admin']);
         $admin->roles()->attach($adminRole);
 
-        $user = User::factory()->create(['name' => 'Test User', 'email' => 'test@example.com']);
+        $user = User::factory()->create(['name' => 'testuser', 'email' => 'test@example.com']);
 
         $response = $this->actingAs($admin)->get(route('admin.users.index'));
 
@@ -57,10 +57,10 @@ class AdminUserTest extends TestCase
         $adminRole = Role::query()->create(['name' => 'Admin', 'slug' => 'admin']);
         $admin->roles()->attach($adminRole);
 
-        $user = User::factory()->create(['name' => 'Old Name', 'email' => 'old@example.com']);
+        $user = User::factory()->create(['name' => 'oldname', 'email' => 'old@example.com']);
 
         $response = $this->actingAs($admin)->patch(route('admin.users.update', $user), [
-            'name' => 'New Name',
+            'name' => 'newname',
             'email' => 'new@example.com',
         ]);
 
@@ -68,7 +68,7 @@ class AdminUserTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
-            'name' => 'New Name',
+            'name' => 'newname',
             'email' => 'new@example.com',
         ]);
     }
@@ -136,6 +136,7 @@ class AdminUserTest extends TestCase
         ]);
 
         $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
 
         $this->assertTrue($user->fresh()->hasRole('editor'));
         $this->assertTrue($user->fresh()->hasRole('user'));
@@ -290,9 +291,9 @@ class AdminUserTest extends TestCase
         ]);
 
         $this->post(route('login'), [
-            'email' => $user->email,
+            'login' => $user->email,
             'password' => 'password',
-        ])->assertSessionHasErrors('email');
+        ])->assertSessionHasErrors('login');
 
         $this->assertGuest();
     }

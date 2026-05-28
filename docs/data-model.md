@@ -11,11 +11,12 @@ Purpose: stores authenticated users.
 Important fields:
 
 - `id`
-- `name`
+- `name`, unique alphanumeric with underscores
 - `email`
 - `password`
 - `email_verified_at`
 - `blocked_at`, nullable timestamp for admin account blocks
+- `blocked_until`, nullable timestamp for temporary blocks (null means permanent)
 - `blocked_by`, nullable user reference to the admin who blocked the account
 - `block_reason`, nullable text with the admin-provided block reason
 - `locale`, nullable string for user language preference (null means system default)
@@ -29,6 +30,8 @@ Relationships:
 - Has many `ratings`
 - Has many `comments`
 - Has many `reports`
+- Has many `warnings`
+- Has many `sanctions` (UserSanction)
 - Belongs to many `roles`, if a pivot-based role model is used
 
 ## `roles` and `role_user`
@@ -377,3 +380,54 @@ Relationships:
 - No direct relationships; templates are looked up by key
 
 Implementation note: The `EmailTemplate` model provides `getSubject($locale)`, `getBody($locale)`, and `renderBody($data, $locale)` helpers. Inactive templates fall back to hardcoded defaults in `EmailTemplateService`. Templates support dynamic placeholders such as `{user_name}`, `{mod_title}`, `{rejection_reason}`, and `{cta_url}`. The `EmailTemplate::PLACEHOLDERS` constant defines which placeholders are available per template key. Admins manage templates in `/admin/email-templates`.
+
+## `warnings`
+
+Purpose: stores user warnings issued by admins or moderators for rule violations.
+
+Important fields:
+
+- `id`
+- `user_id`, foreign key to the warned user
+- `points`, unsigned integer warning points
+- `reason`, text explanation
+- `issued_by`, foreign key to the admin/moderator who issued the warning
+- `status`, one of `active`, `expired`, `removed`
+- `removed_by`, nullable foreign key to the admin/moderator who removed the warning
+- `removed_at`, nullable timestamp
+- `expires_at`, nullable timestamp for automatic expiry
+- `created_at`
+- `updated_at`
+
+Relationships:
+
+- Belongs to `user`
+- Belongs to `issuer` (User)
+- May belong to `remover` (User)
+
+Implementation note: Active warnings contribute to the user's active warning points. When active points reach configurable thresholds, automatic sanctions (upload ban, account lock) are applied via `WarningService`.
+
+## `user_sanctions`
+
+Purpose: stores upload bans and account locks applied to users, either automatically through warning thresholds or manually by admins/moderators.
+
+Important fields:
+
+- `id`
+- `user_id`, foreign key to the sanctioned user
+- `type`, one of `upload_ban`, `account_lock`
+- `reason`, text explanation
+- `issued_by`, foreign key to the admin/moderator who created the sanction
+- `expires_at`, nullable timestamp for automatic expiry
+- `removed_by`, nullable foreign key to the admin/moderator who removed the sanction
+- `removed_at`, nullable timestamp
+- `created_at`
+- `updated_at`
+
+Relationships:
+
+- Belongs to `user`
+- Belongs to `issuer` (User)
+- May belong to `remover` (User)
+
+Implementation note: Active upload bans prevent mod submissions. Active account locks prevent login. The `EnsureUserIsNotBlocked` middleware checks both the legacy `blocked_at` field and active `account_lock` sanctions.

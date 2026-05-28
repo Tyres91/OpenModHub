@@ -6,6 +6,7 @@ use App\Models\Mod;
 use App\Models\ModVersion;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\WarningService;
 
 class ModPolicy
 {
@@ -21,6 +22,10 @@ class ModPolicy
     public function create(User $user): bool
     {
         if ($user->isBlocked()) {
+            return false;
+        }
+
+        if (app(WarningService::class)->isUploadBanned($user)) {
             return false;
         }
 

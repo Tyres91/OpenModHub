@@ -4,8 +4,10 @@ export interface User {
     email: string;
     email_verified_at?: string;
     blocked_at?: string | null;
+    blocked_until?: string | null;
     locale: string | null;
     roles: string[];
+    permissions?: string[];
 }
 
 export interface PublicRank {

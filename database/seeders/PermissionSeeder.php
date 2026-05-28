@@ -26,6 +26,11 @@ class PermissionSeeder extends Seeder
                 'name' => 'Handle Reports',
             ],
             [
+                'group' => 'moderation',
+                'slug' => 'moderate_users',
+                'name' => 'Moderate Users',
+            ],
+            [
                 'group' => 'content',
                 'slug' => 'edit_any_mod',
                 'name' => 'Edit Any Mod',

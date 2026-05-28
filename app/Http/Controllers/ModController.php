@@ -11,6 +11,7 @@ use App\Models\ModVersion;
 use App\Models\SecurityCheck;
 use App\Services\RankService;
 use App\Services\VirusTotalService;
+use App\Services\WarningService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,8 +145,22 @@ class ModController extends Controller
         return redirect()->away($mod->external_download_url);
     }
 
-    public function create(): Response
+    public function create(WarningService $warningService): Response|RedirectResponse
     {
+        $user = auth()->user();
+
+        if ($user !== null && $warningService->isUploadBanned($user)) {
+            $ban = $warningService->getActiveUploadBan($user);
+            $message = $ban !== null
+                ? __('messages.sanctions.upload_banned', [
+                    'date' => $ban->expires_at?->format('d.m.Y H:i') ?? '—',
+                    'reason' => $ban->reason,
+                ])
+                : __('messages.sanctions.upload_banned', ['date' => '—', 'reason' => '']);
+
+            return redirect()->route('mods.mine')->with('error', $message);
+        }
+
         Gate::authorize('create', Mod::class);
 
         return Inertia::render('Mods/Create', [
