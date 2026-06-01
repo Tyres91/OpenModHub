@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ForceDeleteModRequest;
 use App\Http\Requests\RejectModRequest;
 use App\Models\Mod;
 use App\Models\ModVersion;
@@ -13,6 +14,7 @@ use App\Notifications\ModVersionApprovedNotification;
 use App\Notifications\ModVersionRejectedNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -163,34 +165,28 @@ class ModerationController extends Controller
         return back()->with('status', __('messages.flash.mod_version_rejected'));
     }
 
-    public function destroy(Mod $mod): RedirectResponse
+    public function forceDestroy(ForceDeleteModRequest $request, Mod $mod): RedirectResponse
     {
-        Gate::authorize('delete', $mod);
+        $request->validated();
 
-        $mod->delete();
+        DB::transaction(function () use ($mod): void {
+            $mod->loadMissing(['images', 'versions.securityChecks']);
 
-        return back()->with('status', __('messages.flash.mod_deleted'));
-    }
+            $this->deleteModFiles($mod);
 
-    public function forceDestroy(Mod $mod): RedirectResponse
-    {
-        Gate::authorize('forceDelete', $mod);
+            $mod->comments()->delete();
+            $mod->ratings()->delete();
+            $mod->reports()->delete();
+            $mod->securityChecks()->delete();
 
-        $this->deleteModFiles($mod);
+            foreach ($mod->versions as $version) {
+                $version->securityChecks()->delete();
+            }
 
-        $mod->comments()->delete();
-        $mod->ratings()->delete();
-        $mod->reports()->delete();
-        $mod->securityChecks()->delete();
-
-        foreach ($mod->versions as $version) {
-            $this->deleteVersionFiles($version);
-            $version->securityChecks()->delete();
-        }
-
-        $mod->versions()->delete();
-        $mod->images()->delete();
-        $mod->forceDelete();
+            $mod->versions()->delete();
+            $mod->images()->delete();
+            $mod->forceDelete();
+        });
 
         return back()->with('status', __('messages.flash.mod_permanently_deleted'));
     }
@@ -201,13 +197,6 @@ class ModerationController extends Controller
             if ($image->file_path) {
                 Storage::disk('public')->delete($image->file_path);
             }
-        }
-    }
-
-    private function deleteVersionFiles(ModVersion $version): void
-    {
-        if ($version->file_path) {
-            Storage::disk('public')->delete($version->file_path);
         }
     }
 

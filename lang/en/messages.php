@@ -127,6 +127,9 @@ return [
             'approve_publish' => 'Approve and publish',
             'confirm_reject' => 'Confirm reject',
             'rejection_reason_placeholder' => 'Explain why this mod was rejected',
+            'confirm_permanent' => 'This cannot be undone. All related data and uploaded files will be deleted.',
+            'type_mod_title' => 'Type the mod title to confirm',
+            'confirm_permanent_delete' => 'Confirm permanent delete',
             'version_heading' => 'Review submitted versions',
         ],
         'categories' => [
@@ -380,6 +383,7 @@ return [
         'rank_point_rules_updated' => 'Rank point rules updated.',
         'mod_approved' => 'Mod approved.',
         'mod_rejected' => 'Mod rejected.',
+        'mod_permanently_deleted' => 'Mod permanently deleted.',
         'comment_posted' => 'Comment posted.',
         'comment_hidden' => 'Comment hidden.',
         'comment_shown' => 'Comment shown.',

@@ -127,6 +127,9 @@ return [
             'approve_publish' => 'Genehmigen und veröffentlichen',
             'confirm_reject' => 'Ablehnung bestätigen',
             'rejection_reason_placeholder' => 'Erkläre, warum dieser Mod abgelehnt wurde',
+            'confirm_permanent' => 'Diese Aktion kann nicht rückgängig gemacht werden. Alle zugehörigen Daten und hochgeladenen Dateien werden gelöscht.',
+            'type_mod_title' => 'Gib den Mod-Titel zur Bestätigung ein',
+            'confirm_permanent_delete' => 'Endgültiges Löschen bestätigen',
             'version_heading' => 'Eingereichte Versionen prüfen',
         ],
         'categories' => [
@@ -380,6 +383,7 @@ return [
         'rank_point_rules_updated' => 'Rang-Punkteregeln aktualisiert.',
         'mod_approved' => 'Mod genehmigt.',
         'mod_rejected' => 'Mod abgelehnt.',
+        'mod_permanently_deleted' => 'Mod endgültig gelöscht.',
         'comment_posted' => 'Kommentar gesendet.',
         'comment_hidden' => 'Kommentar verborgen.',
         'comment_shown' => 'Kommentar sichtbar gemacht.',
