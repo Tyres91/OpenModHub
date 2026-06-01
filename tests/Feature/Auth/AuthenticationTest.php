@@ -30,6 +30,31 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_users_can_authenticate_using_their_username(): void
+    {
+        $user = User::factory()->create(['name' => 'Test_User']);
+
+        $response = $this->post('/login', [
+            'login' => ' Test_User ',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_invalid_username_login_uses_neutral_error(): void
+    {
+        $response = $this->from('/login')->post('/login', [
+            'login' => 'missing_user',
+            'password' => 'wrong-password',
+        ]);
+
+        $this->assertGuest();
+        $response->assertRedirect('/login');
+        $response->assertSessionHasErrors(['login' => trans('auth.failed')]);
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();

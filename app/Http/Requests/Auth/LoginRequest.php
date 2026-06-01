@@ -32,7 +32,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $login = $this->string('login')->toString();
+        $login = trim($this->string('login')->toString());
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
         if (! Auth::attempt([$field => $login, 'password' => $this->string('password')->toString()], $this->boolean('remember'))) {
@@ -96,6 +96,6 @@ class LoginRequest extends FormRequest
 
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('login')).'|'.$this->ip());
+        return Str::transliterate(Str::lower(trim($this->string('login')->toString())).'|'.$this->ip());
     }
 }
