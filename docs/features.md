@@ -281,7 +281,7 @@ Current implementation:
 - Approving a version automatically makes it the current download version, including pre-release versions.
 - The mod detail page uses the current approved version for the primary download button and shows approved version history with changelogs and download links.
 
-Planned update: version media should support MP3 uploads for soundmods. Uploaded MP3 files may be displayed as preview audio and, for sound-only mods, may also serve as the moderated download asset. Uploaded audio remains subject to the same moderation workflow as the version.
+Current implementation: version media supports MP3 uploads for soundmods. Uploaded MP3 files may be displayed as preview audio and, for sound-only mods, may also serve as the moderated download asset when no external download URL is provided. Uploaded audio remains subject to the same moderation workflow as the version.
 
 Current implementation: mods may include a YouTube preview URL on submitted versions. The application stores a validated canonical YouTube URL and extracted video identifier, then renders the preview with an explicit click-to-load step so YouTube is not contacted before visitor interaction.
 

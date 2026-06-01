@@ -73,6 +73,23 @@ function YouTubeReviewBox({ embedUrl, title }: { embedUrl: string; title: string
     );
 }
 
+function AudioReviewBox({ version }: { version: ModVersionEntry }) {
+    const { translations } = usePage().props;
+    const t = useTranslations(translations);
+
+    if (!version.audio_url) {
+        return null;
+    }
+
+    return (
+        <div className="mt-4 rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-sm text-cyan-950 dark:border-cyan-900 dark:bg-cyan-950 dark:text-cyan-100">
+            <p className="font-bold">{t('mods.audio_preview', 'Audio preview')}</p>
+            <audio controls preload="metadata" src={version.audio_url} className="mt-3 w-full" />
+            {version.audio_original_name && <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">{version.audio_original_name}</p>}
+        </div>
+    );
+}
+
 function RejectForm({ mod }: { mod: ModEntry }) {
     const { translations } = usePage().props;
     const t = useTranslations(translations);
@@ -283,9 +300,11 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                             <Link href={route('mods.show', mod.slug)} className="font-semibold text-indigo-700 dark:text-indigo-300">
                                                 {t('actions.preview', 'Preview')}
                                             </Link>
-                                            <a href={mod.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">
-                                                {t('common.download_link', 'Download link')}
-                                            </a>
+                                            {mod.external_download_url && (
+                                                <a href={mod.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">
+                                                    {t('common.download_link', 'Download link')}
+                                                </a>
+                                            )}
                                             <span className="text-gray-600 dark:text-gray-300">
                                                 {t('mods.download_clicks_count', '{count} download clicks').replace('{count}', String(mod.download_clicks_count ?? 0))}
                                             </span>
@@ -296,6 +315,7 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                             )}
                                         </div>
                                         <SecurityReviewBox mod={mod} />
+                                        {mod.current_version && <AudioReviewBox version={mod.current_version} />}
                                         {mod.current_version?.youtube_embed_url && <YouTubeReviewBox embedUrl={mod.current_version.youtube_embed_url} title={`${mod.title} YouTube preview`} />}
                                     </div>
 
@@ -333,9 +353,10 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                                 <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-600 dark:text-gray-300">{version.changelog}</p>
                                                 <div className="mt-4 flex flex-wrap gap-3 text-sm">
                                                     {version.mod && <Link href={route('mods.show', version.mod.slug)} className="font-semibold text-indigo-700 dark:text-indigo-300">{t('actions.preview', 'Preview')}</Link>}
-                                                    <a href={version.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.download_link', 'Download link')}</a>
+                                                    {version.external_download_url && <a href={version.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.download_link', 'Download link')}</a>}
                                                     {version.virus_total_url && <a href={version.virus_total_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.virustotal', 'VirusTotal')}</a>}
                                                 </div>
+                                                <AudioReviewBox version={version} />
                                                 {version.youtube_embed_url && <YouTubeReviewBox embedUrl={version.youtube_embed_url} title={`${version.mod?.title ?? 'Mod'} YouTube preview`} />}
                                             </div>
                                             <div className="space-y-3">

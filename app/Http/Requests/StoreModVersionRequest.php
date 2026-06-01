@@ -35,7 +35,7 @@ class StoreModVersionRequest extends FormRequest
                 Rule::unique(ModVersion::class, 'normalized_version')->where('mod_id', $mod?->id),
             ],
             'changelog' => ['required', 'string', 'min:10', 'max:10000'],
-            'external_download_url' => ['required', 'url:http,https', 'max:2048'],
+            'external_download_url' => ['nullable', 'required_without:audio_file', 'url:http,https', 'max:2048'],
             'virus_total_url' => ['nullable', 'url:http,https', 'max:2048'],
             'youtube_preview_url' => [
                 'nullable',
@@ -48,6 +48,7 @@ class StoreModVersionRequest extends FormRequest
                 },
             ],
             'youtube_video_id' => ['nullable', 'string', 'regex:/^[A-Za-z0-9_-]{11}$/'],
+            'audio_file' => ['nullable', 'file', 'mimes:mp3', 'mimetypes:audio/mpeg,audio/mp3', 'max:20480'],
         ];
     }
 

@@ -336,6 +336,12 @@ common.search_icons,Search icons...,Icons durchsuchen...
 common.no_icons_found,No icons found,Keine Icons gefunden
 mods.upload_type_error,Only JPEG and PNG images are allowed.,Nur JPEG- und PNG-Bilder sind erlaubt.
 mods.upload_size_error,The image must not exceed 5 MB.,Das Bild darf maximal 5 MB groß sein.
+mods.audio_type_error,Only MP3 audio files are allowed.,Nur MP3-Audiodateien sind erlaubt.
+mods.audio_size_error,The MP3 file must not exceed 20 MB.,Die MP3-Datei darf maximal 20 MB groß sein.
+mods.audio_file,MP3 audio file,MP3-Audiodatei
+mods.audio_file_hint,"Optional MP3 preview or soundmod download, maximum 20 MB.","Optionale MP3-Vorschau oder Soundmod-Download, maximal 20 MB."
+mods.external_download_or_audio_hint,Required unless you upload an MP3 file as the download.,Erforderlich außer du lädst eine MP3-Datei als Download hoch.
+mods.audio_preview,Audio preview,Audio-Vorschau
 mods.screenshot,Screenshot,Screenshot
 mods.screenshot_hint,"PNG or JPEG, minimum 512x512px, maximum 5 MB.","PNG oder JPEG, mindestens 512x512px, maximal 5 MB."
 mods.youtube_preview_url,YouTube preview URL,YouTube-Vorschau-URL

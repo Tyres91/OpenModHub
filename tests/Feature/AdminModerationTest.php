@@ -158,11 +158,16 @@ class AdminModerationTest extends TestCase
             'normalized_version' => '1.0.0.0',
             'changelog' => 'Initial release.',
             'external_download_url' => 'https://example.com/version',
+            'audio_file_path' => 'mods/audio/example.mp3',
+            'audio_original_name' => 'example.mp3',
+            'audio_mime' => 'audio/mpeg',
+            'audio_size' => 100,
             'status' => Mod::STATUS_APPROVED,
             'is_current' => true,
         ]);
 
         Storage::disk('public')->put('mods/screenshots/example.png', 'image-content');
+        Storage::disk('public')->put('mods/audio/example.mp3', 'audio-content');
 
         $image = $mod->images()->create([
             'file_path' => 'mods/screenshots/example.png',
@@ -206,6 +211,7 @@ class AdminModerationTest extends TestCase
         $this->assertDatabaseMissing('security_checks', ['id' => $modSecurityCheck->id]);
         $this->assertDatabaseMissing('security_checks', ['id' => $versionSecurityCheck->id]);
         Storage::disk('public')->assertMissing('mods/screenshots/example.png');
+        Storage::disk('public')->assertMissing('mods/audio/example.mp3');
     }
 
     public function test_permanent_mod_delete_requires_matching_title_confirmation(): void

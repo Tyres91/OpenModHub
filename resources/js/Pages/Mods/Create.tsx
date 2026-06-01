@@ -5,6 +5,7 @@ import { FormEvent, useState, useRef, ChangeEvent } from 'react';
 import { useTranslations } from '@/lib/translations';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_AUDIO_SIZE = 20 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png'];
 
 export default function Create({ categories }: PageProps<{ categories: Pick<Category, 'id' | 'name'>[] }>) {
@@ -12,7 +13,9 @@ export default function Create({ categories }: PageProps<{ categories: Pick<Cate
     const t = useTranslations(translations);
     const [preview, setPreview] = useState<string | null>(null);
     const [fileError, setFileError] = useState<string | null>(null);
+    const [audioError, setAudioError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const audioInputRef = useRef<HTMLInputElement>(null);
 
     const { data, setData, post, processing, errors } = useForm({
         title: '',
@@ -23,6 +26,7 @@ export default function Create({ categories }: PageProps<{ categories: Pick<Cate
         external_download_url: '',
         virus_total_url: '',
         youtube_preview_url: '',
+        audio_file: null as File | null,
         image: null as File | null,
     });
 
@@ -58,6 +62,32 @@ export default function Create({ categories }: PageProps<{ categories: Pick<Cate
         };
         reader.readAsDataURL(file);
         setData('image', file);
+    };
+
+    const handleAudioChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        setAudioError(null);
+
+        if (!file) {
+            setData('audio_file', null);
+            return;
+        }
+
+        if (file.type !== 'audio/mpeg' && !file.name.toLowerCase().endsWith('.mp3')) {
+            setAudioError(t('mods.audio_type_error', 'Only MP3 audio files are allowed.'));
+            setData('audio_file', null);
+            if (audioInputRef.current) audioInputRef.current.value = '';
+            return;
+        }
+
+        if (file.size > MAX_AUDIO_SIZE) {
+            setAudioError(t('mods.audio_size_error', 'The MP3 file must not exceed 20 MB.'));
+            setData('audio_file', null);
+            if (audioInputRef.current) audioInputRef.current.value = '';
+            return;
+        }
+
+        setData('audio_file', file);
     };
 
     const submit = (event: FormEvent) => {
@@ -112,7 +142,17 @@ export default function Create({ categories }: PageProps<{ categories: Pick<Cate
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('mods.external_download_url', 'External download URL')}</label>
                             <input value={data.external_download_url} onChange={(event) => setData('external_download_url', event.target.value)} className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" />
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('mods.external_download_or_audio_hint', 'Required unless you upload an MP3 file as the download.')}</p>
                             {errors.external_download_url && <p className="mt-2 text-sm text-red-600">{errors.external_download_url}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('mods.audio_file', 'MP3 audio file')}</label>
+                            <input ref={audioInputRef} type="file" accept="audio/mpeg,.mp3" onChange={handleAudioChange} className="mt-1 w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-500 dark:text-gray-200 dark:file:bg-indigo-700 dark:hover:file:bg-indigo-600" />
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('mods.audio_file_hint', 'Optional MP3 preview or soundmod download, maximum 20 MB.')}</p>
+                            {audioError && <p className="mt-2 text-sm text-red-600">{audioError}</p>}
+                            {errors.audio_file && <p className="mt-2 text-sm text-red-600">{errors.audio_file}</p>}
+                            {data.audio_file && <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{data.audio_file.name}</p>}
                         </div>
 
                         <div>

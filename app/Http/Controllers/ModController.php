@@ -142,6 +142,8 @@ class ModController extends Controller
             $request->session()->put('download_clicks_counted', array_values(array_unique($countedDownloads)));
         }
 
+        abort_if(blank($mod->external_download_url), 404);
+
         return redirect()->away($mod->external_download_url);
     }
 
@@ -181,7 +183,7 @@ class ModController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'category_id' => $validated['category_id'],
-            'external_download_url' => $validated['external_download_url'],
+            'external_download_url' => $validated['external_download_url'] ?? null,
             'virus_total_url' => $validated['virus_total_url'] ?? null,
             'slug' => $this->uniqueSlug($request->string('title')->toString()),
             'status' => Mod::STATUS_PENDING,
@@ -192,12 +194,22 @@ class ModController extends Controller
             'version' => $validated['version'],
             'normalized_version' => $validated['normalized_version'],
             'changelog' => $validated['changelog'],
-            'external_download_url' => $validated['external_download_url'],
+            'external_download_url' => $validated['external_download_url'] ?? null,
             'virus_total_url' => $validated['virus_total_url'] ?? null,
             'youtube_preview_url' => $validated['youtube_preview_url'] ?? null,
             'youtube_video_id' => $validated['youtube_video_id'] ?? null,
             'status' => Mod::STATUS_PENDING,
         ]);
+
+        if ($request->hasFile('audio_file')) {
+            $audioFile = $request->file('audio_file');
+            $version->update([
+                'audio_file_path' => $audioFile->store('mods/audio', 'public'),
+                'audio_original_name' => $audioFile->getClientOriginalName(),
+                'audio_mime' => $audioFile->getMimeType(),
+                'audio_size' => $audioFile->getSize(),
+            ]);
+        }
 
         $file = $request->file('image');
         $path = $file->store('mods/screenshots', 'public');
@@ -208,7 +220,7 @@ class ModController extends Controller
             'sort_order' => 0,
         ]);
 
-        if ($virusTotalService->isConfigured()) {
+        if ($virusTotalService->isConfigured() && filled($version->external_download_url)) {
             SubmitUrlToVirusTotalJob::dispatch($mod->id, $version->id);
         } else {
             $virusTotalService->recordVersionNotSubmitted($version);
@@ -306,6 +318,10 @@ class ModController extends Controller
             'youtube_preview_url' => $version->youtube_preview_url,
             'youtube_video_id' => $version->youtube_video_id,
             'youtube_embed_url' => $version->youtube_video_id ? 'https://www.youtube-nocookie.com/embed/'.$version->youtube_video_id : null,
+            'audio_url' => $version->audio_file_path ? Storage::disk('public')->url($version->audio_file_path) : null,
+            'audio_original_name' => $version->audio_original_name,
+            'audio_mime' => $version->audio_mime,
+            'audio_size' => $version->audio_size,
             'download_clicks_count' => $version->download_clicks_count ?? 0,
             'status' => $version->status,
             'rejection_reason' => $version->rejection_reason,

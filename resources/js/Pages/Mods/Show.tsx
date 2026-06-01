@@ -158,6 +158,13 @@ export default function Show({
                                     <YouTubePreview embedUrl={mod.current_version.youtube_embed_url} title={`${mod.title} YouTube preview`} />
                                 </div>
                             )}
+                            {mod.current_version?.audio_url && (
+                                <div className="mt-8 rounded-2xl border border-white/10 bg-slate-950 p-5">
+                                    <h2 className="text-xl font-bold text-white">{t('mods.audio_preview', 'Audio preview')}</h2>
+                                    <audio controls preload="metadata" src={mod.current_version.audio_url} className="mt-4 w-full" />
+                                    {mod.current_version.audio_original_name && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{mod.current_version.audio_original_name}</p>}
+                                </div>
+                            )}
                         </section>
 
                         <aside className="space-y-4 rounded-2xl border border-white/10 bg-slate-950 p-5">
@@ -237,6 +244,7 @@ export default function Show({
                                         )}
                                     </div>
                                     <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-200">{version.changelog}</p>
+                                    {version.audio_url && <audio controls preload="metadata" src={version.audio_url} className="mt-4 w-full" />}
                                     <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
                                         {t('mods.download_clicks_count', '{count} download clicks').replace('{count}', String(version.download_clicks_count ?? 0))}
                                     </p>

@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -40,14 +41,24 @@ class ModVersionController extends Controller
             'version' => $validated['version'],
             'normalized_version' => $validated['normalized_version'],
             'changelog' => $validated['changelog'],
-            'external_download_url' => $validated['external_download_url'],
+            'external_download_url' => $validated['external_download_url'] ?? null,
             'virus_total_url' => $validated['virus_total_url'] ?? null,
             'youtube_preview_url' => $validated['youtube_preview_url'] ?? null,
             'youtube_video_id' => $validated['youtube_video_id'] ?? null,
             'status' => Mod::STATUS_PENDING,
         ]);
 
-        if ($virusTotalService->isConfigured()) {
+        if ($request->hasFile('audio_file')) {
+            $audioFile = $request->file('audio_file');
+            $version->update([
+                'audio_file_path' => $audioFile->store('mods/audio', 'public'),
+                'audio_original_name' => $audioFile->getClientOriginalName(),
+                'audio_mime' => $audioFile->getMimeType(),
+                'audio_size' => $audioFile->getSize(),
+            ]);
+        }
+
+        if ($virusTotalService->isConfigured() && filled($version->external_download_url)) {
             SubmitUrlToVirusTotalJob::dispatch($mod->id, $version->id);
         } else {
             $virusTotalService->recordVersionNotSubmitted($version);
@@ -81,6 +92,12 @@ class ModVersionController extends Controller
             $request->session()->put('mod_version_download_clicks_counted', array_values(array_unique($countedDownloads)));
         }
 
-        return redirect()->away($modVersion->external_download_url);
+        if (filled($modVersion->external_download_url)) {
+            return redirect()->away($modVersion->external_download_url);
+        }
+
+        abort_if($modVersion->audio_file_path === null, 404);
+
+        return redirect()->away(Storage::disk('public')->url($modVersion->audio_file_path));
     }
 }

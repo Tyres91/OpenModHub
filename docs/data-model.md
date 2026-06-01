@@ -134,7 +134,7 @@ Relationships:
 
 Implementation note: Existing mods are backfilled into `1.0.0` versions. The migration is additive and does not delete or recreate users, mods, comments, ratings, reports, or roles.
 
-Media note: YouTube preview fields belong to `mod_versions` so previews follow the same moderation workflow as downloadable releases. YouTube embeds are derived from stored IDs instead of user-provided iframe HTML. MP3 fields are planned to use the same version-level approach.
+Media note: MP3 and YouTube preview fields belong to `mod_versions` so previews and soundmod downloads follow the same moderation workflow as downloadable releases. YouTube embeds are derived from stored IDs instead of user-provided iframe HTML.
 
 ## `categories`
 

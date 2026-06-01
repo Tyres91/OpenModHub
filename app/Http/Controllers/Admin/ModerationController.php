@@ -180,6 +180,7 @@ class ModerationController extends Controller
             $mod->securityChecks()->delete();
 
             foreach ($mod->versions as $version) {
+                $this->deleteVersionFiles($version);
                 $version->securityChecks()->delete();
             }
 
@@ -197,6 +198,13 @@ class ModerationController extends Controller
             if ($image->file_path) {
                 Storage::disk('public')->delete($image->file_path);
             }
+        }
+    }
+
+    private function deleteVersionFiles(ModVersion $version): void
+    {
+        if ($version->audio_file_path) {
+            Storage::disk('public')->delete($version->audio_file_path);
         }
     }
 
@@ -270,6 +278,10 @@ class ModerationController extends Controller
             'youtube_preview_url' => $version->youtube_preview_url,
             'youtube_video_id' => $version->youtube_video_id,
             'youtube_embed_url' => $version->youtube_video_id ? 'https://www.youtube-nocookie.com/embed/'.$version->youtube_video_id : null,
+            'audio_url' => $version->audio_file_path ? Storage::disk('public')->url($version->audio_file_path) : null,
+            'audio_original_name' => $version->audio_original_name,
+            'audio_mime' => $version->audio_mime,
+            'audio_size' => $version->audio_size,
             'download_clicks_count' => $version->download_clicks_count,
             'status' => $version->status,
             'rejection_reason' => $version->rejection_reason,

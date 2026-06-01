@@ -211,7 +211,7 @@ Screenshots and MP3 files are treated as moderated media assets, not arbitrary f
 
 YouTube previews must be stored as validated URLs or extracted video IDs. The frontend should render a local placeholder first and load the YouTube embed only after the visitor explicitly clicks. User-provided iframe or script HTML must never be rendered.
 
-Version-specific media belongs to `mod_versions` so pending media is reviewed before it becomes public. Permanent mod deletion must delete related database rows and uploaded media files.
+Version-specific media belongs to `mod_versions` so pending media is reviewed before it becomes public. MP3 files can be used as preview audio and as the download target for sound-only mods when no external download URL is provided. Permanent mod deletion must delete related database rows and uploaded media files.
 
 ## Category Ordering
 
