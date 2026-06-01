@@ -433,6 +433,120 @@ class ModSubmissionTest extends TestCase
             );
     }
 
+    public function test_mod_submission_accepts_youtube_preview_url(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+
+        $payload = $this->validModPayload($category, 'YouTube Preview Mod');
+        $payload['youtube_preview_url'] = 'https://youtu.be/dQw4w9WgXcQ';
+
+        $this->actingAs($user)->post(route('mods.store'), $payload)->assertRedirect(route('mods.mine'));
+
+        $this->assertDatabaseHas('mod_versions', [
+            'version' => '1.0.0',
+            'youtube_preview_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'youtube_video_id' => 'dQw4w9WgXcQ',
+        ]);
+    }
+
+    public function test_mod_submission_rejects_non_youtube_preview_url(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+
+        $payload = $this->validModPayload($category, 'Invalid YouTube Preview Mod');
+        $payload['youtube_preview_url'] = 'https://example.com/video';
+
+        $this->actingAs($user)->post(route('mods.store'), $payload)
+            ->assertSessionHasErrors('youtube_preview_url');
+    }
+
+    public function test_version_submission_accepts_youtube_preview_url(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+        $mod = Mod::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Approved Mod',
+            'slug' => 'approved-mod',
+            'description' => 'A publicly approved mod used for version submission.',
+            'external_download_url' => 'https://example.com/approved-mod',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+        ]);
+
+        $this->actingAs($user)->post(route('mods.versions.store', $mod), [
+            'version' => '1.1.0',
+            'changelog' => 'New version with YouTube preview.',
+            'external_download_url' => 'https://example.com/approved-mod-1-1',
+            'youtube_preview_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ])->assertRedirect(route('mods.mine'));
+
+        $this->assertDatabaseHas('mod_versions', [
+            'mod_id' => $mod->id,
+            'version' => '1.1.0',
+            'youtube_video_id' => 'dQw4w9WgXcQ',
+        ]);
+    }
+
+    public function test_public_mod_payload_includes_click_to_load_youtube_preview(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+        $mod = Mod::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Approved YouTube Mod',
+            'slug' => 'approved-youtube-mod',
+            'description' => 'A publicly approved mod with a YouTube preview.',
+            'external_download_url' => 'https://example.com/approved-youtube-mod',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+        ]);
+        ModVersion::query()->create([
+            'mod_id' => $mod->id,
+            'submitted_by' => $user->id,
+            'version' => '1.0.0',
+            'normalized_version' => '1.0.0.0',
+            'changelog' => 'Initial release with YouTube preview.',
+            'external_download_url' => 'https://example.com/approved-youtube-mod',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+            'is_current' => true,
+            'youtube_preview_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'youtube_video_id' => 'dQw4w9WgXcQ',
+        ]);
+
+        $this->get(route('mods.show', $mod))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('mod.current_version.youtube_video_id', 'dQw4w9WgXcQ')
+                ->where('mod.current_version.youtube_embed_url', 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')
+            );
+    }
+
     public function test_rejects_non_image_file(): void
     {
         Storage::fake('public');

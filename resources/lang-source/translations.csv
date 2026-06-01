@@ -338,6 +338,11 @@ mods.upload_type_error,Only JPEG and PNG images are allowed.,Nur JPEG- und PNG-B
 mods.upload_size_error,The image must not exceed 5 MB.,Das Bild darf maximal 5 MB groß sein.
 mods.screenshot,Screenshot,Screenshot
 mods.screenshot_hint,"PNG or JPEG, minimum 512x512px, maximum 5 MB.","PNG oder JPEG, mindestens 512x512px, maximal 5 MB."
+mods.youtube_preview_url,YouTube preview URL,YouTube-Vorschau-URL
+mods.youtube_preview_hint,Optional. The video is shown as a click-to-load preview for privacy.,Optional. Das Video wird aus Datenschutzgründen erst nach Klick geladen.
+mods.youtube_preview,YouTube preview,YouTube-Vorschau
+mods.youtube_privacy_notice,YouTube will only load after you click because it is a third-party service.,YouTube wird erst nach deinem Klick geladen, da es ein Drittanbieter-Dienst ist.
+mods.load_youtube_preview,Load YouTube preview,YouTube-Vorschau laden
 mods.status_pending,Pending,Ausstehend
 mods.status_approved,Approved,Genehmigt
 mods.status_rejected,Rejected,Abgelehnt

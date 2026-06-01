@@ -283,7 +283,7 @@ Current implementation:
 
 Planned update: version media should support MP3 uploads for soundmods. Uploaded MP3 files may be displayed as preview audio and, for sound-only mods, may also serve as the moderated download asset. Uploaded audio remains subject to the same moderation workflow as the version.
 
-Planned update: mods may include a YouTube preview URL. The application should store only a validated YouTube video identifier or canonical URL and render the preview with an explicit click-to-load step so YouTube is not contacted before visitor interaction.
+Current implementation: mods may include a YouTube preview URL on submitted versions. The application stores a validated canonical YouTube URL and extracted video identifier, then renders the preview with an explicit click-to-load step so YouTube is not contacted before visitor interaction.
 
 ## Permanent Mod Deletion
 

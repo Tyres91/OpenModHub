@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'changelog',
     'external_download_url',
     'virus_total_url',
+    'youtube_preview_url',
+    'youtube_video_id',
     'download_clicks_count',
     'status',
     'rejection_reason',

@@ -100,6 +100,9 @@ export interface ModVersionEntry {
     changelog: string;
     external_download_url: string;
     virus_total_url?: string | null;
+    youtube_preview_url?: string | null;
+    youtube_video_id?: string | null;
+    youtube_embed_url?: string | null;
     download_clicks_count: number;
     status: 'pending' | 'approved' | 'rejected';
     rejection_reason?: string | null;

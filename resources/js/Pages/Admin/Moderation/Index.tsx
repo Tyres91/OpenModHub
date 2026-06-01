@@ -52,6 +52,27 @@ function SecurityReviewBox({ mod }: { mod: ModEntry }) {
     );
 }
 
+function YouTubeReviewBox({ embedUrl, title }: { embedUrl: string; title: string }) {
+    const { translations } = usePage().props;
+    const t = useTranslations(translations);
+    const [loaded, setLoaded] = useState(false);
+
+    return (
+        <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-sm text-indigo-950 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-100">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-bold">{t('mods.youtube_preview', 'YouTube preview')}</p>
+                {!loaded && (
+                    <button type="button" onClick={() => setLoaded(true)} className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+                        {t('mods.load_youtube_preview', 'Load YouTube preview')}
+                    </button>
+                )}
+            </div>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">{t('mods.youtube_privacy_notice', 'YouTube will only load after you click because it is a third-party service.')}</p>
+            {loaded && <iframe src={embedUrl} title={title} className="mt-3 aspect-video w-full rounded-lg border border-indigo-200 dark:border-indigo-800" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />}
+        </div>
+    );
+}
+
 function RejectForm({ mod }: { mod: ModEntry }) {
     const { translations } = usePage().props;
     const t = useTranslations(translations);
@@ -275,6 +296,7 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                             )}
                                         </div>
                                         <SecurityReviewBox mod={mod} />
+                                        {mod.current_version?.youtube_embed_url && <YouTubeReviewBox embedUrl={mod.current_version.youtube_embed_url} title={`${mod.title} YouTube preview`} />}
                                     </div>
 
                                     <div className="space-y-3">
@@ -314,6 +336,7 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                                     <a href={version.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.download_link', 'Download link')}</a>
                                                     {version.virus_total_url && <a href={version.virus_total_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.virustotal', 'VirusTotal')}</a>}
                                                 </div>
+                                                {version.youtube_embed_url && <YouTubeReviewBox embedUrl={version.youtube_embed_url} title={`${version.mod?.title ?? 'Mod'} YouTube preview`} />}
                                             </div>
                                             <div className="space-y-3">
                                                 {version.status !== 'approved' && (

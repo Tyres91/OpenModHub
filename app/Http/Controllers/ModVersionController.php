@@ -42,6 +42,8 @@ class ModVersionController extends Controller
             'changelog' => $validated['changelog'],
             'external_download_url' => $validated['external_download_url'],
             'virus_total_url' => $validated['virus_total_url'] ?? null,
+            'youtube_preview_url' => $validated['youtube_preview_url'] ?? null,
+            'youtube_video_id' => $validated['youtube_video_id'] ?? null,
             'status' => Mod::STATUS_PENDING,
         ]);
 

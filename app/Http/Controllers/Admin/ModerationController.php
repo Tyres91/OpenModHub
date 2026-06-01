@@ -34,7 +34,7 @@ class ModerationController extends Controller
         }
 
         $mods = Mod::query()
-            ->with(['category:id,name,slug', 'user:id,name', 'images:id,mod_id,url,file_path,alt_text,sort_order', 'latestSecurityCheck'])
+            ->with(['category:id,name,slug', 'user:id,name', 'images:id,mod_id,url,file_path,alt_text,sort_order', 'latestSecurityCheck', 'versions.latestSecurityCheck'])
             ->where('status', $status)
             ->latest()
             ->paginate(12)
@@ -227,6 +227,9 @@ class ModerationController extends Controller
                 'name' => $mod->user->name,
             ] : null,
             'security_check' => $mod->latestSecurityCheck ? $this->securityCheckPayload($mod->latestSecurityCheck) : null,
+            'current_version' => $mod->relationLoaded('versions') && $mod->versions->isNotEmpty()
+                ? $this->versionPayload($mod->versions->sortBy('id')->first())
+                : null,
             'images' => $mod->images->map(fn ($image): array => [
                 'id' => $image->id,
                 'mod_id' => $image->mod_id,
@@ -264,6 +267,9 @@ class ModerationController extends Controller
             'changelog' => $version->changelog,
             'external_download_url' => $version->external_download_url,
             'virus_total_url' => $version->virus_total_url,
+            'youtube_preview_url' => $version->youtube_preview_url,
+            'youtube_video_id' => $version->youtube_video_id,
+            'youtube_embed_url' => $version->youtube_video_id ? 'https://www.youtube-nocookie.com/embed/'.$version->youtube_video_id : null,
             'download_clicks_count' => $version->download_clicks_count,
             'status' => $version->status,
             'rejection_reason' => $version->rejection_reason,

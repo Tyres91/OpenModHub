@@ -1,6 +1,6 @@
 import { CommentEntry, ModEntry, PageProps } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import RankBadge from '@/Components/RankBadge';
 import SecurityCheckBadge from '@/Components/SecurityCheckBadge';
@@ -23,6 +23,34 @@ const securityPanelStyles: Record<string, string> = {
     suspicious: 'border-red-400/40 bg-red-400/10 text-red-100',
     failed: 'border-red-400/40 bg-red-400/10 text-red-100',
 };
+
+function YouTubePreview({ embedUrl, title }: { embedUrl: string; title: string }) {
+    const { translations } = usePage<PageProps>().props;
+    const t = useTranslations(translations);
+    const [loaded, setLoaded] = useState(false);
+
+    if (loaded) {
+        return (
+            <iframe
+                src={embedUrl}
+                title={title}
+                className="aspect-video w-full rounded-2xl border border-white/10"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+            />
+        );
+    }
+
+    return (
+        <div className="flex aspect-video flex-col items-center justify-center rounded-2xl border border-white/10 bg-slate-950 p-6 text-center">
+            <p className="text-sm leading-6 text-slate-300">{t('mods.youtube_privacy_notice', 'YouTube will only load after you click because it is a third-party service.')}</p>
+            <button type="button" onClick={() => setLoaded(true)} className="mt-4 rounded-xl bg-cyan-400 px-5 py-3 font-black text-slate-950 hover:bg-cyan-300">
+                {t('mods.load_youtube_preview', 'Load YouTube preview')}
+            </button>
+        </div>
+    );
+}
 
 export default function Show({
     mod,
@@ -122,6 +150,12 @@ export default function Show({
                                 <div className="mt-8 rounded-2xl border border-white/10 bg-slate-950 p-5">
                                     <h2 className="text-xl font-bold text-white">{t('mods.current_changelog', 'Current changelog')}</h2>
                                     <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-200">{mod.current_version.changelog}</p>
+                                </div>
+                            )}
+                            {mod.current_version?.youtube_embed_url && (
+                                <div className="mt-8">
+                                    <h2 className="mb-3 text-xl font-bold text-white">{t('mods.youtube_preview', 'YouTube preview')}</h2>
+                                    <YouTubePreview embedUrl={mod.current_version.youtube_embed_url} title={`${mod.title} YouTube preview`} />
                                 </div>
                             )}
                         </section>

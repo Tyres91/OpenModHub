@@ -22,6 +22,7 @@ export default function Create({ categories }: PageProps<{ categories: Pick<Cate
         category_id: '',
         external_download_url: '',
         virus_total_url: '',
+        youtube_preview_url: '',
         image: null as File | null,
     });
 
@@ -118,6 +119,13 @@ export default function Create({ categories }: PageProps<{ categories: Pick<Cate
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('mods.virustotal_url', 'VirusTotal URL')}</label>
                             <input value={data.virus_total_url} onChange={(event) => setData('virus_total_url', event.target.value)} className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" />
                             {errors.virus_total_url && <p className="mt-2 text-sm text-red-600">{errors.virus_total_url}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('mods.youtube_preview_url', 'YouTube preview URL')}</label>
+                            <input value={data.youtube_preview_url} onChange={(event) => setData('youtube_preview_url', event.target.value)} className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" />
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('mods.youtube_preview_hint', 'Optional. The video is shown as a click-to-load preview for privacy.')}</p>
+                            {errors.youtube_preview_url && <p className="mt-2 text-sm text-red-600">{errors.youtube_preview_url}</p>}
                         </div>
 
                         <div>
