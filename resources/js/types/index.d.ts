@@ -36,6 +36,7 @@ export interface Category {
     slug: string;
     description?: string | null;
     is_active?: boolean;
+    sort_order: number;
     mods_count?: number;
     created_at?: string;
     updated_at?: string;

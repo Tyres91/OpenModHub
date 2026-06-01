@@ -27,6 +27,8 @@ Important fields:
 Relationships:
 
 - Has many `mods`
+
+Implementation note: categories are ordered by `sort_order`, then name and id for stable display. Admin-managed drag-and-drop updates the stored order.
 - Has many `ratings`
 - Has many `comments`
 - Has many `reports`

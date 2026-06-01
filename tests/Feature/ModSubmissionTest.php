@@ -405,6 +405,34 @@ class ModSubmissionTest extends TestCase
             );
     }
 
+    public function test_public_category_options_are_ordered_by_sort_order(): void
+    {
+        Category::query()->create(['name' => 'Visuals', 'slug' => 'visuals', 'is_active' => true, 'sort_order' => 20]);
+        Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'is_active' => true, 'sort_order' => 10]);
+
+        $this->get(route('mods.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('categories.0.slug', 'audio')
+                ->where('categories.1.slug', 'visuals')
+            );
+    }
+
+    public function test_submit_form_category_options_are_ordered_by_sort_order(): void
+    {
+        $user = User::factory()->create();
+        Category::query()->create(['name' => 'Visuals', 'slug' => 'visuals', 'is_active' => true, 'sort_order' => 20]);
+        Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'is_active' => true, 'sort_order' => 10]);
+
+        $this->actingAs($user)
+            ->get(route('mods.create'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('categories.0.name', 'Audio')
+                ->where('categories.1.name', 'Visuals')
+            );
+    }
+
     public function test_rejects_non_image_file(): void
     {
         Storage::fake('public');

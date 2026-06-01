@@ -49,9 +49,7 @@ Current implementation:
 
 Categories and topics should be manageable in the admin area. This allows the portal structure to evolve without code changes.
 
-Current implementation: initial active categories are seeded for development. Admins can create, edit, deactivate, and delete unused categories in the backend.
-
-Planned update: categories should support an admin-managed display order. Admins should reorder categories through drag-and-drop, and public category filters plus submit forms should use that configured order.
+Current implementation: initial active categories are seeded for development. Admins can create, edit, deactivate, delete unused categories, and reorder categories through drag-and-drop in the backend. Public category filters and submit forms use the configured category order.
 
 ## User Roles
 

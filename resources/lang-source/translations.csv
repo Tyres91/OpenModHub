@@ -104,6 +104,9 @@ admin.moderation.confirm_permanent_delete,Confirm permanent delete,Endgültiges 
 admin.categories.title,Categories,Kategorien
 admin.categories.heading,Manage categories,Kategorien verwalten
 admin.categories.subtitle,"Create, edit, and deactivate categories.","Kategorien erstellen, bearbeiten und deaktivieren."
+admin.categories.order_heading,Category order,Kategorie-Reihenfolge
+admin.categories.order_hint,Drag categories to change their display order.,Ziehe Kategorien per Drag-and-drop in die gewünschte Reihenfolge.
+admin.categories.drag_handle,Drag to reorder,Zum Sortieren ziehen
 admin.categories.new_category,New category,Neue Kategorie
 admin.categories.no_categories,No categories yet.,Noch keine Kategorien.
 admin.categories.name,Name,Name
@@ -258,6 +261,7 @@ flash.report_submitted,Report submitted.,Meldung gesendet.
 flash.category_created,Category created.,Kategorie erstellt.
 flash.category_updated,Category updated.,Kategorie aktualisiert.
 flash.category_deleted,Category deleted.,Kategorie gelöscht.
+flash.category_order_updated,Category order updated.,Kategorie-Reihenfolge aktualisiert.
 flash.category_not_deletable,Categories with mods cannot be deleted. Deactivate the category instead.,Kategorien mit Mods können nicht gelöscht werden. Deaktiviere die Kategorie stattdessen.
 flash.rank_created,Rank created.,Rang erstellt.
 flash.rank_updated,Rank updated.,Rang aktualisiert.

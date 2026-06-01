@@ -65,7 +65,7 @@ class ModController extends Controller
             'mods' => $mods,
             'categories' => Category::query()
                 ->where('is_active', true)
-                ->orderBy('name')
+                ->ordered()
                 ->get(['id', 'name', 'slug']),
             'filters' => [
                 'search' => $search,
@@ -166,7 +166,7 @@ class ModController extends Controller
         return Inertia::render('Mods/Create', [
             'categories' => Category::query()
                 ->where('is_active', true)
-                ->orderBy('name')
+                ->ordered()
                 ->get(['id', 'name']),
         ]);
     }
