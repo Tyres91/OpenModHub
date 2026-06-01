@@ -99,19 +99,19 @@ export default function Show({
         <PublicLayout>
             <Head title={mod.title} />
 
-            <main className="mx-auto max-w-6xl px-6 py-8">
+            <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
                 <Link href={route('mods.index')} className="text-sm font-semibold text-cyan-300 hover:text-cyan-200">
                     {t('actions.back', 'Back')} {t('mods.title', 'Mods').toLowerCase()}
                 </Link>
 
                 <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/5">
-                    <div className="aspect-[16/7] bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950">
+                    <div className="aspect-video bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 md:aspect-[16/7]">
                         {heroImage && (
                             <img src={heroImage.url} alt={heroImage.alt_text ?? `${mod.title} screenshot`} className="h-full w-full object-cover" />
                         )}
                     </div>
 
-                    <div className="grid gap-8 p-6 lg:grid-cols-[1fr_320px] lg:p-8">
+                    <div className="grid gap-8 p-4 sm:p-6 lg:grid-cols-[1fr_320px] lg:p-8">
                         <section>
                             <div className="flex flex-wrap gap-3">
                                 <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-bold uppercase text-cyan-200">
@@ -122,7 +122,7 @@ export default function Show({
                                 </span>
                             </div>
 
-                            <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">{mod.title}</h1>
+                            <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">{mod.title}</h1>
                             <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-400">
                                 <span>
                                     {t('mods.submitted_by', 'Submitted by')}{' '}

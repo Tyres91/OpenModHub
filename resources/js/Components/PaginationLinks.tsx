@@ -7,7 +7,7 @@ export default function PaginationLinks({ links }: { links: PaginationLink[] }) 
     }
 
     return (
-        <nav className="flex flex-wrap gap-2" aria-label="Pagination">
+        <nav className="flex flex-wrap justify-center gap-2 sm:justify-start" aria-label="Pagination">
             {links.map((link, index) =>
                 link.url ? (
                     <Link
