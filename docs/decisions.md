@@ -226,3 +226,55 @@ Remove the Editor role. Keep Admin as the only privileged role, with admins impl
 
 Consequences:
 User management is simpler and avoids overlapping role semantics. Existing `editor` role assignments are removed by migration. Moderation access now depends on direct permissions such as `review_mods`, `moderate_comments`, `handle_reports`, and `moderate_users`.
+
+## 2026-06-01: Use Permanent Mod Deletion Instead of a Trash Workflow
+
+Status: Accepted
+
+Context:
+Moderators need a clear way to remove unwanted mods and their related data. A separate trash workflow would add restore states and extra UI that are not currently needed.
+
+Decision:
+The moderation UI will expose permanent mod deletion only. The backend must require a strong confirmation and clean up related database rows and uploaded media files.
+
+Consequences:
+Deletion behavior is simpler and explicit, but destructive. Tests must cover authorization, confirmation, relationship cleanup, and file cleanup.
+
+## 2026-06-01: Support Moderated MP3 Media for Soundmods
+
+Status: Accepted
+
+Context:
+Some mods are audio-focused and need MP3 previews or MP3 files as the actual soundmod download. The project should still avoid becoming a generic file-hosting platform.
+
+Decision:
+OpenModHub may store moderated MP3 files for soundmods. MP3 media belongs to mod versions so it follows the same approval workflow as downloads and changelogs. Larger archives should remain externally hosted.
+
+Consequences:
+The data model and storage cleanup must support version-specific audio files. Validation must restrict uploads to MP3 files with a configured size limit. Permanent deletion must remove uploaded audio files.
+
+## 2026-06-01: Load YouTube Previews Only After User Click
+
+Status: Accepted
+
+Context:
+YouTube previews are useful for mods, but automatic embeds contact a third party before the visitor interacts with the page.
+
+Decision:
+The application will accept validated YouTube preview URLs, store a safe video identifier, and render a local placeholder first. The YouTube embed will load only after the visitor clicks.
+
+Consequences:
+The frontend needs a click-to-load component. The backend must validate YouTube URLs and never render user-provided iframe HTML.
+
+## 2026-06-01: Use dnd-kit for Category Drag-and-Drop Sorting
+
+Status: Accepted
+
+Context:
+Admins need to reorder categories manually. Up/down buttons are simple, but drag-and-drop better matches the requested admin workflow.
+
+Decision:
+Category sorting will use `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities`. Categories will store a `sort_order` value used by admin lists, public filters, and submit forms.
+
+Consequences:
+A small frontend dependency is added. Backend reorder validation and tests are required to persist the configured order safely.

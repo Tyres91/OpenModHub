@@ -43,6 +43,8 @@ The repository should show:
 
 ## Project Boundary
 
-OpenModHub is not planned as a file-hosting platform. Mods will use external download links instead of storing mod archives directly in the application.
+OpenModHub is not planned as a general file-hosting platform. Mods primarily use external download links instead of storing full mod archives directly in the application.
 
-The application may store screenshots or image references, depending on the final implementation. Download files themselves should remain externally hosted. This keeps the MVP focused on moderation, discovery, metadata, and community features instead of storage, bandwidth, malware liability, and file distribution complexity.
+The application may store moderated preview media such as screenshots and MP3 audio samples for soundmods. MP3 files may also be used as the moderated download asset for sound-only mods when that is the actual mod content. Larger archives and generic file distribution should remain externally hosted. This keeps the project focused on moderation, discovery, metadata, and community features instead of becoming a broad storage and bandwidth platform.
+
+Embedded third-party previews such as YouTube videos must be privacy-aware. They should not load remote embeds automatically; visitors must explicitly click before a YouTube embed is loaded.

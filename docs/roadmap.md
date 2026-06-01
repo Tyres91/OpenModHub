@@ -63,7 +63,13 @@ Current status: ratings, comments, reports, public user profiles, and user-facin
 - CD pipeline preparation for future deployment
 - Feature and unit tests
 - Moderated mod versions with changelog
+- Permanent mod deletion with cleanup and strong confirmation
+- Admin-managed category ordering
+- Privacy-aware YouTube previews
+- MP3 audio previews and soundmod downloads
 
 Current status: the VirusTotal link field remains available and optional queued VirusTotal API checks are implemented through `VirusTotalService`, `SubmitUrlToVirusTotalJob`, `PollVirusTotalResultJob`, and the `security_checks` table. Consent-gated Google Tag Manager configuration is implemented for optional tracking, with no tracking script loaded before explicit analytics consent.
 
 Moderated mod versions with changelogs are implemented through `mod_versions`. Existing mods are backfilled into initial versions without deleting users or existing content.
+
+Planned updates: permanent mod deletion should be hardened with backend confirmation and cleanup tests. Categories should become drag-and-drop sortable. Version media should support MP3 audio and click-to-load YouTube previews.

@@ -28,8 +28,8 @@ All other users (non-admin) receive explicit permissions assigned individually. 
 
 #### Content Management
 - `edit_any_mod` - Edit any mod (not just own)
-- `delete_any_mod` - Delete any mod
-- `manage_categories` - Create, edit, delete categories
+- `delete_any_mod` - Permanently delete any mod
+- `manage_categories` - Create, edit, delete, and reorder categories
 - `manage_faqs` - Manage FAQ entries
 
 #### Community
