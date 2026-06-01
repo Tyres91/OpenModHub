@@ -45,9 +45,16 @@ class LoginRequest extends FormRequest
 
         $user = Auth::user();
 
-        if ($user instanceof User && $user->isBlocked()) {
+        if ($user instanceof User) {
             $warningService = app(WarningService::class);
             $accountLock = $warningService->getActiveAccountLock($user);
+
+            if (! $user->isBlocked() && $accountLock === null) {
+                RateLimiter::clear($this->throttleKey());
+
+                return;
+            }
+
             $blockReason = $user->block_reason;
             $blockedUntil = $user->blocked_until;
 
