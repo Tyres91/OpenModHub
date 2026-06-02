@@ -1,6 +1,6 @@
 import { CommentEntry, ModEntry, PageProps } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import RankBadge from '@/Components/RankBadge';
 import SecurityCheckBadge from '@/Components/SecurityCheckBadge';
@@ -23,6 +23,34 @@ const securityPanelStyles: Record<string, string> = {
     suspicious: 'border-red-400/40 bg-red-400/10 text-red-100',
     failed: 'border-red-400/40 bg-red-400/10 text-red-100',
 };
+
+function YouTubePreview({ embedUrl, title }: { embedUrl: string; title: string }) {
+    const { translations } = usePage<PageProps>().props;
+    const t = useTranslations(translations);
+    const [loaded, setLoaded] = useState(false);
+
+    if (loaded) {
+        return (
+            <iframe
+                src={embedUrl}
+                title={title}
+                className="aspect-video w-full rounded-2xl border border-white/10"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+            />
+        );
+    }
+
+    return (
+        <div className="flex aspect-video flex-col items-center justify-center rounded-2xl border border-white/10 bg-slate-950 p-6 text-center">
+            <p className="text-sm leading-6 text-slate-300">{t('mods.youtube_privacy_notice', 'YouTube will only load after you click because it is a third-party service.')}</p>
+            <button type="button" onClick={() => setLoaded(true)} className="mt-4 rounded-xl bg-cyan-400 px-5 py-3 font-black text-slate-950 hover:bg-cyan-300">
+                {t('mods.load_youtube_preview', 'Load YouTube preview')}
+            </button>
+        </div>
+    );
+}
 
 export default function Show({
     mod,
@@ -71,19 +99,19 @@ export default function Show({
         <PublicLayout>
             <Head title={mod.title} />
 
-            <main className="mx-auto max-w-6xl px-6 py-8">
+            <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
                 <Link href={route('mods.index')} className="text-sm font-semibold text-cyan-300 hover:text-cyan-200">
                     {t('actions.back', 'Back')} {t('mods.title', 'Mods').toLowerCase()}
                 </Link>
 
                 <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/5">
-                    <div className="aspect-[16/7] bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950">
+                    <div className="aspect-video bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 md:aspect-[16/7]">
                         {heroImage && (
                             <img src={heroImage.url} alt={heroImage.alt_text ?? `${mod.title} screenshot`} className="h-full w-full object-cover" />
                         )}
                     </div>
 
-                    <div className="grid gap-8 p-6 lg:grid-cols-[1fr_320px] lg:p-8">
+                    <div className="grid gap-8 p-4 sm:p-6 lg:grid-cols-[1fr_320px] lg:p-8">
                         <section>
                             <div className="flex flex-wrap gap-3">
                                 <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-bold uppercase text-cyan-200">
@@ -94,7 +122,7 @@ export default function Show({
                                 </span>
                             </div>
 
-                            <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">{mod.title}</h1>
+                            <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">{mod.title}</h1>
                             <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-400">
                                 <span>
                                     {t('mods.submitted_by', 'Submitted by')}{' '}
@@ -122,6 +150,19 @@ export default function Show({
                                 <div className="mt-8 rounded-2xl border border-white/10 bg-slate-950 p-5">
                                     <h2 className="text-xl font-bold text-white">{t('mods.current_changelog', 'Current changelog')}</h2>
                                     <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-200">{mod.current_version.changelog}</p>
+                                </div>
+                            )}
+                            {mod.current_version?.youtube_embed_url && (
+                                <div className="mt-8">
+                                    <h2 className="mb-3 text-xl font-bold text-white">{t('mods.youtube_preview', 'YouTube preview')}</h2>
+                                    <YouTubePreview embedUrl={mod.current_version.youtube_embed_url} title={`${mod.title} YouTube preview`} />
+                                </div>
+                            )}
+                            {mod.current_version?.audio_url && (
+                                <div className="mt-8 rounded-2xl border border-white/10 bg-slate-950 p-5">
+                                    <h2 className="text-xl font-bold text-white">{t('mods.audio_preview', 'Audio preview')}</h2>
+                                    <audio controls preload="metadata" src={mod.current_version.audio_url} className="mt-4 w-full" />
+                                    {mod.current_version.audio_original_name && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{mod.current_version.audio_original_name}</p>}
                                 </div>
                             )}
                         </section>
@@ -203,6 +244,7 @@ export default function Show({
                                         )}
                                     </div>
                                     <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-200">{version.changelog}</p>
+                                    {version.audio_url && <audio controls preload="metadata" src={version.audio_url} className="mt-4 w-full" />}
                                     <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
                                         {t('mods.download_clicks_count', '{count} download clicks').replace('{count}', String(version.download_clicks_count ?? 0))}
                                     </p>

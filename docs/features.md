@@ -11,6 +11,8 @@ Each mod should contain:
 - Title
 - Description
 - Images or screenshots
+- Optional MP3 audio preview for soundmods
+- Optional privacy-aware YouTube preview
 - External download link
 - VirusTotal link or VirusTotal result
 - Category or topic
@@ -19,7 +21,7 @@ Each mod should contain:
 - Created date
 - Updated date
 
-Mods also support moderated release versions. Each version has a semantic Composer-style version number, changelog, external download link, optional VirusTotal link, per-version download counter, and moderation status.
+Mods also support moderated release versions. Each version has a semantic Composer-style version number, changelog, external download link, optional MP3 audio file, optional privacy-aware YouTube preview, optional VirusTotal link, per-version download counter, and moderation status.
 
 ## Moderation Workflow
 
@@ -47,7 +49,7 @@ Current implementation:
 
 Categories and topics should be manageable in the admin area. This allows the portal structure to evolve without code changes.
 
-Current implementation: initial active categories are seeded for development. Admins can create, edit, deactivate, and delete unused categories in the backend.
+Current implementation: initial active categories are seeded for development. Admins can create, edit, deactivate, delete unused categories, and reorder categories through drag-and-drop in the backend. Public category filters and submit forms use the configured category order.
 
 ## User Roles
 
@@ -278,6 +280,22 @@ Current implementation:
 - Submitted versions are pending until approved by an admin or a user with review permissions.
 - Approving a version automatically makes it the current download version, including pre-release versions.
 - The mod detail page uses the current approved version for the primary download button and shows approved version history with changelogs and download links.
+
+Current implementation: version media supports MP3 uploads for soundmods. Uploaded MP3 files may be displayed as preview audio and, for sound-only mods, may also serve as the moderated download asset when no external download URL is provided. Uploaded audio remains subject to the same moderation workflow as the version.
+
+Current implementation: mods may include a YouTube preview URL on submitted versions. The application stores a validated canonical YouTube URL and extracted video identifier, then renders the preview with an explicit click-to-load step so YouTube is not contacted before visitor interaction.
+
+## Permanent Mod Deletion
+
+Admins and users with the `delete_any_mod` permission should be able to permanently delete mods when needed.
+
+Planned update:
+
+- The moderation UI should expose permanent deletion only, not a separate trash workflow.
+- Permanent deletion must require a strong confirmation, such as typing the mod title.
+- The backend must enforce the confirmation, not only the frontend.
+- Related comments, ratings, reports, versions, security checks, media records, and uploaded files must be cleaned up.
+- Only users with `delete_any_mod` may perform the action.
 
 ## FAQs
 

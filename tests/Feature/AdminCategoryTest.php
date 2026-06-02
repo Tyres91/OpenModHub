@@ -15,6 +15,12 @@ class AdminCategoryTest extends TestCase
     public function test_admin_can_create_category(): void
     {
         $admin = $this->userWithRole('admin');
+        Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+            'sort_order' => 20,
+        ]);
 
         $response = $this->actingAs($admin)->post(route('admin.categories.store'), [
             'name' => 'Audio',
@@ -27,7 +33,54 @@ class AdminCategoryTest extends TestCase
             'name' => 'Audio',
             'slug' => 'audio',
             'is_active' => true,
+            'sort_order' => 30,
         ]);
+    }
+
+    public function test_admin_index_orders_categories_by_sort_order(): void
+    {
+        $admin = $this->userWithRole('admin');
+        Category::query()->create(['name' => 'Visuals', 'slug' => 'visuals', 'is_active' => true, 'sort_order' => 20]);
+        Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'is_active' => true, 'sort_order' => 10]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.categories.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('categories.0.slug', 'audio')
+                ->where('categories.1.slug', 'visuals')
+            );
+    }
+
+    public function test_admin_can_reorder_categories(): void
+    {
+        $admin = $this->userWithRole('admin');
+        $audio = Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'is_active' => true, 'sort_order' => 10]);
+        $visuals = Category::query()->create(['name' => 'Visuals', 'slug' => 'visuals', 'is_active' => true, 'sort_order' => 20]);
+
+        $this->actingAs($admin)->patch(route('admin.categories.reorder'), [
+            'categories' => [
+                ['id' => $visuals->id, 'sort_order' => 10],
+                ['id' => $audio->id, 'sort_order' => 20],
+            ],
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('categories', ['id' => $visuals->id, 'sort_order' => 10]);
+        $this->assertDatabaseHas('categories', ['id' => $audio->id, 'sort_order' => 20]);
+    }
+
+    public function test_regular_user_cannot_reorder_categories(): void
+    {
+        $user = $this->userWithRole('user');
+        $category = Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'is_active' => true, 'sort_order' => 10]);
+
+        $this->actingAs($user)->patch(route('admin.categories.reorder'), [
+            'categories' => [
+                ['id' => $category->id, 'sort_order' => 20],
+            ],
+        ])->assertForbidden();
+
+        $this->assertSame(10, $category->fresh()->sort_order);
     }
 
     public function test_admin_can_update_category(): void

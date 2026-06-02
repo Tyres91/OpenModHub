@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\SecurityCheck;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AdminModerationTest extends TestCase
@@ -142,6 +143,103 @@ class AdminModerationTest extends TestCase
             'rejection_reason' => 'The new download link is not reachable.',
             'reviewed_by' => $reviewer->id,
         ]);
+    }
+
+    public function test_user_with_delete_permission_can_permanently_delete_mod_with_related_data(): void
+    {
+        Storage::fake('public');
+
+        $deleter = $this->userWithPermission('delete_any_mod');
+        $mod = $this->approvedMod();
+        $version = ModVersion::query()->create([
+            'mod_id' => $mod->id,
+            'submitted_by' => $mod->user_id,
+            'version' => '1.0.0',
+            'normalized_version' => '1.0.0.0',
+            'changelog' => 'Initial release.',
+            'external_download_url' => 'https://example.com/version',
+            'audio_file_path' => 'mods/audio/example.mp3',
+            'audio_original_name' => 'example.mp3',
+            'audio_mime' => 'audio/mpeg',
+            'audio_size' => 100,
+            'status' => Mod::STATUS_APPROVED,
+            'is_current' => true,
+        ]);
+
+        Storage::disk('public')->put('mods/screenshots/example.png', 'image-content');
+        Storage::disk('public')->put('mods/audio/example.mp3', 'audio-content');
+
+        $image = $mod->images()->create([
+            'file_path' => 'mods/screenshots/example.png',
+            'alt_text' => 'Screenshot',
+            'sort_order' => 0,
+        ]);
+        $comment = $mod->comments()->create([
+            'user_id' => $mod->user_id,
+            'body' => 'Looks good.',
+            'status' => 'visible',
+        ]);
+        $rating = $mod->ratings()->create([
+            'user_id' => $mod->user_id,
+            'score' => 5,
+        ]);
+        $report = $mod->reports()->create([
+            'user_id' => $mod->user_id,
+            'reason' => 'other',
+            'message' => 'Duplicate.',
+        ]);
+        $modSecurityCheck = $mod->securityChecks()->create([
+            'provider' => SecurityCheck::PROVIDER_VIRUSTOTAL,
+            'status' => SecurityCheck::STATUS_CLEAN,
+        ]);
+        $versionSecurityCheck = $version->securityChecks()->create([
+            'mod_id' => $mod->id,
+            'provider' => SecurityCheck::PROVIDER_VIRUSTOTAL,
+            'status' => SecurityCheck::STATUS_CLEAN,
+        ]);
+
+        $this->actingAs($deleter)->delete(route('admin.moderation.force-delete', $mod), [
+            'confirmation' => $mod->title,
+        ])->assertRedirect();
+
+        $this->assertNull(Mod::withTrashed()->find($mod->id));
+        $this->assertDatabaseMissing('mod_versions', ['id' => $version->id]);
+        $this->assertDatabaseMissing('mod_images', ['id' => $image->id]);
+        $this->assertDatabaseMissing('comments', ['id' => $comment->id]);
+        $this->assertDatabaseMissing('ratings', ['id' => $rating->id]);
+        $this->assertDatabaseMissing('reports', ['id' => $report->id]);
+        $this->assertDatabaseMissing('security_checks', ['id' => $modSecurityCheck->id]);
+        $this->assertDatabaseMissing('security_checks', ['id' => $versionSecurityCheck->id]);
+        Storage::disk('public')->assertMissing('mods/screenshots/example.png');
+        Storage::disk('public')->assertMissing('mods/audio/example.mp3');
+    }
+
+    public function test_permanent_mod_delete_requires_matching_title_confirmation(): void
+    {
+        $deleter = $this->userWithPermission('delete_any_mod');
+        $mod = $this->approvedMod();
+
+        $this->actingAs($deleter)
+            ->from(route('admin.moderation.index'))
+            ->delete(route('admin.moderation.force-delete', $mod), [
+                'confirmation' => 'Wrong title',
+            ])
+            ->assertSessionHasErrors('confirmation')
+            ->assertRedirect(route('admin.moderation.index'));
+
+        $this->assertNotNull($mod->fresh());
+    }
+
+    public function test_regular_user_cannot_permanently_delete_mod(): void
+    {
+        $user = $this->userWithRole('user');
+        $mod = $this->approvedMod();
+
+        $this->actingAs($user)->delete(route('admin.moderation.force-delete', $mod), [
+            'confirmation' => $mod->title,
+        ])->assertForbidden();
+
+        $this->assertNotNull($mod->fresh());
     }
 
     private function userWithRole(string $slug): User

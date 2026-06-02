@@ -27,6 +27,8 @@ Important fields:
 Relationships:
 
 - Has many `mods`
+
+Implementation note: categories are ordered by `sort_order`, then name and id for stable display. Admin-managed drag-and-drop updates the stored order.
 - Has many `ratings`
 - Has many `comments`
 - Has many `reports`
@@ -107,6 +109,12 @@ Important fields:
 - `normalized_version`, Composer-normalized version for uniqueness and comparison
 - `changelog`
 - `external_download_url`
+- `audio_file_path`, nullable local MP3 path for soundmod preview/download media
+- `audio_original_name`, nullable original uploaded audio filename
+- `audio_mime`, nullable uploaded audio MIME type
+- `audio_size`, nullable uploaded audio size in bytes
+- `youtube_preview_url`, nullable validated YouTube preview URL
+- `youtube_video_id`, nullable extracted YouTube video identifier for safe embeds
 - `virus_total_url`, nullable
 - `download_clicks_count`, aggregate external download clicks deduplicated per session and version
 - `status`, such as `pending`, `approved`, `rejected`
@@ -126,6 +134,8 @@ Relationships:
 
 Implementation note: Existing mods are backfilled into `1.0.0` versions. The migration is additive and does not delete or recreate users, mods, comments, ratings, reports, or roles.
 
+Media note: MP3 and YouTube preview fields belong to `mod_versions` so previews and soundmod downloads follow the same moderation workflow as downloadable releases. YouTube embeds are derived from stored IDs instead of user-provided iframe HTML.
+
 ## `categories`
 
 Purpose: stores admin-managed categories or topics for mods.
@@ -137,6 +147,7 @@ Important fields:
 - `slug`
 - `description`, nullable
 - `is_active`
+- `sort_order`, integer for admin-managed display order
 - `created_at`
 - `updated_at`
 

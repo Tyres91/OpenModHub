@@ -59,22 +59,22 @@ export default function Index({
         <PublicLayout>
             <Head title={t('mods.title', 'Mods')} />
 
-            <main className="mx-auto max-w-7xl px-6 py-10">
+            <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
                 <section>
                     <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-cyan-300">
                             {t('mods.title', 'Mods')}
                         </p>
-                        <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-6xl">
+                        <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl lg:text-6xl">
                             {t('mods.discover', 'Discover approved mods from the community.')}
                         </h1>
-                        <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
+                        <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
                             {t('mods.discover_subtitle', 'Every public entry passed the OpenModHub moderation workflow before appearing here.')}
                         </p>
                     </div>
 
                     <form onSubmit={submit} className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-cyan-950/40">
-                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1fr_180px_180px_160px_auto]">
+                        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_180px_180px_160px_auto]">
                             <input
                                 value={search}
                                 onChange={(event) => setSearch(event.target.value)}
@@ -125,7 +125,7 @@ export default function Index({
                                 <option value="desc">{t('mods.sort_desc', 'Descending')}</option>
                                 <option value="asc">{t('mods.sort_asc', 'Ascending')}</option>
                             </select>
-                            <button className="rounded-xl bg-cyan-400 px-5 py-2 font-bold text-slate-950 hover:bg-cyan-300">
+                            <button className="rounded-xl bg-cyan-400 px-5 py-2 font-bold text-slate-950 hover:bg-cyan-300 md:col-span-2 xl:col-span-1">
                                 {t('actions.filter', 'Filter')}
                             </button>
                         </div>

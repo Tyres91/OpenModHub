@@ -52,6 +52,44 @@ function SecurityReviewBox({ mod }: { mod: ModEntry }) {
     );
 }
 
+function YouTubeReviewBox({ embedUrl, title }: { embedUrl: string; title: string }) {
+    const { translations } = usePage().props;
+    const t = useTranslations(translations);
+    const [loaded, setLoaded] = useState(false);
+
+    return (
+        <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-sm text-indigo-950 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-100">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-bold">{t('mods.youtube_preview', 'YouTube preview')}</p>
+                {!loaded && (
+                    <button type="button" onClick={() => setLoaded(true)} className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+                        {t('mods.load_youtube_preview', 'Load YouTube preview')}
+                    </button>
+                )}
+            </div>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">{t('mods.youtube_privacy_notice', 'YouTube will only load after you click because it is a third-party service.')}</p>
+            {loaded && <iframe src={embedUrl} title={title} className="mt-3 aspect-video w-full rounded-lg border border-indigo-200 dark:border-indigo-800" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />}
+        </div>
+    );
+}
+
+function AudioReviewBox({ version }: { version: ModVersionEntry }) {
+    const { translations } = usePage().props;
+    const t = useTranslations(translations);
+
+    if (!version.audio_url) {
+        return null;
+    }
+
+    return (
+        <div className="mt-4 rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-sm text-cyan-950 dark:border-cyan-900 dark:bg-cyan-950 dark:text-cyan-100">
+            <p className="font-bold">{t('mods.audio_preview', 'Audio preview')}</p>
+            <audio controls preload="metadata" src={version.audio_url} className="mt-3 w-full" />
+            {version.audio_original_name && <p className="mt-2 text-xs font-semibold uppercase tracking-wide opacity-80">{version.audio_original_name}</p>}
+        </div>
+    );
+}
+
 function RejectForm({ mod }: { mod: ModEntry }) {
     const { translations } = usePage().props;
     const t = useTranslations(translations);
@@ -152,48 +190,45 @@ function DeleteButtons({ mod }: { mod: ModEntry }) {
     const { translations } = usePage().props;
     const t = useTranslations(translations);
     const [showConfirm, setShowConfirm] = useState(false);
-    const [showPermanent, setShowPermanent] = useState(false);
+    const { data, setData, delete: destroy, processing, errors, reset } = useForm({
+        confirmation: '',
+    });
 
-    const handleSoftDelete = () => {
-        router.delete(route('admin.moderation.delete', mod.slug), { preserveScroll: true });
-    };
-
-    const handleForceDelete = () => {
-        router.delete(route('admin.moderation.force-delete', mod.slug), { preserveScroll: true });
+    const handleForceDelete = (event: FormEvent) => {
+        event.preventDefault();
+        destroy(route('admin.moderation.force-delete', mod.slug), {
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+                setShowConfirm(false);
+            },
+        });
     };
 
     if (showConfirm) {
         return (
-            <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('admin.moderation.confirm_delete', 'Delete this mod?')}</p>
-                <div className="flex flex-col gap-2">
-                    <button onClick={handleSoftDelete} className="w-full rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-300">
-                        {t('admin.moderation.soft_delete', 'Move to trash')}
-                    </button>
-                    <button onClick={() => { setShowConfirm(false); setShowPermanent(true); }} className="w-full rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-                        {t('admin.moderation.permanent_delete', 'Permanently delete')}
-                    </button>
-                    <button onClick={() => setShowConfirm(false)} className="w-full rounded-md px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
-                        {t('actions.cancel', 'Cancel')}
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    if (showPermanent) {
-        return (
-            <div className="space-y-2">
+            <form onSubmit={handleForceDelete} className="space-y-2">
                 <p className="text-sm font-medium text-red-700 dark:text-red-300">{t('admin.moderation.confirm_permanent', 'This cannot be undone. All data will be lost.')}</p>
-                <div className="flex gap-2">
-                    <button onClick={handleForceDelete} className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500">
+                <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400" htmlFor={`delete-confirmation-${mod.id}`}>
+                    {t('admin.moderation.type_mod_title', 'Type the mod title to confirm')}
+                </label>
+                <input
+                    id={`delete-confirmation-${mod.id}`}
+                    value={data.confirmation}
+                    onChange={(event) => setData('confirmation', event.target.value)}
+                    className="w-full rounded-md border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                    placeholder={mod.title}
+                />
+                {errors.confirmation && <p className="text-sm text-red-600">{errors.confirmation}</p>}
+                <div className="flex flex-col gap-2 sm:flex-row">
+                    <button disabled={processing || data.confirmation !== mod.title} className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50">
                         {t('admin.moderation.confirm_permanent_delete', 'Confirm permanent delete')}
                     </button>
-                    <button onClick={() => setShowPermanent(false)} className="rounded-md px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    <button type="button" onClick={() => { reset(); setShowConfirm(false); }} className="rounded-md px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
                         {t('actions.cancel', 'Cancel')}
                     </button>
                 </div>
-            </div>
+            </form>
         );
     }
 
@@ -265,9 +300,11 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                             <Link href={route('mods.show', mod.slug)} className="font-semibold text-indigo-700 dark:text-indigo-300">
                                                 {t('actions.preview', 'Preview')}
                                             </Link>
-                                            <a href={mod.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">
-                                                {t('common.download_link', 'Download link')}
-                                            </a>
+                                            {mod.external_download_url && (
+                                                <a href={mod.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">
+                                                    {t('common.download_link', 'Download link')}
+                                                </a>
+                                            )}
                                             <span className="text-gray-600 dark:text-gray-300">
                                                 {t('mods.download_clicks_count', '{count} download clicks').replace('{count}', String(mod.download_clicks_count ?? 0))}
                                             </span>
@@ -278,6 +315,8 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                             )}
                                         </div>
                                         <SecurityReviewBox mod={mod} />
+                                        {mod.current_version && <AudioReviewBox version={mod.current_version} />}
+                                        {mod.current_version?.youtube_embed_url && <YouTubeReviewBox embedUrl={mod.current_version.youtube_embed_url} title={`${mod.title} YouTube preview`} />}
                                     </div>
 
                                     <div className="space-y-3">
@@ -314,9 +353,11 @@ export default function Index({ mods, modVersions, status, flash }: PageProps<{ 
                                                 <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-600 dark:text-gray-300">{version.changelog}</p>
                                                 <div className="mt-4 flex flex-wrap gap-3 text-sm">
                                                     {version.mod && <Link href={route('mods.show', version.mod.slug)} className="font-semibold text-indigo-700 dark:text-indigo-300">{t('actions.preview', 'Preview')}</Link>}
-                                                    <a href={version.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.download_link', 'Download link')}</a>
+                                                    {version.external_download_url && <a href={version.external_download_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.download_link', 'Download link')}</a>}
                                                     {version.virus_total_url && <a href={version.virus_total_url} target="_blank" rel="noreferrer" className="font-semibold text-indigo-700 dark:text-indigo-300">{t('common.virustotal', 'VirusTotal')}</a>}
                                                 </div>
+                                                <AudioReviewBox version={version} />
+                                                {version.youtube_embed_url && <YouTubeReviewBox embedUrl={version.youtube_embed_url} title={`${version.mod?.title ?? 'Mod'} YouTube preview`} />}
                                             </div>
                                             <div className="space-y-3">
                                                 {version.status !== 'approved' && (

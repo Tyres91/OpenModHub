@@ -204,3 +204,15 @@ VirusTotal automation stores moderation context only. It never auto-approves mod
 Mods use `mod_versions` for release-specific download links, changelogs, VirusTotal checks, and download counters. New mod submissions create an initial pending version. New versions for approved mods can be submitted by the owner and must be approved by an admin or a user with review permissions before they become public.
 
 Approving a version clears `is_current` from other versions of the same mod and marks the approved version as current. The public mod download route resolves to the current approved version; version-specific download routes count clicks per version.
+
+## Media Previews
+
+Screenshots and MP3 files are treated as moderated media assets, not arbitrary file hosting. MP3 uploads are intended for soundmods where audio is either preview content or the actual sound-only mod download. Larger archives should continue to use external download links.
+
+YouTube previews must be stored as validated URLs or extracted video IDs. The frontend should render a local placeholder first and load the YouTube embed only after the visitor explicitly clicks. User-provided iframe or script HTML must never be rendered.
+
+Version-specific media belongs to `mod_versions` so pending media is reviewed before it becomes public. MP3 files can be used as preview audio and as the download target for sound-only mods when no external download URL is provided. Permanent mod deletion must delete related database rows and uploaded media files.
+
+## Category Ordering
+
+Categories should support an admin-managed `sort_order`. Admin users can reorder categories with drag-and-drop in the admin area. Public category filters and mod submission forms should use the configured order instead of alphabetical ordering.

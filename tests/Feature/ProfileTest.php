@@ -28,7 +28,7 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [
-                'name' => 'Test User',
+                'name' => 'Test_User',
                 'email' => 'test@example.com',
             ]);
 
@@ -38,7 +38,7 @@ class ProfileTest extends TestCase
 
         $user->refresh();
 
-        $this->assertSame('Test User', $user->name);
+        $this->assertSame('Test_User', $user->name);
         $this->assertSame('test@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
     }
@@ -50,7 +50,7 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [
-                'name' => 'Test User',
+                'name' => 'Test_User',
                 'email' => $user->email,
             ]);
 
@@ -77,6 +77,32 @@ class ProfileTest extends TestCase
 
         $this->assertGuest();
         $this->assertNull($user->fresh());
+    }
+
+    public function test_profile_username_must_be_valid_and_unique(): void
+    {
+        User::factory()->create(['name' => 'Existing_User']);
+        $user = User::factory()->create(['name' => 'Current_User']);
+
+        $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->patch('/profile', [
+                'name' => 'Invalid User',
+                'email' => $user->email,
+            ])
+            ->assertSessionHasErrors('name')
+            ->assertRedirect('/profile');
+
+        $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->patch('/profile', [
+                'name' => 'Existing_User',
+                'email' => $user->email,
+            ])
+            ->assertSessionHasErrors('name')
+            ->assertRedirect('/profile');
     }
 
     public function test_correct_password_must_be_provided_to_delete_account(): void

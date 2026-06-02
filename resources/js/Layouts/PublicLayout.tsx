@@ -25,7 +25,7 @@ export default function PublicLayout({
                         <BrandLogo imageClassName="h-8 max-w-[150px] object-contain sm:h-10 sm:max-w-[180px]" fallbackIconClassName="h-8 w-auto fill-current text-cyan-200 sm:h-9" textClassName="text-lg font-black tracking-tight text-white sm:text-xl" />
                     </Link>
 
-                    <nav className="hidden items-center gap-4 text-sm font-semibold sm:flex">
+                    <nav className="hidden items-center gap-4 text-sm font-semibold md:flex">
                         <Link href={route('faqs.index')} className="text-slate-200 hover:text-white">
                             {t('navigation.faqs', 'FAQs')}
                         </Link>
@@ -61,7 +61,7 @@ export default function PublicLayout({
 
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-white/10 hover:text-white sm:hidden"
+                        className="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-white/10 hover:text-white md:hidden"
                     >
                         <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                             {mobileMenuOpen ? (
@@ -74,7 +74,7 @@ export default function PublicLayout({
                 </div>
 
                 {mobileMenuOpen && (
-                    <div className="border-t border-white/10 px-4 pb-4 pt-2 sm:hidden">
+                    <div className="border-t border-white/10 px-4 pb-4 pt-2 md:hidden">
                         <div className="space-y-2">
                             <Link href={route('faqs.index')} className="block rounded-md px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
                                 {t('navigation.faqs', 'FAQs')}

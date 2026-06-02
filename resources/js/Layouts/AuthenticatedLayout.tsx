@@ -22,6 +22,7 @@ export default function Authenticated({
     const t = useTranslations(translations);
     const canReview = user?.permissions?.includes('review_mods') || user?.permissions?.includes('moderate_comments') || user?.permissions?.includes('handle_reports');
     const canManageAdminData = user?.permissions?.includes('manage_users') || user?.permissions?.includes('manage_categories') || user?.permissions?.includes('manage_faqs') || user?.permissions?.includes('manage_ranks') || user?.permissions?.includes('manage_settings');
+    const canManageMods = user?.permissions?.includes('review_mods') || user?.permissions?.includes('edit_any_mod') || user?.permissions?.includes('delete_any_mod') || user?.roles?.includes('admin') || false;
     const moderationTodos = page.props.moderationTodos;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
@@ -39,7 +40,7 @@ export default function Authenticated({
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden space-x-8 lg:-my-px lg:ms-10 lg:flex">
                                 <NavLink
                                     href={route('mods.index')}
                                     active={route().current('mods.index') || route().current('home')}
@@ -80,8 +81,16 @@ export default function Authenticated({
                                 {canManageAdminData && (
                                     <NavDropdown
                                         label={t('navigation.admin', 'Admin')}
-                                        active={route().current('admin.users.*') || route().current('admin.categories.*') || route().current('admin.faqs.*') || route().current('admin.ranks.*') || route().current('admin.rank-point-rules.*') || route().current('admin.settings.*') || route().current('admin.email-templates.*')}
+                                        active={route().current('admin.users.*') || route().current('admin.categories.*') || route().current('admin.faqs.*') || route().current('admin.ranks.*') || route().current('admin.rank-point-rules.*') || route().current('admin.settings.*') || route().current('admin.email-templates.*') || route().current('admin.mods.*')}
                                     >
+                                        {canManageMods && (
+                                            <NavDropdownLink
+                                                href={route('admin.mods.index')}
+                                                active={route().current('admin.mods.*')}
+                                            >
+                                                {t('navigation.admin_mods', 'All Mods')}
+                                            </NavDropdownLink>
+                                        )}
                                         <NavDropdownLink
                                             href={route('admin.users.index')}
                                             active={route().current('admin.users.*')}
@@ -129,7 +138,7 @@ export default function Authenticated({
                             </div>
                         </div>
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div className="hidden lg:ms-6 lg:flex lg:items-center">
                             <LanguageSwitcher />
                             <div className="relative ms-3">
                                 <Dropdown>
@@ -181,7 +190,7 @@ export default function Authenticated({
                             )}
                         </div>
 
-                        <div className="-me-2 flex items-center sm:hidden">
+                        <div className="-me-2 flex items-center lg:hidden">
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
@@ -227,7 +236,7 @@ export default function Authenticated({
                 <div
                     className={
                         (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
+                        ' lg:hidden'
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
@@ -292,6 +301,14 @@ export default function Authenticated({
                                 <div className="mt-4 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                     {t('navigation.admin', 'Admin')}
                                 </div>
+                                {canManageMods && (
+                                    <ResponsiveNavLink
+                                        href={route('admin.mods.index')}
+                                        active={route().current('admin.mods.*')}
+                                    >
+                                        {t('navigation.admin_mods', 'All Mods')}
+                                    </ResponsiveNavLink>
+                                )}
                                 <ResponsiveNavLink
                                     href={route('admin.users.index')}
                                     active={route().current('admin.users.*')}

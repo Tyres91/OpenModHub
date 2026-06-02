@@ -1,10 +1,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Category, PageProps } from '@/types';
+import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, HTMLAttributes, useEffect, useState } from 'react';
 import { useTranslations } from '@/lib/translations';
 
-function CategoryRow({ category }: { category: Category }) {
+function CategoryRow({ category, dragHandleProps }: { category: Category; dragHandleProps?: HTMLAttributes<HTMLButtonElement> }) {
     const { translations } = usePage().props;
     const t = useTranslations(translations);
     const [editing, setEditing] = useState(false);
@@ -57,7 +60,17 @@ function CategoryRow({ category }: { category: Category }) {
         <article className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
             <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
+                        {dragHandleProps && (
+                            <button
+                                type="button"
+                                {...dragHandleProps}
+                                className="cursor-grab rounded-md border border-gray-300 px-2 py-1 text-sm font-bold text-gray-500 hover:bg-gray-50 active:cursor-grabbing dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
+                                aria-label={t('admin.categories.drag_handle', 'Drag to reorder')}
+                            >
+                                ⋮⋮
+                            </button>
+                        )}
                         <h2 className="text-lg font-bold text-gray-950 dark:text-white">{category.name}</h2>
                         <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-200">{category.slug}</span>
                         <span className={category.is_active ? 'rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700' : 'rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500'}>
@@ -76,6 +89,20 @@ function CategoryRow({ category }: { category: Category }) {
     );
 }
 
+function SortableCategoryRow({ category }: { category: Category }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: category.id });
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} className={isDragging ? 'opacity-60' : undefined}>
+            <CategoryRow category={category} dragHandleProps={{ ...attributes, ...listeners }} />
+        </div>
+    );
+}
+
 export default function Index({ categories, flash }: PageProps<{ categories: Category[] }>) {
     const { translations } = usePage().props;
     const t = useTranslations(translations);
@@ -84,6 +111,17 @@ export default function Index({ categories, flash }: PageProps<{ categories: Cat
         description: '',
         is_active: true,
     });
+    const [orderedCategories, setOrderedCategories] = useState(categories);
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    useEffect(() => {
+        setOrderedCategories(categories);
+    }, [categories]);
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
@@ -91,6 +129,39 @@ export default function Index({ categories, flash }: PageProps<{ categories: Cat
             preserveScroll: true,
             onSuccess: () => reset(),
         });
+    };
+
+    const reorderCategories = (items: Category[]) => {
+        const reordered = items.map((category, index) => ({
+            ...category,
+            sort_order: (index + 1) * 10,
+        }));
+
+        setOrderedCategories(reordered);
+        router.patch(
+            route('admin.categories.reorder'),
+            {
+                categories: reordered.map((category) => ({ id: category.id, sort_order: category.sort_order })),
+            },
+            { preserveScroll: true },
+        );
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (!over || active.id === over.id) {
+            return;
+        }
+
+        const oldIndex = orderedCategories.findIndex((category) => category.id === active.id);
+        const newIndex = orderedCategories.findIndex((category) => category.id === over.id);
+
+        if (oldIndex === -1 || newIndex === -1) {
+            return;
+        }
+
+        reorderCategories(arrayMove(orderedCategories, oldIndex, newIndex));
     };
 
     return (
@@ -124,7 +195,17 @@ export default function Index({ categories, flash }: PageProps<{ categories: Cat
                     </form>
 
                     <section className="space-y-4">
-                        {categories.map((category) => <CategoryRow key={category.id} category={category} />)}
+                        <div>
+                            <h2 className="text-lg font-bold text-gray-950 dark:text-white">{t('admin.categories.order_heading', 'Category order')}</h2>
+                            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('admin.categories.order_hint', 'Drag categories to change their display order.')}</p>
+                        </div>
+                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                            <SortableContext items={orderedCategories.map((category) => category.id)} strategy={verticalListSortingStrategy}>
+                                <div className="space-y-4">
+                                    {orderedCategories.map((category) => <SortableCategoryRow key={category.id} category={category} />)}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
                     </section>
                 </div>
             </div>

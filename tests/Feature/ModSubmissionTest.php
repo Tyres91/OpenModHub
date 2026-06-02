@@ -405,6 +405,269 @@ class ModSubmissionTest extends TestCase
             );
     }
 
+    public function test_public_category_options_are_ordered_by_sort_order(): void
+    {
+        Category::query()->create(['name' => 'Visuals', 'slug' => 'visuals', 'is_active' => true, 'sort_order' => 20]);
+        Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'is_active' => true, 'sort_order' => 10]);
+
+        $this->get(route('mods.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('categories.0.slug', 'audio')
+                ->where('categories.1.slug', 'visuals')
+            );
+    }
+
+    public function test_submit_form_category_options_are_ordered_by_sort_order(): void
+    {
+        $user = User::factory()->create();
+        Category::query()->create(['name' => 'Visuals', 'slug' => 'visuals', 'is_active' => true, 'sort_order' => 20]);
+        Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'is_active' => true, 'sort_order' => 10]);
+
+        $this->actingAs($user)
+            ->get(route('mods.create'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('categories.0.name', 'Audio')
+                ->where('categories.1.name', 'Visuals')
+            );
+    }
+
+    public function test_mod_submission_accepts_youtube_preview_url(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+
+        $payload = $this->validModPayload($category, 'YouTube Preview Mod');
+        $payload['youtube_preview_url'] = 'https://youtu.be/dQw4w9WgXcQ';
+
+        $this->actingAs($user)->post(route('mods.store'), $payload)->assertRedirect(route('mods.mine'));
+
+        $this->assertDatabaseHas('mod_versions', [
+            'version' => '1.0.0',
+            'youtube_preview_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'youtube_video_id' => 'dQw4w9WgXcQ',
+        ]);
+    }
+
+    public function test_mod_submission_rejects_non_youtube_preview_url(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+
+        $payload = $this->validModPayload($category, 'Invalid YouTube Preview Mod');
+        $payload['youtube_preview_url'] = 'https://example.com/video';
+
+        $this->actingAs($user)->post(route('mods.store'), $payload)
+            ->assertSessionHasErrors('youtube_preview_url');
+    }
+
+    public function test_version_submission_accepts_youtube_preview_url(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+        $mod = Mod::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Approved Mod',
+            'slug' => 'approved-mod',
+            'description' => 'A publicly approved mod used for version submission.',
+            'external_download_url' => 'https://example.com/approved-mod',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+        ]);
+
+        $this->actingAs($user)->post(route('mods.versions.store', $mod), [
+            'version' => '1.1.0',
+            'changelog' => 'New version with YouTube preview.',
+            'external_download_url' => 'https://example.com/approved-mod-1-1',
+            'youtube_preview_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ])->assertRedirect(route('mods.mine'));
+
+        $this->assertDatabaseHas('mod_versions', [
+            'mod_id' => $mod->id,
+            'version' => '1.1.0',
+            'youtube_video_id' => 'dQw4w9WgXcQ',
+        ]);
+    }
+
+    public function test_public_mod_payload_includes_click_to_load_youtube_preview(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Gameplay',
+            'slug' => 'gameplay',
+            'is_active' => true,
+        ]);
+        $mod = Mod::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Approved YouTube Mod',
+            'slug' => 'approved-youtube-mod',
+            'description' => 'A publicly approved mod with a YouTube preview.',
+            'external_download_url' => 'https://example.com/approved-youtube-mod',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+        ]);
+        ModVersion::query()->create([
+            'mod_id' => $mod->id,
+            'submitted_by' => $user->id,
+            'version' => '1.0.0',
+            'normalized_version' => '1.0.0.0',
+            'changelog' => 'Initial release with YouTube preview.',
+            'external_download_url' => 'https://example.com/approved-youtube-mod',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+            'is_current' => true,
+            'youtube_preview_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'youtube_video_id' => 'dQw4w9WgXcQ',
+        ]);
+
+        $this->get(route('mods.show', $mod))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('mod.current_version.youtube_video_id', 'dQw4w9WgXcQ')
+                ->where('mod.current_version.youtube_embed_url', 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')
+            );
+    }
+
+    public function test_mod_submission_accepts_mp3_without_external_download_url(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Audio',
+            'slug' => 'audio',
+            'is_active' => true,
+        ]);
+
+        $payload = $this->validModPayload($category, 'Audio Only Mod');
+        unset($payload['external_download_url']);
+        $payload['audio_file'] = UploadedFile::fake()->create('preview.mp3', 100, 'audio/mpeg');
+
+        $this->actingAs($user)->post(route('mods.store'), $payload)->assertRedirect(route('mods.mine'));
+
+        $version = ModVersion::query()->where('version', '1.0.0')->firstOrFail();
+
+        $this->assertNull($version->external_download_url);
+        $this->assertSame('preview.mp3', $version->audio_original_name);
+        Storage::disk('public')->assertExists($version->audio_file_path);
+    }
+
+    public function test_mod_submission_rejects_invalid_audio_file(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Audio',
+            'slug' => 'audio',
+            'is_active' => true,
+        ]);
+
+        $payload = $this->validModPayload($category, 'Invalid Audio Mod');
+        $payload['audio_file'] = UploadedFile::fake()->create('audio.wav', 100, 'audio/wav');
+
+        $this->actingAs($user)->post(route('mods.store'), $payload)
+            ->assertSessionHasErrors('audio_file');
+    }
+
+    public function test_version_download_can_use_uploaded_audio_file(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Audio',
+            'slug' => 'audio',
+            'is_active' => true,
+        ]);
+        $mod = Mod::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Approved Audio Mod',
+            'slug' => 'approved-audio-mod',
+            'description' => 'A publicly approved audio mod.',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+        ]);
+        Storage::disk('public')->put('mods/audio/current.mp3', 'audio-content');
+        $version = ModVersion::query()->create([
+            'mod_id' => $mod->id,
+            'submitted_by' => $user->id,
+            'version' => '1.0.0',
+            'normalized_version' => '1.0.0.0',
+            'changelog' => 'Initial audio release.',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+            'is_current' => true,
+            'audio_file_path' => 'mods/audio/current.mp3',
+            'audio_original_name' => 'current.mp3',
+            'audio_mime' => 'audio/mpeg',
+            'audio_size' => 100,
+        ]);
+
+        $this->get(route('mods.versions.download', [$mod, $version]))
+            ->assertRedirect(Storage::disk('public')->url('mods/audio/current.mp3'));
+    }
+
+    public function test_public_mod_payload_includes_audio_preview(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::query()->create([
+            'name' => 'Audio',
+            'slug' => 'audio',
+            'is_active' => true,
+        ]);
+        $mod = Mod::query()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Approved Audio Preview Mod',
+            'slug' => 'approved-audio-preview-mod',
+            'description' => 'A publicly approved mod with audio preview.',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+        ]);
+        ModVersion::query()->create([
+            'mod_id' => $mod->id,
+            'submitted_by' => $user->id,
+            'version' => '1.0.0',
+            'normalized_version' => '1.0.0.0',
+            'changelog' => 'Initial audio release.',
+            'status' => Mod::STATUS_APPROVED,
+            'approved_at' => now(),
+            'is_current' => true,
+            'audio_file_path' => 'mods/audio/current.mp3',
+            'audio_original_name' => 'current.mp3',
+            'audio_mime' => 'audio/mpeg',
+            'audio_size' => 100,
+        ]);
+
+        $this->get(route('mods.show', $mod))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('mod.current_version.audio_original_name', 'current.mp3')
+                ->where('mod.current_version.audio_url', Storage::disk('public')->url('mods/audio/current.mp3'))
+            );
+    }
+
     public function test_rejects_non_image_file(): void
     {
         Storage::fake('public');

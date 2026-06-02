@@ -98,9 +98,15 @@ admin.moderation.no_mods,No mods in this queue.,Keine Mods in dieser Warteschlan
 admin.moderation.approve_publish,Approve and publish,Genehmigen und veröffentlichen
 admin.moderation.confirm_reject,Confirm reject,Ablehnung bestätigen
 admin.moderation.rejection_reason_placeholder,"Explain why this mod was rejected","Erkläre, warum dieser Mod abgelehnt wurde"
+admin.moderation.confirm_permanent,This cannot be undone. All related data and uploaded files will be deleted.,Diese Aktion kann nicht rückgängig gemacht werden. Alle zugehörigen Daten und hochgeladenen Dateien werden gelöscht.
+admin.moderation.type_mod_title,Type the mod title to confirm,Gib den Mod-Titel zur Bestätigung ein
+admin.moderation.confirm_permanent_delete,Confirm permanent delete,Endgültiges Löschen bestätigen
 admin.categories.title,Categories,Kategorien
 admin.categories.heading,Manage categories,Kategorien verwalten
 admin.categories.subtitle,"Create, edit, and deactivate categories.","Kategorien erstellen, bearbeiten und deaktivieren."
+admin.categories.order_heading,Category order,Kategorie-Reihenfolge
+admin.categories.order_hint,Drag categories to change their display order.,Ziehe Kategorien per Drag-and-drop in die gewünschte Reihenfolge.
+admin.categories.drag_handle,Drag to reorder,Zum Sortieren ziehen
 admin.categories.new_category,New category,Neue Kategorie
 admin.categories.no_categories,No categories yet.,Noch keine Kategorien.
 admin.categories.name,Name,Name
@@ -255,6 +261,7 @@ flash.report_submitted,Report submitted.,Meldung gesendet.
 flash.category_created,Category created.,Kategorie erstellt.
 flash.category_updated,Category updated.,Kategorie aktualisiert.
 flash.category_deleted,Category deleted.,Kategorie gelöscht.
+flash.category_order_updated,Category order updated.,Kategorie-Reihenfolge aktualisiert.
 flash.category_not_deletable,Categories with mods cannot be deleted. Deactivate the category instead.,Kategorien mit Mods können nicht gelöscht werden. Deaktiviere die Kategorie stattdessen.
 flash.rank_created,Rank created.,Rang erstellt.
 flash.rank_updated,Rank updated.,Rang aktualisiert.
@@ -262,6 +269,7 @@ flash.rank_deleted,Rank deleted.,Rang gelöscht.
 flash.rank_point_rules_updated,Rank point rules updated.,Rang-Punkteregeln aktualisiert.
 flash.mod_approved,Mod approved.,Mod genehmigt.
 flash.mod_rejected,Mod rejected.,Mod abgelehnt.
+flash.mod_permanently_deleted,Mod permanently deleted.,Mod endgültig gelöscht.
 flash.comment_posted,Comment posted.,Kommentar gesendet.
 flash.comment_hidden,Comment hidden.,Kommentar verborgen.
 flash.comment_shown,Comment shown.,Kommentar sichtbar gemacht.
@@ -328,8 +336,19 @@ common.search_icons,Search icons...,Icons durchsuchen...
 common.no_icons_found,No icons found,Keine Icons gefunden
 mods.upload_type_error,Only JPEG and PNG images are allowed.,Nur JPEG- und PNG-Bilder sind erlaubt.
 mods.upload_size_error,The image must not exceed 5 MB.,Das Bild darf maximal 5 MB groß sein.
+mods.audio_type_error,Only MP3 audio files are allowed.,Nur MP3-Audiodateien sind erlaubt.
+mods.audio_size_error,The MP3 file must not exceed 20 MB.,Die MP3-Datei darf maximal 20 MB groß sein.
+mods.audio_file,MP3 audio file,MP3-Audiodatei
+mods.audio_file_hint,"Optional MP3 preview or soundmod download, maximum 20 MB.","Optionale MP3-Vorschau oder Soundmod-Download, maximal 20 MB."
+mods.external_download_or_audio_hint,Required unless you upload an MP3 file as the download.,Erforderlich außer du lädst eine MP3-Datei als Download hoch.
+mods.audio_preview,Audio preview,Audio-Vorschau
 mods.screenshot,Screenshot,Screenshot
 mods.screenshot_hint,"PNG or JPEG, minimum 512x512px, maximum 5 MB.","PNG oder JPEG, mindestens 512x512px, maximal 5 MB."
+mods.youtube_preview_url,YouTube preview URL,YouTube-Vorschau-URL
+mods.youtube_preview_hint,Optional. The video is shown as a click-to-load preview for privacy.,Optional. Das Video wird aus Datenschutzgründen erst nach Klick geladen.
+mods.youtube_preview,YouTube preview,YouTube-Vorschau
+mods.youtube_privacy_notice,YouTube will only load after you click because it is a third-party service.,YouTube wird erst nach deinem Klick geladen, da es ein Drittanbieter-Dienst ist.
+mods.load_youtube_preview,Load YouTube preview,YouTube-Vorschau laden
 mods.status_pending,Pending,Ausstehend
 mods.status_approved,Approved,Genehmigt
 mods.status_rejected,Rejected,Abgelehnt

@@ -36,6 +36,7 @@ export interface Category {
     slug: string;
     description?: string | null;
     is_active?: boolean;
+    sort_order: number;
     mods_count?: number;
     created_at?: string;
     updated_at?: string;
@@ -97,8 +98,15 @@ export interface ModVersionEntry {
     version: string;
     normalized_version?: string;
     changelog: string;
-    external_download_url: string;
+    external_download_url?: string | null;
     virus_total_url?: string | null;
+    youtube_preview_url?: string | null;
+    youtube_video_id?: string | null;
+    youtube_embed_url?: string | null;
+    audio_url?: string | null;
+    audio_original_name?: string | null;
+    audio_mime?: string | null;
+    audio_size?: number | null;
     download_clicks_count: number;
     status: 'pending' | 'approved' | 'rejected';
     rejection_reason?: string | null;
@@ -116,7 +124,7 @@ export interface ModEntry {
     title: string;
     slug: string;
     description: string;
-    external_download_url: string;
+    external_download_url?: string | null;
     virus_total_url?: string | null;
     download_clicks_count: number;
     status: 'pending' | 'approved' | 'rejected';

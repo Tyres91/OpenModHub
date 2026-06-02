@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Rank;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserSanction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -280,7 +281,64 @@ class AdminUserTest extends TestCase
         $this->post(route('login'), [
             'login' => $user->email,
             'password' => 'password',
-        ])->assertSessionHasErrors('login');
+        ])->assertSessionHasErrors([
+            'login' => __('messages.sanctions.account_locked_permanent', [
+                'reason' => '',
+            ]),
+        ]);
+
+        $this->assertGuest();
+    }
+
+    public function test_blocked_user_login_error_includes_reason(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'blocked@example.com',
+            'password' => bcrypt('password'),
+            'blocked_at' => now(),
+            'blocked_until' => now()->addDay(),
+            'block_reason' => 'Repeated malware uploads',
+        ]);
+
+        $this->post(route('login'), [
+            'login' => $user->email,
+            'password' => 'password',
+        ])->assertSessionHasErrors([
+            'login' => __('messages.sanctions.account_locked', [
+                'date' => $user->blocked_until->format('d.m.Y H:i'),
+                'reason' => 'Repeated malware uploads',
+            ]),
+        ]);
+
+        $this->assertGuest();
+    }
+
+    public function test_account_lock_sanction_blocks_login_with_reason(): void
+    {
+        $issuer = User::factory()->create();
+        $user = User::factory()->create([
+            'email' => 'locked@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        $expiresAt = now()->addDays(3);
+
+        UserSanction::query()->create([
+            'user_id' => $user->id,
+            'type' => UserSanction::TYPE_ACCOUNT_LOCK,
+            'reason' => 'Too many warnings',
+            'issued_by' => $issuer->id,
+            'expires_at' => $expiresAt,
+        ]);
+
+        $this->post(route('login'), [
+            'login' => $user->email,
+            'password' => 'password',
+        ])->assertSessionHasErrors([
+            'login' => __('messages.sanctions.account_locked', [
+                'date' => $expiresAt->format('d.m.Y H:i'),
+                'reason' => 'Too many warnings',
+            ]),
+        ]);
 
         $this->assertGuest();
     }

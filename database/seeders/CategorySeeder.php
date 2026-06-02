@@ -17,12 +17,13 @@ class CategorySeeder extends Seeder
             ['name' => 'Visuals', 'slug' => 'visuals', 'description' => 'Textures, shaders, models, and visual upgrades.'],
             ['name' => 'Quality of Life', 'slug' => 'quality-of-life', 'description' => 'Small improvements that make playing smoother.'],
             ['name' => 'Tools', 'slug' => 'tools', 'description' => 'Utilities, launchers, editors, and helper tools.'],
-        ])->each(fn (array $category) => Category::query()->updateOrCreate(
+        ])->each(fn (array $category, int $index) => Category::query()->updateOrCreate(
             ['slug' => $category['slug']],
             [
                 'name' => $category['name'],
                 'description' => $category['description'],
                 'is_active' => true,
+                'sort_order' => ($index + 1) * 10,
             ],
         ));
     }

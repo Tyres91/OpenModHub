@@ -25,7 +25,7 @@ class UpdateUserRequest extends FormRequest
         $user = $this->route('user');
 
         return [
-            'name' => ['required', 'string', 'max:30', 'regex:/^[a-zA-Z0-9_]+$/', Rule::unique(User::class, 'name')->ignore($user->id)],
+            'name' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_]+$/', Rule::unique(User::class, 'name')->ignore($user->id)],
             'email' => [
                 'required',
                 'string',

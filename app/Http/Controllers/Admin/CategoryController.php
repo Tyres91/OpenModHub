@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReorderCategoryRequest;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -21,7 +23,7 @@ class CategoryController extends Controller
         return Inertia::render('Admin/Categories/Index', [
             'categories' => Category::query()
                 ->withCount('mods')
-                ->orderBy('name')
+                ->ordered()
                 ->get()
                 ->map(fn (Category $category): array => $this->categoryPayload($category))
                 ->values(),
@@ -30,9 +32,12 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
+        $maxSortOrder = Category::query()->max('sort_order') ?? 0;
+
         Category::query()->create([
             ...$request->validated(),
             'slug' => $this->uniqueSlug($request->string('name')->toString()),
+            'sort_order' => $maxSortOrder + 10,
         ]);
 
         return back()->with('status', __('messages.flash.category_created'));
@@ -56,6 +61,19 @@ class CategoryController extends Controller
         $category->delete();
 
         return back()->with('status', __('messages.flash.category_deleted'));
+    }
+
+    public function reorder(ReorderCategoryRequest $request): RedirectResponse
+    {
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated('categories') as $category) {
+                Category::query()
+                    ->whereKey($category['id'])
+                    ->update(['sort_order' => $category['sort_order']]);
+            }
+        });
+
+        return back()->with('status', __('messages.flash.category_order_updated'));
     }
 
     private function uniqueSlug(string $name): string
@@ -83,6 +101,7 @@ class CategoryController extends Controller
             'slug' => $category->slug,
             'description' => $category->description,
             'is_active' => $category->is_active,
+            'sort_order' => $category->sort_order,
             'mods_count' => $category->mods_count,
             'created_at' => $category->created_at->toISOString(),
             'updated_at' => $category->updated_at->toISOString(),

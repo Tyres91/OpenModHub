@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\ModController as AdminModController;
 use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\RankController;
 use App\Http\Controllers\Admin\RankPointRuleController;
@@ -47,13 +48,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
         Route::patch('/moderation/{mod:slug}/approve', [ModerationController::class, 'approve'])->name('moderation.approve');
         Route::patch('/moderation/{mod:slug}/reject', [ModerationController::class, 'reject'])->name('moderation.reject');
-        Route::delete('/moderation/{mod:slug}/delete', [ModerationController::class, 'destroy'])->name('moderation.delete');
         Route::delete('/moderation/{mod:slug}/force-delete', [ModerationController::class, 'forceDestroy'])->name('moderation.force-delete');
         Route::patch('/moderation/versions/{modVersion}/approve', [ModerationController::class, 'approveVersion'])->name('moderation.versions.approve');
         Route::patch('/moderation/versions/{modVersion}/reject', [ModerationController::class, 'rejectVersion'])->name('moderation.versions.reject');
 
+        Route::get('/mods', [AdminModController::class, 'index'])->name('mods.index');
+        Route::patch('/mods/{mod}', [AdminModController::class, 'update'])->name('mods.update');
+        Route::delete('/mods/{mod}', [AdminModController::class, 'destroy'])->name('mods.destroy');
+
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::patch('/categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
         Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
@@ -110,6 +115,7 @@ Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update
 
 Route::get('/users/{user}', [UserProfileController::class, 'show'])->name('users.show');
 Route::get('/mods/{mod:slug}/versions/{modVersion}/download', [ModVersionController::class, 'download'])->name('mods.versions.download');
+Route::get('/mods/{mod:slug}/versions/{modVersion}/audio', [ModVersionController::class, 'audio'])->name('mods.versions.audio');
 Route::get('/mods/{mod:slug}/download', [ModController::class, 'download'])->name('mods.download');
 Route::get('/mods/{mod:slug}', [ModController::class, 'show'])->name('mods.show');
 
