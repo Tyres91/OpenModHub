@@ -625,7 +625,7 @@ class ModSubmissionTest extends TestCase
         ]);
 
         $this->get(route('mods.versions.download', [$mod, $version]))
-            ->assertRedirect(Storage::disk('public')->url('mods/audio/current.mp3'));
+            ->assertRedirect(route('mods.versions.audio', [$mod, $version]));
     }
 
     public function test_public_mod_payload_includes_audio_preview(): void
@@ -664,7 +664,7 @@ class ModSubmissionTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('mod.current_version.audio_original_name', 'current.mp3')
-                ->where('mod.current_version.audio_url', Storage::disk('public')->url('mods/audio/current.mp3'))
+                ->where('mod.current_version.audio_url', route('mods.versions.audio', [$mod, $mod->currentVersion]))
             );
     }
 
