@@ -402,6 +402,7 @@ function UserRow({ user, roles, permissions, specialRanks, availableLocales, aut
 
     if (editing) {
         return (
+            <>
             <form onSubmit={submit} className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
                 <div className="grid gap-4 lg:grid-cols-[1fr_1fr_auto]">
                     <div>
@@ -490,77 +491,33 @@ function UserRow({ user, roles, permissions, specialRanks, availableLocales, aut
                     {errors.permissions && <p className="mt-1 text-sm text-red-600">{errors.permissions}</p>}
                 </div>
 
-                <div className="mt-4 flex gap-2">
-                    <button disabled={processing} className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">{t('actions.save', 'Save')}</button>
-                    <button type="button" onClick={() => { setEditing(false); reset('password', 'password_confirmation'); }} className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{t('actions.cancel', 'Cancel')}</button>
-                </div>
-            </form>
-        );
-    }
-
-    return (
-        <article className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <div className="flex flex-wrap items-center gap-3">
-                        <h2 className="text-lg font-bold text-gray-950 dark:text-white">{user.name}</h2>
-                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-200">{user.email}</span>
-                        {user.roles.map((role) => (
-                            <span key={role} className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold capitalize text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">{role}</span>
-                        ))}
-                        {user.special_rank && (
-                            <span className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ backgroundColor: user.special_rank.color }}>
-                                {user.special_rank.name}
-                            </span>
+                <div className="mt-4 flex items-center justify-between gap-2">
+                    <div className="flex gap-2">
+                        <button disabled={processing} className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">{t('actions.save', 'Save')}</button>
+                        <button type="button" onClick={() => { setEditing(false); reset('password', 'password_confirmation'); }} className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{t('actions.cancel', 'Cancel')}</button>
+                    </div>
+                    <div className="flex gap-2">
+                        {canModerate && (
+                            <button type="button" onClick={() => setShowModeration(!showModeration)} className="rounded-md border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-200 dark:hover:bg-amber-950/40">
+                                {showModeration ? t('actions.hide', 'Hide') : t('warnings.title', 'Moderation')}
+                            </button>
                         )}
-                        {user.blocked_at && (
-                            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 dark:bg-red-900/40 dark:text-red-200">
-                                {t('admin.users.blocked', 'Blocked')}
-                            </span>
+                        {canManageUsers && (
+                            user.blocked_at ? (
+                                <button type="button" onClick={unblockUser} className="rounded-md border border-green-300 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-200 dark:hover:bg-green-950/40">{t('actions.unblock', 'Unblock')}</button>
+                            ) : (
+                                <button type="button" onClick={() => setShowBlockModal(true)} className="rounded-md border border-red-300 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-200 dark:hover:bg-red-950/40">{t('actions.block', 'Block')}</button>
+                            )
                         )}
-                        {user.active_warning_points > 0 && (
-                            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">
-                                {user.active_warning_points} {t('warnings.points', 'pts')}
-                            </span>
+                        {canDelete && (
+                            <button type="button" onClick={() => setShowDeleteModal(true)} className="rounded-md border border-red-600 bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500">{t('admin.users.delete_user', 'Delete')}</button>
                         )}
                     </div>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                        {user.mods_count} {t('common.mods_count_label', 'mods')} &middot; {t('admin.users.joined', 'Joined')} {new Date(user.created_at).toLocaleDateString()}
-                    </p>
-                    {user.blocked_at && (
-                        <p className="mt-2 text-sm text-red-700 dark:text-red-300">
-                            {user.blocked_until
-                                ? t('admin.users.blocked_temporarily', 'Blocked until').replace(':date', new Date(user.blocked_until).toLocaleString())
-                                : t('admin.users.blocked_permanently', 'Permanently blocked')
-                            }
-                            {user.block_reason ? ` · ${user.block_reason}` : ''}
-                        </p>
-                    )}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    {canManageUsers && (
-                        <button onClick={() => setEditing(true)} className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700">{t('actions.edit', 'Edit')}</button>
-                    )}
-                    {canModerate && (
-                        <button onClick={() => setShowModeration(!showModeration)} className="rounded-md border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-200 dark:hover:bg-amber-950/40">
-                            {showModeration ? t('actions.hide', 'Hide') : t('warnings.title', 'Moderation')}
-                        </button>
-                    )}
-                    {canManageUsers && (
-                        user.blocked_at ? (
-                            <button onClick={unblockUser} className="rounded-md border border-green-300 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-200 dark:hover:bg-green-950/40">{t('actions.unblock', 'Unblock')}</button>
-                        ) : (
-                            <button onClick={() => setShowBlockModal(true)} className="rounded-md border border-red-300 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-200 dark:hover:bg-red-950/40">{t('actions.block', 'Block')}</button>
-                        )
-                    )}
-                    {canDelete && (
-                        <button onClick={() => setShowDeleteModal(true)} className="rounded-md border border-red-600 bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500">{t('admin.users.delete_user', 'Delete')}</button>
-                    )}
-                </div>
-            </div>
+            </form>
 
             {showModeration && canModerate && (
-                <div>
+                <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
                     <WarningSection user={user} />
                     <SanctionSection user={user} />
                 </div>
@@ -642,7 +599,157 @@ function UserRow({ user, roles, permissions, specialRanks, availableLocales, aut
                     </div>
                 </div>
             )}
+            </>
+        );
+    }
+
+    return (
+        <>
+        <article className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <h2 className="text-lg font-bold text-gray-950 dark:text-white">{user.name}</h2>
+                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-200">{user.email}</span>
+                        {user.roles.map((role) => (
+                            <span key={role} className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold capitalize text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">{role}</span>
+                        ))}
+                        {user.special_rank && (
+                            <span className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ backgroundColor: user.special_rank.color }}>
+                                {user.special_rank.name}
+                            </span>
+                        )}
+                        {user.blocked_at && (
+                            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 dark:bg-red-900/40 dark:text-red-200">
+                                {t('admin.users.blocked', 'Blocked')}
+                            </span>
+                        )}
+                        {user.active_warning_points > 0 && (
+                            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">
+                                {user.active_warning_points} {t('warnings.points', 'pts')}
+                            </span>
+                        )}
+                    </div>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                        {user.mods_count} {t('common.mods_count_label', 'mods')} &middot; {t('admin.users.joined', 'Joined')} {new Date(user.created_at).toLocaleDateString()}
+                    </p>
+                    {user.blocked_at && (
+                        <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+                            {user.blocked_until
+                                ? t('admin.users.blocked_temporarily', 'Blocked until').replace(':date', new Date(user.blocked_until).toLocaleString())
+                                : t('admin.users.blocked_permanently', 'Permanently blocked')
+                            }
+                            {user.block_reason ? ` · ${user.block_reason}` : ''}
+                        </p>
+                    )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    {canManageUsers && (
+                        <button onClick={() => setEditing(true)} className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700">{t('actions.edit', 'Edit')}</button>
+                    )}
+                    {canModerate && (
+                        <button onClick={() => setShowModeration(!showModeration)} className="rounded-md border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-200 dark:hover:bg-amber-950/40">
+                            {showModeration ? t('actions.hide', 'Hide') : t('warnings.title', 'Moderation')}
+                        </button>
+                    )}
+                    {canManageUsers && (
+                        user.blocked_at ? (
+                            <button onClick={unblockUser} className="rounded-md border border-green-300 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-200 dark:hover:bg-green-950/40">{t('actions.unblock', 'Unblock')}</button>
+                        ) : (
+                            <button onClick={() => setShowBlockModal(true)} className="rounded-md border border-red-300 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-200 dark:hover:bg-red-950/40">{t('actions.block', 'Block')}</button>
+                        )
+                    )}
+                    {canDelete && (
+                        <button onClick={() => setShowDeleteModal(true)} className="rounded-md border border-red-600 bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500">{t('admin.users.delete_user', 'Delete')}</button>
+                    )}
+                </div>
+            </div>
+
+            {showModeration && canModerate && (
+                <div>
+                    <WarningSection user={user} />
+                    <SanctionSection user={user} />
+                </div>
+            )}
         </article>
+
+        {showBlockModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('actions.block', 'Block')} {user.name}</h3>
+                        <form onSubmit={submitBlock} className="mt-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {t('admin.users.block_reason_required', 'Reason')} *
+                                </label>
+                                <textarea
+                                    value={blockForm.data.block_reason}
+                                    onChange={(e) => blockForm.setData('block_reason', e.target.value)}
+                                    className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                                    rows={3}
+                                    required
+                                />
+                                {blockForm.errors.block_reason && <p className="mt-1 text-sm text-red-600">{blockForm.errors.block_reason}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {t('admin.users.blocked_until', 'Blocked until')} (optional)
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    value={blockForm.data.blocked_until}
+                                    onChange={(e) => blockForm.setData('blocked_until', e.target.value)}
+                                    className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                                />
+                                {blockForm.errors.blocked_until && <p className="mt-1 text-sm text-red-600">{blockForm.errors.blocked_until}</p>}
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <button type="button" onClick={() => { setShowBlockModal(false); blockForm.reset(); }} className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                                    {t('actions.cancel', 'Cancel')}
+                                </button>
+                                <button type="submit" disabled={blockForm.processing} className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50">
+                                    {t('actions.block', 'Block')}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
+                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">{t('admin.users.delete_confirm_title', 'Delete user permanently?')}</h3>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                            {t('admin.users.delete_confirm_text', 'This action cannot be undone. All data will be permanently deleted.')}
+                        </p>
+                        <div className="mt-4">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                {t('admin.users.delete_type_name', 'Type the username to confirm.')}
+                            </label>
+                            <input
+                                type="text"
+                                value={deleteConfirmName}
+                                onChange={(e) => setDeleteConfirmName(e.target.value)}
+                                className="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                            />
+                        </div>
+                        <div className="mt-4 flex justify-end gap-2">
+                            <button onClick={() => { setShowDeleteModal(false); setDeleteConfirmName(''); }} className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                                {t('actions.cancel', 'Cancel')}
+                            </button>
+                            <button
+                                onClick={deleteUser}
+                                disabled={deleteConfirmName !== user.name}
+                                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+                            >
+                                {t('admin.users.delete_user', 'Delete permanently')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
 
