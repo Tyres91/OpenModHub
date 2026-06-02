@@ -318,7 +318,7 @@ class ModController extends Controller
             'youtube_preview_url' => $version->youtube_preview_url,
             'youtube_video_id' => $version->youtube_video_id,
             'youtube_embed_url' => $version->youtube_video_id ? 'https://www.youtube-nocookie.com/embed/'.$version->youtube_video_id : null,
-            'audio_url' => $version->audio_file_path ? Storage::disk('public')->url($version->audio_file_path) : null,
+            'audio_url' => $version->audio_file_path ? route('mods.versions.audio', [$version->mod, $version]) : null,
             'audio_original_name' => $version->audio_original_name,
             'audio_mime' => $version->audio_mime,
             'audio_size' => $version->audio_size,

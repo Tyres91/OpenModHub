@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -98,6 +100,30 @@ class ModVersionController extends Controller
 
         abort_if($modVersion->audio_file_path === null, 404);
 
-        return redirect()->away(Storage::disk('public')->url($modVersion->audio_file_path));
+        return redirect()->route('mods.versions.audio', [$mod, $modVersion]);
+    }
+
+    public function audio(Mod $mod, ModVersion $modVersion): BinaryFileResponse
+    {
+        Gate::authorize('viewVersion', [$mod, $modVersion]);
+
+        abort_unless($modVersion->mod_id === $mod->id, 404);
+        abort_if($modVersion->audio_file_path === null, 404);
+
+        $filePath = Storage::disk('public')->path($modVersion->audio_file_path);
+        abort_if(! file_exists($filePath), 404);
+
+        $response = new BinaryFileResponse($filePath);
+
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_INLINE,
+            $modVersion->audio_original_name ?? 'audio.mp3'
+        );
+
+        $response->headers->set('Content-Type', $modVersion->audio_mime ?? 'audio/mpeg');
+        $response->headers->set('Accept-Ranges', 'bytes');
+        $response->trustXSendfileTypeHeader();
+
+        return $response;
     }
 }

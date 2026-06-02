@@ -115,6 +115,7 @@ Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update
 
 Route::get('/users/{user}', [UserProfileController::class, 'show'])->name('users.show');
 Route::get('/mods/{mod:slug}/versions/{modVersion}/download', [ModVersionController::class, 'download'])->name('mods.versions.download');
+Route::get('/mods/{mod:slug}/versions/{modVersion}/audio', [ModVersionController::class, 'audio'])->name('mods.versions.audio');
 Route::get('/mods/{mod:slug}/download', [ModController::class, 'download'])->name('mods.download');
 Route::get('/mods/{mod:slug}', [ModController::class, 'show'])->name('mods.show');
 
