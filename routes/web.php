@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\ModController as AdminModController;
 use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\RankController;
 use App\Http\Controllers\Admin\RankPointRuleController;
@@ -50,6 +51,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/moderation/{mod:slug}/force-delete', [ModerationController::class, 'forceDestroy'])->name('moderation.force-delete');
         Route::patch('/moderation/versions/{modVersion}/approve', [ModerationController::class, 'approveVersion'])->name('moderation.versions.approve');
         Route::patch('/moderation/versions/{modVersion}/reject', [ModerationController::class, 'rejectVersion'])->name('moderation.versions.reject');
+
+        Route::get('/mods', [AdminModController::class, 'index'])->name('mods.index');
+        Route::patch('/mods/{mod}', [AdminModController::class, 'update'])->name('mods.update');
+        Route::delete('/mods/{mod}', [AdminModController::class, 'destroy'])->name('mods.destroy');
 
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
