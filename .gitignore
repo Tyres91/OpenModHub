@@ -6,6 +6,7 @@
 !.env.testing
 !.env.unraid.example
 !.env.production.example
+!.env.plesk.example
 .env.backup
 .env.production
 .phpactor.json

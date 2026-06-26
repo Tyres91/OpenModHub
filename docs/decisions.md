@@ -278,3 +278,23 @@ Category sorting will use `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/ut
 
 Consequences:
 A small frontend dependency is added. Backend reorder validation and tests are required to persist the configured order safely.
+
+## 2026-06-26: Support Plesk-Managed PHP Hosting as a Production Target
+
+Status: Accepted
+
+Context:
+OpenModHub's existing deployment options required either Docker, a full Unraid setup, or a Debian vServer with manual nginx and Certbot configuration. These do not fit common shared or managed hosting environments where a Plesk subscription provides the PHP handler, the database, the web server, and the cron scheduler. Excluding Plesk left the project harder to deploy on the most common form of PHP hosting.
+
+Decision:
+OpenModHub will support Plesk-managed PHP servers as a documented production target alongside the existing Docker and Unraid paths. The application code does not change: the existing `database` cache, session, and queue drivers already work against the Plesk-managed MariaDB/MySQL instance. The Plesk-specific adjustments are limited to:
+
+- The domain document root is set to the project's `public/` directory via Plesk's hosting settings.
+- The queue worker is replaced by a short-lived `php artisan queue:work --stop-when-empty --max-time=240` invocation triggered every five minutes by a Plesk scheduled task.
+- The Laravel scheduler is triggered by a Plesk scheduled task calling `php artisan schedule:run` every minute.
+- The `public/storage` symlink is created with a relative target so it works on every host path.
+- A new `.env.plesk.example` template and a `scripts/deploy-plesk.sh` helper provide Plesk-specific defaults and an idempotent deploy script.
+- The `docs/deployment-plesk.md` guide documents the full walkthrough, including file ownership, scheduled tasks, and SMTP setup.
+
+Consequences:
+Plesk deployments need no root access and no manual server configuration beyond what Plesk already provides. The queue worker is no longer long-running; jobs accumulate briefly between cron ticks and are processed in batches. The frontend build (`public/build/`) is still produced on a build host and uploaded with the release because Plesk's Node.js support is not always available. All existing Docker and Unraid paths remain functional and are not deprecated.

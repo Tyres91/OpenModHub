@@ -44,9 +44,9 @@ MariaDB or MySQL is the planned database. The schema should use Laravel migratio
 
 ## Docker
 
-OpenModHub should be built around a Docker-first development workflow. A new developer should be able to start the project with Docker Compose without manually installing every runtime dependency on the host system.
+OpenModHub is built around a Docker-first development workflow. A new developer should be able to start the project with Docker Compose without manually installing every runtime dependency on the host system.
 
-Docker and Docker Compose should provide a reproducible local development environment. The expected services are:
+Docker and Docker Compose provide a reproducible local development environment. The expected services are:
 
 - PHP/Laravel application service
 - Web server or Laravel development server service, depending on setup
@@ -54,9 +54,22 @@ Docker and Docker Compose should provide a reproducible local development enviro
 - Node/Vite workflow, either inside the app container or locally documented
 - Optional queue worker service for background jobs
 
-The Docker setup should stay practical and understandable. It should support local development, database migrations, frontend asset compilation, and test execution without becoming a production orchestration platform.
+The Docker setup stays practical and understandable. It supports local development, database migrations, frontend asset compilation, and test execution without becoming a production orchestration platform.
 
 Local Unraid deployment is supported through `Dockerfile.unraid` and an Unraid Docker template in `docker/unraid/templates/openmodhub-app.xml`. The Unraid setup builds a local `openmodhub:local` image, runs a single app container, and connects to an existing MariaDB container such as `openmodhub-db` through environment variables.
+
+## Plesk-Managed Hosting
+
+OpenModHub also supports Plesk-managed PHP servers as a production target. The Plesk setup requires no Docker, no root access, and no manual server provisioning. It is documented in `docs/deployment-plesk.md`.
+
+Key differences from the Docker / Unraid deployment:
+
+- The web entry point is the Plesk domain document root, which is configured to point to the project's `public/` directory.
+- The queue worker is a short-lived `php artisan queue:work` invocation triggered by a Plesk scheduled task every few minutes, not a long-running process.
+- The Laravel scheduler is triggered by a Plesk scheduled task calling `php artisan schedule:run` every minute.
+- The database is the Plesk-managed local MySQL or MariaDB instance, accessed over `127.0.0.1:3306`.
+- File ownership follows the Plesk subscription user model (`psaserv:psacln` on Debian-based systems, `apache:psacln` on RHEL-based systems).
+- The `public/storage` symlink is created with a relative target so it works on every host path.
 
 ## CI/CD
 

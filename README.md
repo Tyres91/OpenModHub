@@ -11,7 +11,8 @@ The goal is to demonstrate a clean, maintainable full-stack architecture without
 - React with TypeScript
 - Tailwind CSS
 - MariaDB / MySQL
-- Docker / Docker Compose
+- Docker / Docker Compose for local development
+- Plesk-managed PHP server as a supported production target
 - Vite
 - GitHub Actions CI/CD, CI configured and CD planned
 
@@ -73,6 +74,10 @@ docker compose run --rm app php artisan queue:work --tries=3
 ```
 
 For a local Unraid deployment with an Unraid Docker template, see `docs/deployment-unraid.md`.
+
+For a Docker-based Debian vServer deployment with nginx, see `docs/deployment-server.md`.
+
+For a Plesk-managed PHP server (no Docker, no root access required), see `docs/deployment-plesk.md`. The Plesk setup uses the Plesk domain document root, a cron-triggered queue worker, and the Plesk database server.
 
 Seeded development accounts use the password `password`:
 

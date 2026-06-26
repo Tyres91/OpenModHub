@@ -73,3 +73,18 @@ Current status: the VirusTotal link field remains available and optional queued 
 Moderated mod versions with changelogs are implemented through `mod_versions`. Existing mods are backfilled into initial versions without deleting users or existing content.
 
 Planned updates: permanent mod deletion should be hardened with backend confirmation and cleanup tests. Categories should become drag-and-drop sortable. Version media should support MP3 audio and click-to-load YouTube previews.
+
+## Phase 6: Managed Hosting Deployment
+
+Current status: a Plesk-managed PHP server deployment path is implemented. OpenModHub can now run on a standard Plesk subscription with PHP 8.4, the Plesk-managed MySQL/MariaDB instance, and the Plesk scheduled-task system.
+
+- Plesk-specific environment template at `.env.plesk.example`
+- Document root set to the project's `public/` directory via Plesk hosting settings
+- Queue worker replaced by a short-lived `php artisan queue:work` invocation triggered every five minutes by a Plesk scheduled task
+- Laravel scheduler triggered every minute by a Plesk scheduled task
+- Frontend build (`public/build/`) produced on a build host and uploaded with the release
+- Idempotent deploy helper at `scripts/deploy-plesk.sh`
+- Full walkthrough in `docs/deployment-plesk.md`
+- Decision recorded in `docs/decisions.md` (2026-06-26)
+
+Planned follow-up: investigate whether Plesk's Node.js extension can be used to run the frontend build on the server itself, so deployments become self-contained.

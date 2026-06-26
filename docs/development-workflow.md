@@ -66,6 +66,30 @@ docker compose run --rm node npm run build
 
 For local email verification testing, the default `.env.example` uses `MAIL_MAILER=log`, so verification links are written to the Laravel logs instead of sent through a real mail provider.
 
+## Production Deployment
+
+OpenModHub supports two production targets in addition to the local Docker Compose setup:
+
+- **Unraid** (single container, MariaDB as a separate container) — see `docs/deployment-unraid.md`.
+- **Debian vServer with nginx and Certbot** (Docker-based) — see `docs/deployment-server.md`.
+- **Plesk-managed PHP server** (no Docker, no root) — see `docs/deployment-plesk.md`.
+
+For Plesk, the production deployment steps are:
+
+```bash
+ssh <plesk-user>@<server>
+cd /var/www/vhosts/<sub>/openmodhub
+cp .env.plesk.example .env
+# edit .env with database, mail, and APP_URL
+composer install --no-dev --optimize-autoloader
+php artisan key:generate
+php artisan storage:link
+php artisan migrate --seed --force
+php artisan config:cache route:cache view:cache
+```
+
+The queue worker and the Laravel scheduler are configured as Plesk scheduled tasks, not as background processes. See `docs/deployment-plesk.md` for the full walkthrough.
+
 Admins can also enable Debug mode in `/admin/settings` during local development. With Debug mode enabled, newly registered users see their signed verification URL directly on the email verification prompt. Keep this disabled outside trusted development environments.
 
 For adaptive registration captcha testing, configure Cloudflare Turnstile keys in `.env` when needed:
